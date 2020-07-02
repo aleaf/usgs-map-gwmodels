@@ -33,6 +33,9 @@ dependencies:
 - nbstripout
 - pyyaml
 - pylint
+- codecov
+- coverage
+- flake8
 - rope  # for refactoring
 - pip
 - pip:
