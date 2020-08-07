@@ -3,18 +3,18 @@ import pandas as pd
 from mfsetup.units import convert_volume_units, convert_time_units
 
 
-def str_ids(iterable):
+def format_usgs_site_ids(iterable):
     """Cast site ids to strings"""
     str_ids = []
     for id in iterable:
         if not str(id).startswith('0') and str(id).isdigit():
-            str_ids.append(correct_station_id(id))
+            str_ids.append(format_usgs_site_id(id))
         else:
             str_ids.append(str(id))
     return str_ids
 
 
-def correct_station_id(stationID):
+def format_usgs_site_id(stationID):
     """For dealing with USGS site IDs that have leading 0s.
     """
     if 1 < int(str(stationID)[0]) < 10 and len(str(stationID)) < 15:
@@ -59,7 +59,7 @@ def preprocess_flows(streamflows_file,
     # convert site numbers to strings;
     # add leading 0s to any USGS sites that should have them
     if 'site_no' in df.columns:
-        df['site_no'] = str_ids(df['site_no'])
+        df['site_no'] = format_usgs_site_ids(df['site_no'])
     
     # index the dataframe to times;
     # truncate data before start date
