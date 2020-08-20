@@ -1,0 +1,68 @@
+# names associated with aquifer codes
+# from https://help.waterdata.usgs.gov/aqfr_cd
+aquifer_code_names:
+  124SPRT: Sparta Sand 
+  110ALVM: Quaternary Alluvium 
+  124MUWX: Meridian-Upper Wilcox Aquifer 
+  111ALVM: Holocene Alluvium 
+  124MMPS: Memphis Sand 
+  112TRRC: Terrace Deposits
+  211MCNR: McNairy Formation 
+  124WLCXG: Wilcox Group 
+  12405MP: 500-foot Sand (Memphis Aquifer) 
+  112MRVA: MRVA 
+  112MRVAA: MRVA
+  112VLTR: Valley Trains Pleistocene
+  112ACFL: Atchafalaya Aquifer
+  112ORVA: Ouachita River Alluvial Aquifer
+  110QRNR: Quaternary System
+  112ABVL: Abbeville Aquifer Pleistocene Age
+  112PRIR: Prairie Formation
+  112LOSS: Loess
+  111HLCN: Holocene Series
+  112ALVL: Alluvial Aquifers Undifferentiated
+  124WLCX: Wilcox Group 
+  124FRPL: Fort Pillow Sand of Wilcox Group
+  N100MSRVVL: MRVA
+
+# mapping of local aquifer codes to
+# to embayment-wide aquifer names
+regional_aquifer:
+  112MRVA: mrva
+  123FRHL: vicksburg  # Forest Hills Sands (Kathy classifies this as Vicksburg)
+  124CCKF: upper claiborne  # Cockfield Formation of Claiborne Group
+  124CKFJ: upper claiborne  # Cockfield Through Jackson Formations
+  124CCKFJ: upper claiborne  # Cockfield Through Jackson Formations, undivided
+  12405MP: middle clairborne
+  124BGFD: middle clairborne
+  124LRDO: middle clairborne
+  124MMPS: middle clairborne
+  124QCSP: middle clairborne
+  124QNCT: middle clairborne
+  124RKLW: middle clairborne
+  124SPRT: middle clairborne
+  124WCHS: middle clairborne
+  124SPAR: middle clairborne
+  124SPT: middle clairborne
+  124SPRT: middle clairborne
+  124WNSB: middle clairborne
+  124LSBN: middle clairborne
+  124SPRTC: middle clairborne
+  # lower claiborne and upper wilcox are difficult to differentiate
+  # the 'lower claiborne' classification therefore covers both
+  112MUWX: lower claiborne  # Meridian-Upper Wilcox Aquifer
+  124CPRS: lower claiborne  # Cypress Aquifer
+  124CRRZ: lower claiborne  # Carrizo Sand
+  124CZWX: lower claiborne  # Carrizo Sand and Wilcox Group, Undifferentiated
+  124MRDN: lower claiborne  # Meridian Sand Member of Tallahatta Formation
+  124MUWX: lower claiborne  # Meridian-Upper Wilcox Aquifer
+  124WLCX: lower claiborne  # Wilcox Group
+  124TLLT: lower claiborne  # Tallahatta Formation
+  124BSCC: lower claiborne  # Basic City Shale Member of Tallahatta Formation
+  124CRWL: lower claiborne  # Carrizo-Wilcox Aquifer
+  124WLCXM: middle wilcox
+  # lower wilcox units
+  124FRPL: lower wilcox  # Fort Pillow Sand of Wilcox Group
+  12414MP: lower wilcox  # 1400-foot Sand of Memphis Area (local name for Fort Pillow)
+  124WLCXL: lower wilcox  # Lower Wilcox Aquifer
+
