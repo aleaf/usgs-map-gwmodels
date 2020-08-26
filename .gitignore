@@ -88,3 +88,6 @@ target/
 
 # flopy
 *.chk
+
+# MAP work
+working_data/
