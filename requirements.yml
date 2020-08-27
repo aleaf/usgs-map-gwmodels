@@ -1,0 +1,35 @@
+name: sfrmaker
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - ipython
+  - jupyter
+  - notebook
+  - ipykernel
+  - matplotlib
+  - pyyaml
+  - numpy
+  - scipy
+  - xarray
+  - netcdf4
+  - pandas
+  - gdal
+  - fiona
+  - rasterio
+  - rasterstats
+  - shapely
+  - rtree
+  - pyproj>=2.2
+  - pyshp
+  - pytest
+  - pip
+  - pip:
+    - gis-utils
+    - git+git://github.com/modflowpy/flopy@develop
+    - git+git://github.com/aleaf/sfrmaker@develop
+    - git+git://github.com/aleaf/modflow-setup@develop
+    - git+git://github.com/aleaf/modflow-export@develop
+
+

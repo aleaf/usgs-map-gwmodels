@@ -88,3 +88,6 @@ target/
 
 # flopy
 *.chk
+
+# output
+*.pdf

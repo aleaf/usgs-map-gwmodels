@@ -1,0 +1,44 @@
+name: usgs-map-gwmodels_dev
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - ipython
+  - jupyter
+  - notebook
+  - ipykernel
+  - matplotlib
+  - pyyaml
+  - numpy
+  - scipy
+  - xarray
+  - netcdf4
+  - pandas
+  - gdal
+  - fiona
+  - rasterio
+  - rasterstats
+  - shapely
+  - rtree
+  - pyproj>=2.2
+  - pyshp
+  - pytest
+  - codecov
+  - coverage
+  - flake8
+  - sphinx
+  - numpydoc
+  - nbsphinx  # for rendering notebooks in sphinx-generated docs
+  - sphinx-copybutton
+  - sphinx_rtd_theme
+  - twine  # for uploading releases to PyPI
+  - pip
+  - pip:
+    - gis-utils
+    - doctr  # for publishing docs via Travis
+    - versioneer  # semantic versioning
+    - git+git://github.com/modflowpy/flopy@develop
+    - git+git://github.com/aleaf/sfrmaker@develop
+    - git+git://github.com/aleaf/modflow-setup@develop
+    - git+git://github.com/aleaf/modflow-export@develop
