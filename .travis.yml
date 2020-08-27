@@ -3,14 +3,14 @@ language: python
 matrix:
   include:
     # test with python 3.7 and latest flopy release available via conda
-    - env: ENV_FILE="ci/37-conda-flopy.yml"
+    - env: ENV_FILE="ci/38-conda-flopy.yml"
 
     # test with latest python version and flopy develop branch
     - env: ENV_FILE="ci/latest-python-flopy-develop.yml"
 
   # for flopy bugs that haven't been fixed in the latest conda release
   allow_failures:
-    - env: ENV_FILE="ci/37-conda-flopy.yml"
+    - env: ENV_FILE="ci/38-conda-flopy.yml"
 
 env:
   global:
