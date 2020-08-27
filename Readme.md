@@ -2,16 +2,21 @@
 usgs-map-gwmodels
 =================
 
+### Version 0
 [![Build Status](https://travis-ci.com/aleaf/usgs-map-gwmodels.svg?branch=master)](https://travis-ci.com/aleaf/usgs-map-gwmodels)
 [![codecov](https://codecov.io/gh/aleaf/usgs-map-gwmodels/branch/develop/graph/badge.svg)](https://codecov.io/gh/aleaf/usgs-map-gwmodels)
 
 
 Python code for pre- and post-processing of groundwater models for the USGS Mississippi Alluvial Plain Project
 
-Features
---------
+Documentation
+----------------------------------------------- 
+See the [Online Documentation](https://aleaf.github.io/usgs-map-gwmodels/index.html)
 
-* TODO
+Contributing
+----------------------------------------------- 
+See the [Contributing Page](https://aleaf.github.io/usgs-map-gwmodels/contributing.html)
+
 
 Disclaimer
 ----------
