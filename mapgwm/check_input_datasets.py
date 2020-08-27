@@ -96,9 +96,9 @@ def test_headobs(new_data_file, new_meta_file):
 
 
 if __name__ == '__main__':
-    home = os.getcwd()
-    upone = os.path.dirname(home)
-    path = os.path.join(upone, 'working_data')
-    data_file = os.path.join(path, 'GW_monthly_stats_test.txt')
+    # put path to your input file here, using same files
+    # as test directory as an example
+    
+    data_file = os.path.join('tests', 'data', 'headobs')
     metadata_file = os.path.join(path, 'GW_monthly_meta_test.txt')
     test_headobs(data_file, metadata_file)
