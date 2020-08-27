@@ -91,5 +91,9 @@ target/
 
 # MAP work
 working_data/
+
 # output
 *.pdf
+
+# Visual Studio
+*.code-workspace
