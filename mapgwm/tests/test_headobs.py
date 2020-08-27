@@ -19,7 +19,6 @@ def test_preprocess_headobs(test_output_folder):
     
     # area of observations to process (discard observations outside of this area)
     active_area = get_active_area('mapgwm/tests/data/extents/MERAS_Extent.shp',
-                                  name_col='desc',
                                   buffer=10000.)
 
     # read the data
