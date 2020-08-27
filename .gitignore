@@ -91,6 +91,7 @@ target/
 
 # MAP work
 working_data/
+mapgwm/tests/output/
 
 # output
 *.pdf
