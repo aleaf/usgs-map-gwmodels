@@ -133,7 +133,7 @@ sim_end_dt = '2017-12-31'
 df['start_date'] = pd.to_datetime('1/1/2010')
 groups = df.groupby('plant_code')
 all_groups = []
-for plant_code,group in groups:
+for plant_code, group in groups:
     group = group.copy()
     group.index = group['start_date']
     start_date = pd.Timestamp(sim_start_dt)
