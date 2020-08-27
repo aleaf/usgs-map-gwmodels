@@ -11,7 +11,6 @@ shapely
 pyproj
 flopy
 gis-utils
-pydrograph
 sfrmaker
 modflow-export
 modflow-setup
