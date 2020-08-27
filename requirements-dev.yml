@@ -6,6 +6,7 @@ dependencies:
   - python
   - ipython
   - jupyter
+  - jupyterlab
   - notebook
   - ipykernel
   - matplotlib
