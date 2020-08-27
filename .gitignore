@@ -91,3 +91,5 @@ target/
 
 # MAP work
 working_data/
+# output
+*.pdf
