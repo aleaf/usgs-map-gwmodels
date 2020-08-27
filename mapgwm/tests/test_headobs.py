@@ -5,8 +5,8 @@ from mapgwm.headobs import preprocess_headobs, get_data, get_active_area
 def test_preprocess_headobs(test_output_folder):
     # input files
     path = 'mapgwm/tests/data/headobs'
-    data_file = os.path.join(path, 'GW_monthly_stats1990-01-01_2019-12-31.txt')
-    metadata_file = os.path.join(path, 'GW_monthly_meta1990-01-01_2019-12-31.txt')
+    data_file = os.path.join(path, 'GW_monthly_stats_test.txt')
+    metadata_file = os.path.join(path, 'GW_monthly_meta_test.txt')
 
     # output
     outputfile = os.path.join(test_output_folder, 'preprocessed_monthly_output.csv')

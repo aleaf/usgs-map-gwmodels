@@ -87,7 +87,7 @@ def get_active_area(shapefile, name_col='desc',
         [description]
     """    
     df = shp2df(shapefile)
-    #df.index = df[name_col]
+    df.index = df[name_col]
     # take the first polygon by default
     return df.geometry.values[0].buffer(buffer)
     
