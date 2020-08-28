@@ -1,0 +1,12 @@
+{
+    "delc": 100.0,
+    "delr": 100.0,
+    "epsg": 5070,
+    "lenuni": 2,
+    "ncol": 351,
+    "nrow": 301,
+    "proj4_str": "+init=epsg:5070",
+    "rotation": 0.0,
+    "xul": 501405,
+    "yul": 1205835
+}

@@ -37,22 +37,26 @@ def compare_lists(list1, name1, list2, name2):
 
         Returns
         -------
-        none
+        passed: boolean,  returns True if files match
     """
     no_match = [x for x in list2 if x not in list1]
     missing = [x for x in list1 if x not in list2]
+    passed = True
     if len(no_match) > 0:
         for x in no_match:
             print('{0} is in {2} but not in {1}'.format(x, name1, name2))
+            passed = False
     elif len(missing) > 0:
         for x in missing:
             print('{0} is missing in {2} compared to {1}'.format(x, name1, name2))
+            passed = False
     else:
         print('lists match: {0}, {1}'.format(name1, name2))
+    return passed
 
 
 
-def test_headobs(new_data_file, new_meta_file):
+def check_headobs(new_data_file, new_meta_file, path_to_tests='.'):
     """headobs.py reads in data from Will Asquith as two csv files
        datafile - csv with observed monthly heads
        metadata - csv with site characteristics
@@ -71,10 +75,10 @@ def test_headobs(new_data_file, new_meta_file):
 
        Returns
        -------
-       None:  will throw assert error if data files do not match
+       (pass1 and pass2):  Boolean, False if files do not match
     """
        
-    path = os.path.join('tests', 'data', 'headobs')
+    path = os.path.join(path_to_tests, 'tests', 'data', 'headobs')
     data_file = os.path.join(path, 'GW_monthly_stats_test.txt')
     metadata_file = os.path.join(path, 'GW_monthly_meta_test.txt')
 
@@ -88,17 +92,20 @@ def test_headobs(new_data_file, new_meta_file):
     data_skiprows = get_header_length(new_meta_file)
     newmeta = pd.read_csv(new_meta_file, sep='\t', skiprows=data_skiprows)
 
-    compare_lists(testdata.columns.tolist(), 'Test Dataset', 
+    pass1 = compare_lists(testdata.columns.tolist(), 'Test Dataset', 
                   newdata.columns.tolist(), 'New Dataset')
 
-    compare_lists(testmeta.columns.tolist(), 'Test Metafile', 
+    pass2 = compare_lists(testmeta.columns.tolist(), 'Test Metafile', 
                   newmeta.columns.tolist(), 'New Metafile')
-
+    
+    return (pass1 and pass2)
 
 if __name__ == '__main__':
-    # put path to your input file here, using same files
-    # as test directory as an example
-    
-    data_file = os.path.join('tests', 'data', 'headobs')
-    metadata_file = os.path.join(path, 'GW_monthly_meta_test.txt')
-    test_headobs(data_file, metadata_file)
+    data_file = os.path.join('tests', 'data', 'headobs', 'GW_monthly_stats_test.txt')
+    metadata_file = os.path.join('tests', 'data', 'headobs', 'GW_monthly_meta_test.txt')
+
+    check = check_headobs(data_file, metadata_file)
+    if check:
+        print('PASSED')
+    else:
+        print('FAILED')
