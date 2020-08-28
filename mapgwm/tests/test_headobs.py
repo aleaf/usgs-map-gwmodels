@@ -5,7 +5,7 @@ from mapgwm.headobs import preprocess_headobs, get_data, get_active_area
 def test_preprocess_headobs(test_output_folder):
     # input files
     home = os.getcwd()
-    path = os.path.join(home, 'tests', 'data', 'headobs')
+    path = os.path.join(home, 'mapgwm', 'tests', 'data', 'headobs')
     data_file = os.path.join(path, 'GW_monthly_stats_test.txt')
     metadata_file = os.path.join(path, 'GW_monthly_meta_test.txt')
 
@@ -15,7 +15,7 @@ def test_preprocess_headobs(test_output_folder):
     start_date = '1998-04-01'
     
     # areas of interest within model to break out as separate observation groups
-    gis_path = os.path.join(home, 'tests', 'data', 'extents')
+    gis_path = os.path.join(home, 'mapgwm', 'tests', 'data', 'extents')
     aoi = {'DeltaAOI': os.path.join(gis_path, 'CompositeHydrographArea.shp')}
     
     # area of observations to process (discard observations outside of this area)
