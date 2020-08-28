@@ -2,6 +2,9 @@ import time
 import numpy as np
 import xarray as xr
 
+import os
+from mfsetup import load_modelgrid
+
 
 def get_monthly_means(ncfile, outfile, filter=None,
                       check_results=True):
@@ -57,7 +60,7 @@ def get_monthly_means(ncfile, outfile, filter=None,
         if check_results:
             print("checking compressed file")
             with xr.open_dataset(outfile) as written:
-                for month in monthly.time:
-                    np.testing.assert_equal(monthly.net_infiltration.loc[month].values,
-                                            written.net_infiltration.loc[month].values)
+                for i in range(0, len(monthly.time)):
+                    np.testing.assert_equal(monthly.net_infiltration[i, :].values,
+                                            written.net_infiltration[i, :].values)
     print("finished in {:.2f}s\n".format(time.time() - t0))
