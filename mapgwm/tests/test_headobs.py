@@ -18,7 +18,7 @@ def test_preprocess_headobs(test_output_folder, test_data_path):
     
     # area of observations to process (discard observations outside of this area)
     active_area = get_active_area(os.path.join(test_data_path, 'extents/MERAS_Extent.shp'),
-                                  name_col='desc',
+                                  name_col='FORMATION',
                                   buffer=10000.)
 
     # read the data
