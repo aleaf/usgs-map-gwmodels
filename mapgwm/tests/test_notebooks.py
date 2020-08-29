@@ -46,7 +46,7 @@ def test_notebook(notebook, kernel_name, tmpdir, project_root_path):
     # so that nbsphinx can render it in the docs
     # the docs get built when the tests are run on travis
     # so successful execution of this test will build the notebooks for the docs
-    output_folder = os.path.join(project_root_path, 'docs/source/notebooks')
+    output_folder = os.path.join(project_root_path, 'docs', 'source', 'notebooks')
 
     cmd = ('jupyter ' + 'nbconvert '
            '--ExecutePreprocessor.timeout=600 '

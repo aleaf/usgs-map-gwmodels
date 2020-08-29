@@ -89,5 +89,12 @@ target/
 # flopy
 *.chk
 
+# MAP work
+working_data/
+mapgwm/tests/output/
+
 # output
 *.pdf
+
+# Visual Studio
+*.code-workspace
