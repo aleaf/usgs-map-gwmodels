@@ -11,7 +11,8 @@ def test_check_input_datasets(test_data_path):
     # input files for headobs
     data_file = os.path.join(test_data_path, 'headobs', 'GW_monthly_stats_test.txt')
     metadata_file = os.path.join(test_data_path, 'headobs', 'GW_monthly_meta_test.txt')
-        
+    
+    # check_headobs returns True if both data_file and metadata_file match
     check = check_headobs(data_file, metadata_file, os.path.join(os.path.join(os.getcwd(), 'mapgwm')))
     assert(check)
     
