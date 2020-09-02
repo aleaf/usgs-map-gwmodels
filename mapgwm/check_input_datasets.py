@@ -9,7 +9,7 @@
    this package just test user specified input files against
    those used in the tests directory.  
 
-   Authors should add a check_ method for any datasets
+   Authors should add a method for any datasets
    added to tests/data/
 """
 
