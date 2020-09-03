@@ -14,4 +14,10 @@ Supporting modules
 
    mapgwm.headobs
    mapgwm.checkdatasets
+   mapgwm.lookups
+   mapgwm.nhdplus
+   mapgwm.swb
+   mapgwm.swflows
+   mapgwm.swuds
+   mapgwm.wateruse
    

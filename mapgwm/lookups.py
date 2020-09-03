@@ -19,12 +19,32 @@ aquifer_codes_data = os.path.join(path, 'lookups', 'aquifer_codes.yml')
 
 
 def get_nhdplus_v2_flowline_routing():
-    lookup = pd.read_csv(nhdplus_vs_flowline_routing)
-    lookup = dict(zip(lookup.FROMCOMID, lookup.TOCOMID))
+    """ read in the NHDPLUS v2 flow routing table
+        from a csv specified in the program
+        /mapgwm/lookups/nhdplus_v2_flowline_routing.csv
+
+        User adds::
+
+            from mapgwm.lookups import flowline_routing
+
+        to a script to retrieve flowline_routing as a dict
+    """
+    lookup = pd.read_csv(inflows_lookup_file)
+    lookup = dict(zip(lookup.site_no, lookup.comid))
     return lookup
 
 
 def get_streamflow_site_comids(group=None, groups=None):
+    """ read in the site comid ID table 
+        from a csv specified in the program
+        /mapgwm/lookups/streamflow_site_comids.csv
+
+        User adds::
+
+            from mapgwm.lookups import streamflow_site_comids
+
+        to a script to retrieve streamflow_site_comids as a dict
+    """
     lookup = pd.read_csv(inflows_lookup_file)
     if groups is not None:
         lookup = lookup.loc[lookup.group.isin(groups)]
@@ -42,5 +62,5 @@ def get_aq_cd_names():
 # execute the functions to read the data
 # (each function only gets executed if its output variable is imported)
 streamflow_site_comids = get_streamflow_site_comids()
-aq_codes_dict = get_aq_cd_names()
 flowline_routing = get_nhdplus_v2_flowline_routing()
+aq_codes_dict = get_aq_cd_names()
