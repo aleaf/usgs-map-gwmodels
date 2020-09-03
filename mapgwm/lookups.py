@@ -17,12 +17,32 @@ nhdplus_vs_flowline_routing = os.path.join(path, 'lookups', 'nhdplus_v2_flowline
 
 
 def get_nhdplus_v2_flowline_routing():
+    """ read in the NHDPLUS v2 flow routing table
+        from a csv specified in the program
+        /mapgwm/lookups/nhdplus_v2_flowline_routing.csv
+
+        User adds::
+
+            from mapgwm.lookups import flowline_routing
+
+        to a script to retrieve flowline_routing as a dict
+    """
     lookup = pd.read_csv(inflows_lookup_file)
     lookup = dict(zip(lookup.site_no, lookup.comid))
     return lookup
 
 
 def get_streamflow_site_comids(group=None, groups=None):
+    """ read in the site comid ID table 
+        from a csv specified in the program
+        /mapgwm/lookups/streamflow_site_comids.csv
+
+        User adds::
+
+            from mapgwm.lookups import streamflow_site_comids
+
+        to a script to retrieve streamflow_site_comids as a dict
+    """
     lookup = pd.read_csv(inflows_lookup_file)
     if groups is not None:
         lookup = lookup.loc[lookup.group.isin(groups)]
@@ -35,4 +55,4 @@ def get_streamflow_site_comids(group=None, groups=None):
 # execute the functions to read the data
 # (each function only gets executed if its output variable is imported)
 streamflow_site_comids = get_streamflow_site_comids()
-flowline_routing = get_flowline_routing()
+flowline_routing = get_nhdplus_v2_flowline_routing()
