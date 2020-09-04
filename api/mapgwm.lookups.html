@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API reference &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
+  <title>mapgwm.lookups module &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mapgwm.headobs module" href="mapgwm.headobs.html" />
-    <link rel="prev" title="Usage" href="../usage.html" /> 
+    <link rel="next" title="mapgwm.nhdplus module" href="mapgwm.nhdplus.html" />
+    <link rel="prev" title="mapgwm.check_input_datasets module" href="mapgwm.checkdatasets.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -102,14 +102,12 @@
 </ul>
 <p class="caption"><span class="caption-text">Code reference</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#model-classes">Model classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#supporting-modules">Supporting modules</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#model-classes">Model classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#supporting-modules">Supporting modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.headobs.html">mapgwm.headobs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.checkdatasets.html">mapgwm.check_input_datasets module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mapgwm.lookups.html">mapgwm.lookups module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.lookups module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
 </ul>
@@ -168,13 +166,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>API reference</li>
+          <li><a href="index.html">API reference</a> &raquo;</li>
+        
+      <li>mapgwm.lookups module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/mapgwm.lookups.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -211,25 +211,44 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="api-reference">
-<h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-mapgwm.lookups">
+<span id="mapgwm-lookups-module"></span><h1>mapgwm.lookups module<a class="headerlink" href="#module-mapgwm.lookups" title="Permalink to this headline">¶</a></h1>
+<p>Module for importing lookup tables with information that covers the MERAS region
+(stored in the lookups folder).</p>
+<p>e.g. so that the contents of lookups/streamflow_site_comids.csv
+can be import as a python dictionary with
+&gt;&gt;&gt; from mapgwm.lookups import streamflow_site_comids</p>
+<dl class="py function">
+<dt id="mapgwm.lookups.get_aq_cd_names">
+<code class="sig-prename descclassname">mapgwm.lookups.</code><code class="sig-name descname">get_aq_cd_names</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/lookups.html#get_aq_cd_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.lookups.get_aq_cd_names" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.lookups.get_nhdplus_v2_flowline_routing">
+<code class="sig-prename descclassname">mapgwm.lookups.</code><code class="sig-name descname">get_nhdplus_v2_flowline_routing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/lookups.html#get_nhdplus_v2_flowline_routing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.lookups.get_nhdplus_v2_flowline_routing" title="Permalink to this definition">¶</a></dt>
+<dd><p>read in the NHDPLUS v2 flow routing table
+from a csv specified in the program
+/mapgwm/lookups/nhdplus_v2_flowline_routing.csv</p>
+<p>User adds:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">flowline_routing</span>
+</pre></div>
 </div>
-<div class="section" id="model-classes">
-<h1>Model classes<a class="headerlink" href="#model-classes" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+<p>to a script to retrieve flowline_routing as a dict</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.lookups.get_streamflow_site_comids">
+<code class="sig-prename descclassname">mapgwm.lookups.</code><code class="sig-name descname">get_streamflow_site_comids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">group</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">groups</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/lookups.html#get_streamflow_site_comids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.lookups.get_streamflow_site_comids" title="Permalink to this definition">¶</a></dt>
+<dd><p>read in the site comid ID table 
+from a csv specified in the program
+/mapgwm/lookups/streamflow_site_comids.csv</p>
+<p>User adds:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">streamflow_site_comids</span>
+</pre></div>
 </div>
-</div>
-<div class="section" id="supporting-modules">
-<h1>Supporting modules<a class="headerlink" href="#supporting-modules" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.headobs.html">mapgwm.headobs module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.checkdatasets.html">mapgwm.check_input_datasets module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.lookups.html">mapgwm.lookups module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
-</ul>
-</div>
+<p>to a script to retrieve streamflow_site_comids as a dict</p>
+</dd></dl>
+
 </div>
 
 
@@ -240,10 +259,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mapgwm.headobs.html" class="btn btn-neutral float-right" title="mapgwm.headobs module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mapgwm.nhdplus.html" class="btn btn-neutral float-right" title="mapgwm.nhdplus module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mapgwm.checkdatasets.html" class="btn btn-neutral float-left" title="mapgwm.check_input_datasets module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

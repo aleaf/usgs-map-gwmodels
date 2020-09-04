@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API reference &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
+  <title>mapgwm.swb module &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mapgwm.headobs module" href="mapgwm.headobs.html" />
-    <link rel="prev" title="Usage" href="../usage.html" /> 
+    <link rel="next" title="Release History" href="../release-history.html" />
+    <link rel="prev" title="mapgwm.nhdplus module" href="mapgwm.nhdplus.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -102,16 +102,14 @@
 </ul>
 <p class="caption"><span class="caption-text">Code reference</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#model-classes">Model classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#supporting-modules">Supporting modules</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#model-classes">Model classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#supporting-modules">Supporting modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.headobs.html">mapgwm.headobs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.checkdatasets.html">mapgwm.check_input_datasets module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.lookups.html">mapgwm.lookups module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.swb module</a></li>
 </ul>
 </li>
 </ul>
@@ -168,13 +166,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>API reference</li>
+          <li><a href="index.html">API reference</a> &raquo;</li>
+        
+      <li>mapgwm.swb module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/mapgwm.swb.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -211,25 +211,33 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="api-reference">
-<h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="model-classes">
-<h1>Model classes<a class="headerlink" href="#model-classes" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
-</div>
-<div class="section" id="supporting-modules">
-<h1>Supporting modules<a class="headerlink" href="#supporting-modules" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.headobs.html">mapgwm.headobs module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.checkdatasets.html">mapgwm.check_input_datasets module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.lookups.html">mapgwm.lookups module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
-</ul>
-</div>
+<div class="section" id="module-mapgwm.swb">
+<span id="mapgwm-swb-module"></span><h1>mapgwm.swb module<a class="headerlink" href="#module-mapgwm.swb" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="mapgwm.swb.get_monthly_means">
+<code class="sig-prename descclassname">mapgwm.swb.</code><code class="sig-name descname">get_monthly_means</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ncfile</span></em>, <em class="sig-param"><span class="n">outfile</span></em>, <em class="sig-param"><span class="n">filter</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">check_results</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swb.html#get_monthly_means"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swb.get_monthly_means" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get monthly mean values for a netcdf file
+with a time variable ‘time’ and write them to another netcdf file.
+Use dask if it is installed to limit memory required and
+distribute to cores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ncfile</strong><span class="classifier">str</span></dt><dd><p>Path to input netcdf file. Assumed to have variable ‘net_infiltration’
+that is compressed in the output file.</p>
+</dd>
+<dt><strong>outfile</strong><span class="classifier">str</span></dt><dd><p>Path of output netcdf file.</p>
+</dd>
+<dt><strong>filter</strong><span class="classifier">tuple of floats</span></dt><dd><p>Bounding box of area to subset from ncfile (left, bottom, right, top).
+By default, none (entire area is retained in output file).</p>
+</dd>
+<dt><strong>check_results</strong><span class="classifier">bool, optional</span></dt><dd><p>Check that the monthly values written to the output file match those in memory.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -240,10 +248,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mapgwm.headobs.html" class="btn btn-neutral float-right" title="mapgwm.headobs module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../release-history.html" class="btn btn-neutral float-right" title="Release History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mapgwm.nhdplus.html" class="btn btn-neutral float-left" title="mapgwm.nhdplus module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

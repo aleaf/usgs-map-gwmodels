@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Philosophy &mdash; usgs-map-gwmodels 0.post16.dev0+g6dd1aa7 documentation</title>
+  <title>Philosophy &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
   
 
   
@@ -41,7 +41,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="installation.html" />
-    <link rel="prev" title="usgs-map-gwmodels 0.post16.dev0+g6dd1aa7" href="index.html" /> 
+    <link rel="prev" title="usgs-map-gwmodels 0.post17.dev0+gb1c3b4d" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post16.dev0+g6dd1aa7
+                0.post17.dev0+gb1c3b4d
               </div>
             
           
@@ -107,7 +107,9 @@
 </ul>
 <p class="caption"><span class="caption-text">Code reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="api/index.html"> Modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#model-classes">Model classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html#supporting-modules">Supporting modules</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Release history</span></p>
 <ul>
@@ -209,15 +211,28 @@
 <h1>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
-<p>What is the motivation for this project?</p>
+<p>The motivation for this project is bring together common scripts used in
+the development of the regional and inset MAP models to a single package.
+That way, if an input dataset from some other part of the MAP project is
+changed, the necessary edits to the processing script can be made once.
+If common scripts exist for each of the insets and the regional model, then
+those edits would have to be made for each of them, increasing the chance
+for error.</p>
 </div>
 <div class="section" id="what-usgs-map-gwmodels-does">
 <h2>What usgs-map-gwmodels does<a class="headerlink" href="#what-usgs-map-gwmodels-does" title="Permalink to this headline">¶</a></h2>
-<p>what can this package do?</p>
+<p>Functions in this package can be used to help develop preprocess data for
+MAP models.  The package can be used along with <em>modflow-setup</em> to develop
+models from the various data sources.  Post-processing scripts could also
+be put into this package, but they have not been added yet.</p>
 </div>
 <div class="section" id="what-usgs-map-gwmodels-doesn-t-do">
 <h2>What usgs-map-gwmodels doesn’t do<a class="headerlink" href="#what-usgs-map-gwmodels-doesn-t-do" title="Permalink to this headline">¶</a></h2>
-<p>summarize the important limitations here</p>
+<p>The most important limitation is that this package is not designed to
+provide set up functions that are specific to only one of the regional models.
+Model-specific functions or scripts should be part of the client code (python
+script or jupyter notebooks) that use <em>usgs-map-gwmodels</em> and <em>modflow-setup</em>
+or user maintained packages.</p>
 </div>
 </div>
 
@@ -232,7 +247,7 @@
         <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="usgs-map-gwmodels 0.post16.dev0+g6dd1aa7" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="usgs-map-gwmodels 0.post17.dev0+gb1c3b4d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

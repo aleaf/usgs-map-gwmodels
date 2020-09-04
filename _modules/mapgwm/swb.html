@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mapgwm.swb &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> usgs-map-gwmodels
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post17.dev0+gb1c3b4d
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html"> More details on how to use the package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Code reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html#model-classes">Model classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html#supporting-modules">Supporting modules</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Release history</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to usgs-map-gwmodels</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">usgs-map-gwmodels</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mapgwm.swb</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mapgwm.swb</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">mfsetup</span> <span class="kn">import</span> <span class="n">load_modelgrid</span>
+
+
+<div class="viewcode-block" id="get_monthly_means"><a class="viewcode-back" href="../../api/mapgwm.swb.html#mapgwm.swb.get_monthly_means">[docs]</a><span class="k">def</span> <span class="nf">get_monthly_means</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">check_results</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get monthly mean values for a netcdf file</span>
+<span class="sd">    with a time variable &#39;time&#39; and write them to another netcdf file.</span>
+<span class="sd">    Use dask if it is installed to limit memory required and</span>
+<span class="sd">    distribute to cores.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ncfile : str</span>
+<span class="sd">        Path to input netcdf file. Assumed to have variable &#39;net_infiltration&#39;</span>
+<span class="sd">        that is compressed in the output file.</span>
+<span class="sd">    outfile : str</span>
+<span class="sd">        Path of output netcdf file.</span>
+<span class="sd">    filter : tuple of floats</span>
+<span class="sd">        Bounding box of area to subset from ncfile (left, bottom, right, top).</span>
+<span class="sd">        By default, none (entire area is retained in output file).</span>
+<span class="sd">    check_results : bool, optional</span>
+<span class="sd">        Check that the monthly values written to the output file match those in memory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">dask</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;using dask...&#39;</span><span class="p">)</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">}</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;opening </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ncfile</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">ncfile</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="n">chunks</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">filter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;culling to bounding box: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">filter</span><span class="p">))</span>
+            <span class="n">l</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="nb">filter</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Aggregating to monthly values...&#39;</span><span class="p">)</span>
+        <span class="c1"># average the data by month;</span>
+        <span class="c1"># resampled data has start of each month as the timestamp</span>
+        <span class="n">monthly</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">monthly</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;netcdf4&#39;</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;netcdf4&#39;</span><span class="p">,</span>  <span class="c1"># engine=&#39;h5netcdf&#39;,</span>
+                          <span class="n">encoding</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;net_infiltration&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;zlib&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;complevel&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+                                                         <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="s1">&#39;float32&#39;</span><span class="p">,</span>  <span class="c1"># &#39;scale_factor&#39;: 0.01,</span>
+                                                         <span class="s1">&#39;_FillValue&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">9999</span><span class="p">,</span>
+                                                         <span class="c1"># &#39;least_significant_digit&#39;: 8</span>
+                                                         <span class="p">}},</span>
+                          <span class="c1"># encoding={&#39;net_infiltration&#39;: {&#39;dtype&#39;: &#39;int16&#39;, &#39;scale_factor&#39;: 0.1, &#39;_FillValue&#39;: -9999}},</span>
+                          <span class="c1"># encoding={&#39;net_infiltration&#39;: {&#39;compression&#39;: &#39;gzip&#39;,</span>
+                          <span class="c1">#                               &#39;compression_opts&#39;: 9}}</span>
+                          <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;wrote </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;took </span><span class="si">{:.2f}</span><span class="s2">s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">check_results</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;checking compressed file&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">written</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">monthly</span><span class="o">.</span><span class="n">time</span><span class="p">)):</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_equal</span><span class="p">(</span><span class="n">monthly</span><span class="o">.</span><span class="n">net_infiltration</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+                                            <span class="n">written</span><span class="o">.</span><span class="n">net_infiltration</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;finished in </span><span class="si">{:.2f}</span><span class="s2">s</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">
+        Last updated on Sep 04, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

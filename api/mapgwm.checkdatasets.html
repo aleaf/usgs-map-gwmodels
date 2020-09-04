@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API reference &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
+  <title>mapgwm.check_input_datasets module &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mapgwm.headobs module" href="mapgwm.headobs.html" />
-    <link rel="prev" title="Usage" href="../usage.html" /> 
+    <link rel="next" title="mapgwm.lookups module" href="mapgwm.lookups.html" />
+    <link rel="prev" title="mapgwm.headobs module" href="mapgwm.headobs.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -102,13 +102,11 @@
 </ul>
 <p class="caption"><span class="caption-text">Code reference</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#model-classes">Model classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="#supporting-modules">Supporting modules</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#model-classes">Model classes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html#supporting-modules">Supporting modules</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.headobs.html">mapgwm.headobs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mapgwm.checkdatasets.html">mapgwm.check_input_datasets module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.check_input_datasets module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.lookups.html">mapgwm.lookups module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
@@ -168,13 +166,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>API reference</li>
+          <li><a href="index.html">API reference</a> &raquo;</li>
+        
+      <li>mapgwm.check_input_datasets module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/api/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/mapgwm.checkdatasets.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -211,25 +211,71 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="api-reference">
-<h1>API reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="model-classes">
-<h1>Model classes<a class="headerlink" href="#model-classes" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
-</div>
-<div class="section" id="supporting-modules">
-<h1>Supporting modules<a class="headerlink" href="#supporting-modules" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.headobs.html">mapgwm.headobs module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.checkdatasets.html">mapgwm.check_input_datasets module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.lookups.html">mapgwm.lookups module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
-</ul>
-</div>
+<div class="section" id="module-mapgwm.check_input_datasets">
+<span id="mapgwm-check-input-datasets-module"></span><h1>mapgwm.check_input_datasets module<a class="headerlink" href="#module-mapgwm.check_input_datasets" title="Permalink to this headline">¶</a></h1>
+<p>Functions to test input files against those
+used for module testing by Travis CI.</p>
+<p>The automatic testing of the scripts uses standard
+input files in tests/data/ to make sure routines will
+run after changes are made.  These tests, however, do
+not check if there are changes to input file formats
+that can cause errors in the processing.  Functions in
+this package just test user specified input files against
+those used in the tests directory.</p>
+<p>Authors should add a method for any datasets
+added to tests/data/</p>
+<dl class="py function">
+<dt id="mapgwm.check_input_datasets.check_headobs">
+<code class="sig-prename descclassname">mapgwm.check_input_datasets.</code><code class="sig-name descname">check_headobs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">new_data_file</span></em>, <em class="sig-param"><span class="n">new_meta_file</span></em>, <em class="sig-param"><span class="n">path_to_tests</span><span class="o">=</span><span class="default_value">'.'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/check_input_datasets.html#check_headobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.check_input_datasets.check_headobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>headobs.py reads in data from Will Asquith as two csv files
+datafile - csv with observed monthly heads
+metadata - csv with site characteristics</p>
+<p>test_headobs points to 
+mapgwm/tests/data/headobs/GW_monthly_stats_test.txt
+mapgwm/tests/data/headobs/GW_monthly_meta_test.txt</p>
+<p>Which have the top 1000 lines of datasets from August 2020.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>new_data_file: path to data file to test</strong></dt><dd></dd>
+<dt><strong>new_meta_file: path to metadata file to test</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>(pass1 and pass2):  Boolean, False if files do not match</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.check_input_datasets.compare_lists">
+<code class="sig-prename descclassname">mapgwm.check_input_datasets.</code><code class="sig-name descname">compare_lists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list1</span></em>, <em class="sig-param"><span class="n">name1</span></em>, <em class="sig-param"><span class="n">list2</span></em>, <em class="sig-param"><span class="n">name2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/check_input_datasets.html#compare_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.check_input_datasets.compare_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>compare two lists and check for different or missing entries
+print out missing or different entries in list 2 compared to list 1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>list1: list</strong></dt><dd><p>name1: str - name to be printed in comparison
+list2: second list
+name2: str - name to be printed in comparison</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>passed: boolean,  returns True if files match</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.check_input_datasets.get_header_length">
+<code class="sig-prename descclassname">mapgwm.check_input_datasets.</code><code class="sig-name descname">get_header_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sitefile</span></em>, <em class="sig-param"><span class="n">col0</span><span class="o">=</span><span class="default_value">'SITE_BADGE'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/check_input_datasets.html#get_header_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.check_input_datasets.get_header_length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 
 
@@ -240,10 +286,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mapgwm.headobs.html" class="btn btn-neutral float-right" title="mapgwm.headobs module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mapgwm.lookups.html" class="btn btn-neutral float-right" title="mapgwm.lookups module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mapgwm.headobs.html" class="btn btn-neutral float-left" title="mapgwm.headobs module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

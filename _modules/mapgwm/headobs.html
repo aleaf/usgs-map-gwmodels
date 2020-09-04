@@ -1,0 +1,525 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mapgwm.headobs &mdash; usgs-map-gwmodels 0.post17.dev0+gb1c3b4d documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> usgs-map-gwmodels
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post17.dev0+gb1c3b4d
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html"> More details on how to use the package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Code reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html#model-classes">Model classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html#supporting-modules">Supporting modules</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Release history</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to usgs-map-gwmodels</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">usgs-map-gwmodels</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mapgwm.headobs</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mapgwm.headobs</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">gisutils</span> <span class="kn">import</span> <span class="n">shp2df</span><span class="p">,</span> <span class="n">df2shp</span><span class="p">,</span> <span class="n">project</span>
+<span class="kn">from</span> <span class="nn">mfsetup.obs</span> <span class="kn">import</span> <span class="n">make_obsname</span>
+<span class="kn">from</span> <span class="nn">mfsetup.units</span> <span class="kn">import</span> <span class="n">convert_length_units</span>
+<span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">aq_codes_dict</span>
+
+
+<div class="viewcode-block" id="makedirs"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.makedirs">[docs]</a><span class="k">def</span> <span class="nf">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;shps/&#39;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;figures/&#39;</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read_metadata"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.read_metadata">[docs]</a><span class="k">def</span> <span class="nf">read_metadata</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param str or list of str: path to metadata file or files</span>
+<span class="sd">    :return:  pandas dataframe with metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># read only these columns from metadata_file unless others are specified</span>
+    <span class="k">if</span> <span class="n">usecols</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">metadata_usecols</span> <span class="o">=</span> <span class="p">[</span>
+                            <span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;WELL_DEPTH_VA&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;OPEN_TOP_VA&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;OPEN_BOTTOM_VA&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;AQFR_CD&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;NAT_AQFR_CD&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;ALT_VA&#39;</span>
+                            <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">metadata_usecols</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># rename these columns</span>
+    <span class="n">metadata_column_renames</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">:</span> <span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;WELL_DEPTH_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;well_depth&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;OPEN_TOP_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;screen_top&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;OPEN_BOTTOM_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;screen_botm&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;ALT_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;well_el_m&#39;</span>
+        <span class="p">}</span>
+   
+    <span class="n">dflist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>   <span class="c1"># allows list of paths or single path</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">files</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">metadata_skiprows</span> <span class="o">=</span> <span class="n">get_header_length</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">metadata_usecols</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> 
+                            <span class="n">skiprows</span><span class="o">=</span><span class="n">metadata_skiprows</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">metadata_column_renames</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">dflist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dflist</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1">#create aquifer column in metadata</span>
+    <span class="n">aq_codes_dict</span><span class="p">[</span><span class="s1">&#39;aquifer_code_names&#39;</span><span class="p">][</span><span class="s1">&#39;unspecified&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;unspecified&#39;</span>
+    <span class="n">metadata</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;aqfr_cd&#39;</span><span class="p">:</span><span class="s1">&#39;unspecified&#39;</span><span class="p">,</span> <span class="s1">&#39;nat_aqfr_cd&#39;</span><span class="p">:</span><span class="s1">&#39;unspecified&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">metadata</span><span class="o">.</span><span class="n">aqfr_cd</span> <span class="o">!=</span> <span class="s1">&#39;unspecified&#39;</span><span class="p">,</span> <span class="s1">&#39;aquifer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">aqfr_cd</span>
+    <span class="n">metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">metadata</span><span class="o">.</span><span class="n">aqfr_cd</span> <span class="o">==</span> <span class="s1">&#39;unspecified&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">nat_aqfr_cd</span> <span class="o">!=</span> <span class="s1">&#39;unspecified&#39;</span><span class="p">),</span> <span class="s1">&#39;aquifer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">nat_aqfr_cd</span>
+    <span class="n">metadata</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">metadata</span><span class="o">.</span><span class="n">aqfr_cd</span> <span class="o">==</span> <span class="s1">&#39;unspecified&#39;</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">nat_aqfr_cd</span> <span class="o">==</span> <span class="s1">&#39;unspecified&#39;</span><span class="p">),</span> <span class="s1">&#39;aquifer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;unspecified&#39;</span> 
+    
+    <span class="c1">#set(data.aquifer).difference(set(aqfr_cd_name.keys()))</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;aquifer_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">aq_codes_dict</span><span class="p">[</span><span class="s1">&#39;aquifer_code_names&#39;</span><span class="p">][</span><span class="n">aqfrcdi</span><span class="p">]</span> <span class="k">for</span> <span class="n">aqfrcdi</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">aquifer</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">metadata</span></div>
+
+
+<div class="viewcode-block" id="get_active_area"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.get_active_area">[docs]</a><span class="k">def</span> <span class="nf">get_active_area</span><span class="p">(</span><span class="n">shapefile</span><span class="p">,</span> <span class="n">name_col</span><span class="o">=</span><span class="s1">&#39;desc&#39;</span><span class="p">,</span> 
+                    <span class="n">buffer</span><span class="o">=</span><span class="mf">10000.</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read a polygon from a shapefile and add a buffer.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shapefile : [type]</span>
+<span class="sd">        [description]</span>
+<span class="sd">    name_col : str, optional</span>
+<span class="sd">        [description], by default &#39;desc&#39;</span>
+<span class="sd">    buffer : [type], optional</span>
+<span class="sd">        [description], by default 10000.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    [type]</span>
+<span class="sd">        [description]</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">shp2df</span><span class="p">(</span><span class="n">shapefile</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">name_col</span><span class="p">]</span>
+    <span class="c1"># take the first polygon by default</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">buffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span></div>
+    
+    
+<div class="viewcode-block" id="get_header_length"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.get_header_length">[docs]</a><span class="k">def</span> <span class="nf">get_header_length</span><span class="p">(</span><span class="n">sitefile</span><span class="p">,</span> <span class="n">col0</span><span class="o">=</span><span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">):</span>
+    
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sitefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;#&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">and</span> <span class="n">col0</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">i</span></div>
+            
+            
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.get_data">[docs]</a><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">metadata_file</span><span class="p">):</span>
+    
+    <span class="c1"># inputs</span>
+    <span class="c1"># rename columns for readability, shapefile 10 char. limit</span>
+    <span class="c1"># and to conform with mfsetup naming conventions</span>
+    <span class="c1"># for now, read all of the columns in data_file</span>
+    <span class="n">data_usecols</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">data_column_renames</span> <span class="o">=</span> <span class="p">{</span><span class="c1"># columns in 4/14/20 &quot;monthly rollup&quot;</span>
+                           <span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">:</span> <span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;DEC_LAT_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;DEC_LONG_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;lon&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;MONTHLY_LEV_ALT_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;head_m&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;MONTHLY_STDEV_LEV_ALT_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;head_std_m&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;MONTHLY_LAST_LEV_ALT_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;last_head_m&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;MONTHLY_LEV_COUNT&#39;</span><span class="p">:</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span>
+                           <span class="c1"># columns in previous (statistical model output) version</span>
+                           <span class="c1"># (in case they&#39;re needed again)</span>
+                           <span class="s1">&#39;LEV_DT&#39;</span><span class="p">:</span> <span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;EST_LEV_ALT_STDEV&#39;</span><span class="p">:</span> <span class="s1">&#39;head_std_m&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;ALT_VA&#39;</span><span class="p">:</span> <span class="s1">&#39;well_el_m&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># read in the data</span>
+    <span class="n">data_skiprows</span> <span class="o">=</span> <span class="n">get_header_length</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">data_usecols</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> 
+                       <span class="n">skiprows</span><span class="o">=</span><span class="n">data_skiprows</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">data_column_renames</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s1">&#39;datetime&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">datetimes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-</span><span class="si">{:02d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">)</span> 
+                     <span class="k">for</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">month</span><span class="p">)]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">datetimes</span><span class="p">)</span>
+    
+    <span class="c1"># read in the metadata</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">read_metadata</span><span class="p">(</span><span class="n">metadata_file</span><span class="p">)</span>
+    
+    <span class="c1"># assign elevation from metadata to datafile</span>
+    <span class="n">well_el_m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;well_el_m&#39;</span><span class="p">]))</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;well_el_m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">well_el_m</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span> <span class="k">for</span> <span class="n">site_no</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">site_no</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">metadata</span></div>
+
+
+<div class="viewcode-block" id="preprocess_headobs"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.preprocess_headobs">[docs]</a><span class="k">def</span> <span class="nf">preprocess_headobs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;1998-04-01&#39;</span><span class="p">,</span>
+                       <span class="n">src_epsg</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_epsg</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                       <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                       <span class="n">active_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">active_area_epsg</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                       <span class="n">aoi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">max_obsname_len</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span>
+                       <span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;../source_data/observations/head_obs/preprocessed_head_obs.csv&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : DataFrame</span>
+<span class="sd">        Head observation data</span>
+<span class="sd">    metadata : DataFrame</span>
+<span class="sd">        Well information</span>
+<span class="sd">    start_date : str (YYYY-mm-dd)</span>
+<span class="sd">        Simulation start date (cull observations before this date)</span>
+<span class="sd">    src_epsg : int</span>
+<span class="sd">        EPSG code defining projection for source data</span>
+<span class="sd">    dest_epsg : int</span>
+<span class="sd">        EPSG code defining projection of model</span>
+<span class="sd">    data_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
+<span class="sd">        Length units of head observations.</span>
+<span class="sd">    active_area : polygon</span>
+<span class="sd">    active_area_epsg : int</span>
+<span class="sd">        EPSG code defining CRS for active area polygon</span>
+<span class="sd">    aoi : dict  (name: shapefile path)</span>
+<span class="sd">        Areas of interest. Dictionary of shapefile paths</span>
+<span class="sd">        keyed by area names as they will in observation group names</span>
+<span class="sd">        (e.g. &#39;mscha&#39; for MS composite hydrograph area&#39;).</span>
+<span class="sd">    max_obsname_len : int</span>
+<span class="sd">        Maximum length for observation name prefix. Default of 13</span>
+<span class="sd">        allows for a PEST obsnme of 20 characters or less with</span>
+<span class="sd">        &lt;prefix&gt;_yyyydd or &lt;prefix&gt;_&lt;per&gt;d&lt;per&gt;</span>
+<span class="sd">        (e.g. &lt;prefix&gt;_2d1 for a difference between stress periods 2 and 1)</span>
+<span class="sd">    outfile : str</span>
+<span class="sd">        Where output file will be written</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># multiplier to convert input length units to model units</span>
+    <span class="n">unit_conversion</span> <span class="o">=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">data_length_units</span><span class="p">,</span> <span class="s1">&#39;meters&#39;</span><span class="p">)</span>
+
+    <span class="c1"># outputs</span>
+    <span class="n">outpath</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+    <span class="n">makedirs</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span>
+    <span class="n">outname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+    <span class="n">out_info_csvfile</span> <span class="o">=</span> <span class="n">outname</span> <span class="o">+</span> <span class="s1">&#39;_info.csv&#39;</span>
+    <span class="n">out_data_csvfile</span> <span class="o">=</span> <span class="n">outfile</span>
+    <span class="n">out_plot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outpath</span><span class="p">,</span> <span class="s1">&#39;open_interval_lengths.pdf&#39;</span><span class="p">)</span>
+    <span class="n">out_shapefile</span> <span class="o">=</span> <span class="n">outname</span> <span class="o">+</span> <span class="s1">&#39;_info.shp&#39;</span>
+
+    <span class="c1"># set the starting and ending dates here</span>
+    <span class="n">stdate</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+
+    <span class="c1"># convert to datetime; drop the timestamps</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
+
+    <span class="c1"># trim to the time range</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&gt;=</span> <span class="n">stdate</span><span class="p">)]</span>
+
+    <span class="c1"># make two tables- one with well info and other with just data, site numbers, times and aquifer</span>
+    <span class="c1">#aquifer = dict(zip(df.site_no, df.aquifer))</span>
+    
+    <span class="c1"># well info</span>
+    <span class="c1"># collapse dataset to mean values at each site</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">rsuffix</span><span class="o">=</span><span class="s1">&#39;_met&#39;</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;start_dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;end_dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="c1"># convert to meters; convert screen tops and botms to depths</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;well_el_m&#39;</span><span class="p">,</span> <span class="s1">&#39;head_m&#39;</span><span class="p">,</span> <span class="s1">&#39;head_std_m&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_top&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_botm&#39;</span><span class="p">]:</span>
+        <span class="n">well_info</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">*=</span> <span class="n">unit_conversion</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_el_m&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_el_m&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span>
+
+    <span class="c1"># just the data, site numbers, times and aquifer</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">,</span> <span class="s1">&#39;head_m&#39;</span><span class="p">,</span> <span class="s1">&#39;head_std_m&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;head_m&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">unit_conversion</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;head_std_m&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">unit_conversion</span>
+
+    <span class="c1"># #### trim down to only wells with both estimated water levels and standard deviation</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;head_m&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;head_std_m&#39;</span><span class="p">])</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="n">criteria</span><span class="p">]</span>
+
+    <span class="c1"># verify that all wells have a wellhead elevation</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">well_el_m</span><span class="p">))</span>
+
+    <span class="c1"># make a histogram of open interval length</span>
+    <span class="n">open_interval_length</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">screen_top</span> <span class="o">-</span> <span class="n">well_info</span><span class="o">.</span><span class="n">screen_botm</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">open_interval_length</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Well open interval length, in feet&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;median: </span><span class="si">{:.0f}</span><span class="se">\n</span><span class="s1">mean: </span><span class="si">{:.0f}</span><span class="se">\n</span><span class="s1">max: </span><span class="si">{:.0f}</span><span class="se">\n</span><span class="s1">min:  </span><span class="si">{:.0f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">open_interval_length</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span>
+                                                                                     <span class="n">open_interval_length</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+                                                                                     <span class="n">open_interval_length</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+                                                                                     <span class="n">open_interval_length</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                                                                                     <span class="p">),</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_plot</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="c1"># drop well_info with negative reported open interval</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">open_interval_length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># project x, y to model crs</span>
+    <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span> <span class="o">=</span> <span class="n">project</span><span class="p">((</span><span class="n">well_info</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">well_info</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+                          <span class="s1">&#39;epsg:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src_epsg</span><span class="p">),</span> <span class="s1">&#39;epsg:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dest_epsg</span><span class="p">))</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dest_epsg</span><span class="p">)],</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;y_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dest_epsg</span><span class="p">)]</span> <span class="o">=</span> <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span><span class="p">)]</span>
+
+    <span class="c1"># cull data to well_info in well info table</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">site_no</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># make unique n-character names for each observation</span>
+    <span class="c1"># names indicate site location</span>
+    <span class="c1"># 13 character length to allow for prefix_yyyymmm in actual observation names</span>
+    <span class="n">unique_obsnames</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">obsnames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">well_info</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">make_obsname</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">unique_names</span><span class="o">=</span><span class="n">unique_obsnames</span><span class="p">,</span>
+                            <span class="n">maxlen</span><span class="o">=</span><span class="n">max_obsname_len</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_obsnames</span>
+        <span class="n">unique_obsnames</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">obsnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;obsprefix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obsnames</span>
+
+    <span class="c1"># add area of interest information</span>
+    <span class="n">aoi_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;none&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">well_info</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">aoi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">shpname</span> <span class="ow">in</span> <span class="n">aoi</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">aoi_info</span> <span class="o">=</span> <span class="n">shp2df</span><span class="p">(</span><span class="n">shpname</span><span class="p">)</span>
+            <span class="n">aoi_poly</span> <span class="o">=</span> <span class="n">aoi_info</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">aoi_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">if</span> <span class="n">g</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">aoi_poly</span><span class="p">)</span> <span class="k">else</span> <span class="n">aoi_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">geometry</span><span class="p">)]</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;aoi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">aoi_names</span>
+
+    <span class="c1"># save out the results</span>
+    <span class="n">df2shp</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;x_5070&#39;</span><span class="p">,</span> <span class="s1">&#39;y_5070&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+           <span class="n">out_shapefile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">epsg</span><span class="o">=</span><span class="n">dest_epsg</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">))</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_data_csvfile</span><span class="p">))</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_data_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="p">)</span>   </div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">
+        Last updated on Sep 04, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

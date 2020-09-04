@@ -1,4 +1,15 @@
+./_modules/index.html
+./_modules/mapgwm/check_input_datasets.html
+./_modules/mapgwm/headobs.html
+./_modules/mapgwm/lookups.html
+./_modules/mapgwm/nhdplus.html
+./_modules/mapgwm/swb.html
 ./_sources/api/index.rst.txt
+./_sources/api/mapgwm.checkdatasets.rst.txt
+./_sources/api/mapgwm.headobs.rst.txt
+./_sources/api/mapgwm.lookups.rst.txt
+./_sources/api/mapgwm.nhdplus.rst.txt
+./_sources/api/mapgwm.swb.rst.txt
 ./_sources/contributing.rst.txt
 ./_sources/examples.rst.txt
 ./_sources/index.rst.txt
@@ -49,6 +60,11 @@
 ./_static/underscore-1.3.1.js
 ./_static/underscore.js
 ./api/index.html
+./api/mapgwm.checkdatasets.html
+./api/mapgwm.headobs.html
+./api/mapgwm.lookups.html
+./api/mapgwm.nhdplus.html
+./api/mapgwm.swb.html
 ./contributing.html
 ./examples.html
 ./genindex.html
@@ -58,6 +74,7 @@
 ./notebooks/Example.ipynb
 ./objects.inv
 ./philosophy.html
+./py-modindex.html
 ./release-history.html
 ./search.html
 ./searchindex.js
