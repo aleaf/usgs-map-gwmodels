@@ -7,6 +7,7 @@ can be import as a python dictionary with
 """
 import os
 import pandas as pd
+import yaml
 
 
 # get the path to this module
@@ -14,11 +15,12 @@ path, _ = os.path.split(__file__)
 # location of lookup files relative to this module
 inflows_lookup_file = os.path.join(path, 'lookups', 'streamflow_site_comids.csv')
 nhdplus_vs_flowline_routing = os.path.join(path, 'lookups', 'nhdplus_v2_flowline_routing.csv')
+aquifer_codes_data = os.path.join(path, 'lookups', 'aquifer_codes.yml')
 
 
 def get_nhdplus_v2_flowline_routing():
-    lookup = pd.read_csv(inflows_lookup_file)
-    lookup = dict(zip(lookup.site_no, lookup.comid))
+    lookup = pd.read_csv(nhdplus_vs_flowline_routing)
+    lookup = dict(zip(lookup.FROMCOMID, lookup.TOCOMID))
     return lookup
 
 
@@ -31,8 +33,14 @@ def get_streamflow_site_comids(group=None, groups=None):
     lookup = dict(zip(lookup.site_no, lookup.comid))
     return lookup
 
+def get_aq_cd_names():
+    with open(aquifer_codes_data, 'r') as AQ:
+        lookup = yaml.safe_load(AQ)
+    return lookup
+
 
 # execute the functions to read the data
 # (each function only gets executed if its output variable is imported)
 streamflow_site_comids = get_streamflow_site_comids()
-flowline_routing = get_flowline_routing()
+aq_codes_dict = get_aq_cd_names()
+flowline_routing = get_nhdplus_v2_flowline_routing()

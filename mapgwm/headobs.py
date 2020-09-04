@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from gisutils import shp2df, df2shp, project
 from mfsetup.obs import make_obsname
 from mfsetup.units import convert_length_units
+from mapgwm.lookups import aq_codes_dict
 
 
 def makedirs(path):
@@ -19,53 +20,55 @@ def makedirs(path):
 def read_metadata(files, usecols=None):
     """
 
-    :param zmetapath:file path for metadata files
-    :return: indf : pandas dataframe with metadata
+    :param str or list of str: path to metadata file or files
+    :return:  pandas dataframe with metadata
     """
-    dfs = []
+    # read only these columns from metadata_file unless others are specified
+    if usecols is None:
+        metadata_usecols = [
+                            'SITE_BADGE',
+                            'WELL_DEPTH_VA',
+                            'OPEN_TOP_VA',
+                            'OPEN_BOTTOM_VA',
+                            'AQFR_CD',
+                            'NAT_AQFR_CD',
+                            'ALT_VA'
+                            ]
+    else:
+        metadata_usecols = None
+
+    # rename these columns
+    metadata_column_renames = {'SITE_BADGE': 'site_no',
+                            'WELL_DEPTH_VA': 'well_depth',
+                            'OPEN_TOP_VA': 'screen_top',
+                            'OPEN_BOTTOM_VA': 'screen_botm',
+                            'ALT_VA': 'well_el_m'
+        }
+   
+    dflist = []
+    if isinstance(files, str):   # allows list of paths or single path
+        files = [files]
+
     for f in files:
-        df = pd.read_csv(f, usecols=usecols,
-                         sep='\t', comment='#', low_memory=False)
-        dfs.append(df)
-    df = pd.concat(dfs, sort=True)
-    return df
+        metadata_skiprows = get_header_length(f)
+        df = pd.read_csv(f, usecols=metadata_usecols, sep='\t', 
+                            skiprows=metadata_skiprows)
+        df.rename(columns=metadata_column_renames, inplace=True)
+        df.set_index('site_no', inplace=True)
+        df.columns = df.columns.str.lower()
+        dflist.append(df)
+    metadata = pd.concat(dflist, sort=True)
 
-
-def get_layer(botm, i, j, elev, nlay):
-    """Return the layers for elevations at i, j locations.
-
-    Parameters
-    ----------
-    botm : bottom array from modflow model
-    i : scaler or sequence
-        row index (zero-based)
-    j : scaler or sequence
-        column index
-    elev : scaler or sequence
-        elevation (in same units as model)
-    nlay : number of layers
-    Returns
-    -------
-    k : np.ndarray (1-D) or scalar
-        zero-based layer index
-    """
-    def to_array(arg):
-        if not isinstance(arg, np.ndarray):
-            return np.array([arg])
-        else:
-            return arg
-
-    i = to_array(i)
-    j = to_array(j)
-    elev = to_array(elev)
-    botms = botm[:, i, j].tolist()
-    layers = np.sum(((botms - elev) > 0), axis=0)
-    # force elevations below model bottom into bottom layer
-    layers[layers > nlay - 1] = nlay - 1
-    layers = np.atleast_1d(np.squeeze(layers))
-    if len(layers) == 1:
-        layers = layers[0]
-    return layers
+    #create aquifer column in metadata
+    aq_codes_dict['aquifer_code_names']['unspecified'] = 'unspecified'
+    metadata.fillna(value={'aqfr_cd':'unspecified', 'nat_aqfr_cd':'unspecified'}, inplace=True)
+    metadata.loc[metadata.aqfr_cd != 'unspecified', 'aquifer'] = metadata.aqfr_cd
+    metadata.loc[(metadata.aqfr_cd == 'unspecified') & (metadata.nat_aqfr_cd != 'unspecified'), 'aquifer'] = metadata.nat_aqfr_cd
+    metadata.loc[(metadata.aqfr_cd == 'unspecified') & (metadata.nat_aqfr_cd == 'unspecified'), 'aquifer'] = 'unspecified' 
+    
+    #set(data.aquifer).difference(set(aqfr_cd_name.keys()))
+    metadata['aquifer_name'] = [aq_codes_dict['aquifer_code_names'][aqfrcdi] for aqfrcdi in metadata.aquifer]
+    return metadata
 
 
 def get_active_area(shapefile, name_col='desc', 
@@ -121,50 +124,6 @@ def get_data(data_file, metadata_file):
                            'EST_LEV_ALT_STDEV': 'head_std_m',
                            'ALT_VA': 'well_el_m',
     }
-    # read only these columns from metadata_file
-    metadata_usecols = [
-                        'SITE_BADGE',
-                        'WELL_DEPTH_VA',
-                        'OPEN_TOP_VA',
-                        'OPEN_BOTTOM_VA',
-                        'AQFR_CD',
-                        'NAT_AQFR_CD',
-                        'ALT_VA'
-                        ]
-    # rename these columns
-    metadata_column_renames = {'SITE_BADGE': 'site_no',
-                               'WELL_DEPTH_VA': 'well_depth',
-                               'OPEN_TOP_VA': 'screen_top',
-                               'OPEN_BOTTOM_VA': 'screen_botm',
-                               'ALT_VA': 'well_el_m'
-    }
-    
-    # names associated with aquifer codes
-    # from https://help.waterdata.usgs.gov/aqfr_cd
-    aqfr_cd_name = {'124SPRT': 'Sparta Sand', 
-                    '110ALVM': 'Quaternary Alluvium', 
-                    '124MUWX': 'Meridian-Upper Wilcox Aquifer', 
-                    '111ALVM': 'Holocene Alluvium', 
-                    '124MMPS': 'Memphis Sand', 
-                    '112TRRC': 'Terrace Deposits',
-                    '211MCNR': 'McNairy Formation', 
-                    '124WLCXG': 'Wilcox Group', 
-                    '12405MP': '500-foot Sand (Memphis Aquifer)', 
-                    '112MRVA': 'MRVA', 
-                    '112MRVAA': 'MRVA',
-                    '112VLTR': 'Valley Trains, Pleistocene',
-                    '112ACFL': 'Atchafalaya Aquifer',
-                    '112ORVA': 'Ouachita River Alluvial Aquifer',
-                    '110QRNR': 'Quaternary System',
-                    '112ABVL': 'Abbeville Aquifer, Pleistocene Age',
-                    '112PRIR': 'Prairie Formation',
-                    '112LOSS': 'Loess',
-                    '111HLCN': 'Holocene Series',
-                    '112ALVL': 'Alluvial Aquifers, Undifferentiated',
-                    '124WLCX': 'Wilcox Group', 
-                    '124FRPL': 'Fort Pillow Sand of Wilcox Group',
-                    'N100MSRVVL': 'MRVA'
-    }
     
     # read in the data
     data_skiprows = get_header_length(data_file)
@@ -177,28 +136,13 @@ def get_data(data_file, metadata_file):
                      for year, month in zip(data.year, data.month)]
         data['datetime'] = pd.to_datetime(datetimes)
     
-
-
     # read in the metadata
-    metadata_skiprows = get_header_length(metadata_file)
-    metadata = pd.read_csv(metadata_file, usecols=metadata_usecols, sep='\t', 
-                           skiprows=metadata_skiprows)
-    metadata.rename(columns=metadata_column_renames, inplace=True)
-    metadata.set_index('site_no', inplace=True)
-    metadata.columns = metadata.columns.str.lower()
+    metadata = read_metadata(metadata_file)
     
+    # assign elevation from metadata to datafile
     well_el_m = dict(zip(metadata.index, metadata['well_el_m']))
     data['well_el_m'] = [well_el_m[site_no] for site_no in data.site_no]
 
-    print('metatadata has no column called "aquifer, so must create it from local or national aquifer codes"')
-    #create aquifer column in metadata
-    metadata.fillna(value={'aqfr_cd':'unspecified', 'nat_aqfr_cd':'unspecified'}, inplace=True)
-    metadata.loc[metadata.aqfr_cd != 'unspecified', 'aquifer'] = metadata.aqfr_cd
-    metadata.loc[(metadata.aqfr_cd == 'unspecified') & (metadata.nat_aqfr_cd != 'unspecified'), 'aquifer'] = metadata.nat_aqfr_cd
-    metadata.loc[(metadata.aqfr_cd == 'unspecified') & (metadata.nat_aqfr_cd == 'unspecified'), 'aquifer'] = 'unspecified' 
-    
-    #set(data.aquifer).difference(set(aqfr_cd_name.keys()))
-    metadata['aquifer_name'] = [aqfr_cd_name[aqfrcdi] for aqfrcdi in metadata.aquifer]
     return data, metadata
 
 
