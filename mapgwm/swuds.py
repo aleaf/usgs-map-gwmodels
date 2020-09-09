@@ -2,10 +2,9 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-import geopandas as gpd
 from osgeo import ogr
 from shapely.geometry import Point
-from gisutils import df2shp, project, raster
+from gisutils import df2shp, project, raster, shp2df
 from mapgwm.lookups import aq_codes_dict
 
 class swuds:
@@ -16,7 +15,8 @@ class swuds:
 
     def __init__(self, xlsx=None, sheet=None, csvfile=None, cols=None):
         """ Constructor for the swuds class. Class methods will help pre-process
-        water-use data for MAP models.
+        water-use data for MAP models.  Dataframe produced by constructor
+        has original SWUDS data, useful for debugging.
 
         Parameters
         ----------
@@ -55,74 +55,72 @@ class swuds:
             if csvfile is not None:
                 self.df_swuds.to_csv(csvfile, index=False)
 
-        # sort dataframe by site number
         self.df_swuds.columns = self.df_swuds.columns.str.upper()
-        self.df_swuds = self.df_swuds.sort_values(['SITE_NO', 'CN_QNTY_PF_FG']).groupby(['SITE_NO']).last().reset_index()
         # remove trailing spaces from code names
-        self.df_swuds["FROM_AQFR_CD"] = self.df_swuds["FROM_AQFR_CD"].str.strip()
+        if 'FROM_AQFR_CD' in self.df_swuds.columns:
+            self.df_swuds["FROM_AQFR_CD"] = self.df_swuds["FROM_AQFR_CD"].str.strip()
 
-        # other attributes
+        # make depths floats
+        if 'SCREEN_BOT' in self.df_swuds.columns:
+            self.df_swuds['SCREEN_BOT'] = pd.to_numeric(self.df_swuds['FROM_WELL_DEPTH_VA'], errors='coerce')
+        if 'FROM_ALT_VA' in self.df_swuds.columns:
+            self.df_swuds['FROM_ALT_VA'] = pd.to_numeric(self.df_swuds['FROM_ALT_VA'], errors='coerce')
+
+        # other attributes for object
         self.aquifer_names = aq_codes_dict['aquifer_code_names']
         self.regional_aquifers = aq_codes_dict['regional_aquifer']
 
 
-
-    def __overlaps(self, a, b):
-        """ Return the amount of overlap, in bp
-        between a and b.
+    def sort_sites(self, secondarysort='CN_QNTY_PF_FG'):
+        """ Sort the dataframe by site number and quantity, or passed parameter
 
         Parameters
         ----------
-        a: 
-        b: 
-
-        Returns
-        -------
-        int:
-            If >0, the number of bp of overlap
-            If 0,  they are book-ended.
-            If <0, the distance in bp between them
+        secondarysort: str
+            variable in dataframe to sort SITE_NO groups, default is CN_QNTY_PF_FG
         """
+        self.df_swuds = self.df_swuds.sort_values(['SITE_NO', secondarysort]).groupby(['SITE_NO']).last().reset_index()
 
-        return min(a[1], b[1]) - max(a[0], b[0])
 
+    def reproject(self, to_code=5070):
+        """ Reproject from lat/lon to Albers (or passed epsg code) using gisutils
 
-    # convert swuds .xlsx to .csv (for quicker reading)
-    # xlsx_swuds = '../source_data/water_use/LMG-withdrawals-2000-2018.xlsx'
-    # outcsv = '../source_data/water_use/LMG-withdrawals-2000-2018.csv'
-    # cols = ["SITE_NO", "WATER_CD", "FROM_DEC_LAT_VA", "FROM_DEC_LONG_VA", "FROM_WELL_DEPTH_VA",
-    #         "FROM_NAT_WATER_USE_CD", "FROM_NAT_AQFR_CD", "FROM_NAT_AQFR_NM", "FROM_AQFR_CD",
-    #         "FROM_AQFR_NM", "YEAR", "SALINITY_CD", "JAN_VAL", "FEB_VAL", "MAR_VAL", "APR_VAL", "MAY_VAL",
-    #         "JUN_VAL", "JUL_VAL", "AUG_VAL", "SEP_VAL", "OCT_VAL", "NOV_VAL", "DEC_VAL", "ANNUAL_VAL",
-    #         "FROM_STATE_NM", "FROM_COUNTY_NM", "FROM_CONSTRUCTION_DT", "FROM_INVENTORY_DT",
-    #         "FROM_ALT_VA", "CN_QNTY_PF_FG"]
-    # sheet = 'LMG-withdrawals-2000-2018'
+        Parameters
+        ----------
+        to_code: int
+            valid epsg code for coordinate system to be projected into.  Defaults to 5070 - Albers
+        """
+        x_reprj, y_reprj = project(zip(self.df_swuds['FROM_DEC_LONG_VA'], self.df_swuds['FROM_DEC_LAT_VA']), 
+                                 'epsg:4269', 
+                                 'epsg:{0}'.format(to_code))
+        self.df_swuds['x_{0}'.format(to_code)] = x_reprj
+        self.df_swuds['y_{0}'.format(to_code)] = y_reprj
+        self.df_swuds['geometry'] = [Point(x, y) for x, y in zip(x_reprj, y_reprj)]
 
-    # # read in aquifer codes
-    # aquifer_codes_lookup_file = '../source_data/water_use/aquifer_codes.yml'
-    # with open(aquifer_codes_lookup_file) as src:
-    #     aquifer_names = yaml.load(src, Loader=yaml.Loader)
+        # drop if no location information
+        self.df_swuds.dropna(subset=['x_{0}'.format(to_code), 'y_{0}'.format(to_code)], axis=0, inplace=True)
+    
 
-    # # read in SWUDs data
-    # # df_swuds = xlsx2csv(xlsx_swuds, sheet, cols, outcsv)
-    # df_swuds = pd.read_csv(outcsv)
-    # df_swuds = df_swuds.sort_values(['SITE_NO', 'CN_QNTY_PF_FG']).groupby(['SITE_NO']).last().reset_index()
+    def apply_footprint(self, bounding_shp, epsg=5070):
+        """ Keep sites in the df_swuds pandas dataframe that fall
+        into the passed bounding shapefile polygon. Requires
+        that df_swuds dataframe has a geometry column as assigned
+        in the reproject method. Method uses the first polygon
+        in the bounding shapefile if it contains more than one.
+        todo: dissolve multiple polygons in bounding_shp?
 
-    # # remove trailing spaces from code names
-    # df_swuds["FROM_AQFR_CD"] = df_swuds["FROM_AQFR_CD"].str.strip()
+        Parameters
+        ----------
+        bounding_shp: str
+            path to shapefile with footprint for current analysis
+        epsg: int
+            valid epsg code for coordinate system for df_swuds.  Defaults to 5070 - Albers
+        """
+        g2 = shp2df(bounding_shp, dest=epsg)
+        poly = gw.geometry.values[0]
+        within = [g.within(poly) for g in self.df_swuds['geometry']]
+        self.df_swuds = self.df_swuds.loc[within].copy()
 
-    # # cast screen bottom depths to floats
-    # df_swuds['SCREEN_BOT'] = pd.to_numeric(df_swuds['FROM_WELL_DEPTH_VA'], errors='coerce')
-    # df_swuds['FROM_ALT_VA'] = pd.to_numeric(df_swuds['FROM_ALT_VA'], errors='coerce')
-
-    # # reproject from lat/lon to albers
-    # x_5070, y_5070 = project(zip(df_swuds['FROM_DEC_LONG_VA'], df_swuds['FROM_DEC_LAT_VA']), 'epsg:4269', 'epsg:5070')
-    # df_swuds['x_5070'] = x_5070
-    # df_swuds['y_5070'] = y_5070
-    # df_swuds['geometry'] = [Point(x, y) for x, y in zip(x_5070, y_5070)]
-
-    # # drop wells with no location information (for now)
-    # df_swuds.dropna(subset=['x_5070', 'y_5070'], axis=0, inplace=True)
 
     # # cull sites to those within the MERAS footprint
     # # meras_bound = '../../../meras3/source_data/extents/meras_extent.shp'
@@ -304,6 +302,27 @@ class swuds:
     # outfile = '../source_data/water_use/swuds_nonTE_{0}_{1}.csv'.format(sim_start_dt, sim_end_dt)
     # df.to_csv(outfile, index=False)
     # j = 2
+
+
+    def overlaps(self, a, b):
+        """ Return the amount of overlap, in bp
+        between a and b.
+
+        Parameters
+        ----------
+        a: 
+        b: 
+
+        Returns
+        -------
+        int:
+            If >0, the number of bp of overlap
+            If 0,  they are book-ended.
+            If <0, the distance in bp between them
+        """
+
+        return min(a[1], b[1]) - max(a[0], b[0])
+
 
 if __name__ == '__main__':
 
