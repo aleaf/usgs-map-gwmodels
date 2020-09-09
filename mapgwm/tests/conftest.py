@@ -1,6 +1,8 @@
 import os
 import shutil
+import numpy as np
 import pytest
+from mfsetup.grid import MFsetupGrid
 
 
 @pytest.fixture(scope="session")
@@ -25,9 +27,22 @@ def test_output_folder(project_root_path):
     """(Re)make an output folder for the tests
     at the begining of each test session."""
     folder = os.path.join(project_root_path, 'mapgwm', 'tests', 'output')
-    reset = True
+    reset = False
     if reset:
         if os.path.isdir(folder):
             shutil.rmtree(folder)
         os.makedirs(folder)
     return folder
+
+
+@pytest.fixture(scope='module')
+def delta_inset_model_grid():
+    ncol=270
+    nrow=605
+    dxy=500.
+    delr = np.ones(ncol) * dxy
+    delc = np.ones(nrow) * dxy
+    grid = MFsetupGrid(delc, delr, top=None, botm=None,
+                       lenuni=2, epsg=5070,
+                       xoff=434955, yoff=1040285, angrot=0.0)
+    return grid
