@@ -46,12 +46,46 @@ class swuds:
         regional_aquifers: dict
             dictionary of regional aquifers keyed by NWIS codes, read using import
             statement from mapgwm.lookups
+        monthly_cols: list of str
+            list of column names for monthly values
+        sim_start_dt: str
+            start time for simulation as string 'yyyy-mm-dd'
+        sim_end_dt: str
+            end time for simulation as string 'yyyy-mm-dd'
+        default_screen_len: float
+            default screen length in meters
+        locations: dict
+            dictionary of x,y locations keyed by SITE_NO, added in assign_layer method
+        depths_m: dict
+            dictionary of depth keyed by SITE_NO, added in assign_layer method
+        well_elevations_m: dict
+            dictionary of well elevations keyed by SITE_NO, added in assign_layer method
+        lc_top_m: dict
+            dictionary with top of Lower Claiborne at well keyed by SITE_NO
+        lc_bot_m: dict
+            dictionary with bottom of Lower Claiborne at well keyed by SITE_NO
+        mc_top_m: dict
+            dictionary with top of Middle Claiborne at well keyed by SITE_NO
+        mc_bot_m: dict
+            dictionary with bottom of Middle Claiborne at well keyed by SITE_NO
         """
+
+        # set some attributes
+        self.monthly_cols = ['JAN_VAL', 'FEB_VAL', 'MAR_VAL', 'APR_VAL', 'MAY_VAL',
+                             'JUN_VAL', 'JUL_VAL', 'AUG_VAL', 'SEP_VAL', 'OCT_VAL',
+                             'NOV_VAL', 'DEC_VAL']
+        self.aquifer_names = aq_codes_dict['aquifer_code_names']
+        self.regional_aquifers = aq_codes_dict['regional_aquifer']
+        self.sim_start_dt = '2008-01-01'
+        self.sim_end_dt = '2017-12-31'
+        self.default_screen_len = 50. * 0.3028
+
+        # now read in excel or csv file
         defaultcols=["SITE_NO","WATER_CD","FROM_DEC_LAT_VA","FROM_DEC_LONG_VA","FROM_WELL_DEPTH_VA",
-          "FROM_NAT_WATER_USE_CD","FROM_NAT_AQFR_CD","FROM_NAT_AQFR_NM","FROM_AQFR_CD",
+          "FROM_ALT_VA","FROM_NAT_WATER_USE_CD","FROM_NAT_AQFR_CD","FROM_NAT_AQFR_NM","FROM_AQFR_CD",
           "FROM_AQFR_NM","YEAR","SALINITY_CD","JAN_VAL","FEB_VAL","MAR_VAL","APR_VAL","MAY_VAL",
           "JUN_VAL","JUL_VAL","AUG_VAL","SEP_VAL","OCT_VAL","NOV_VAL","DEC_VAL","ANNUAL_VAL",
-          "FROM_STATE_NM","FROM_COUNTY_NM","FROM_CONSTRUCTION_DT","FROM_INVENTORY_DT"]
+          "FROM_STATE_NM","FROM_COUNTY_NM","FROM_CONSTRUCTION_DT","FROM_INVENTORY_DT","SCREEN_BOT"]
 
         if isinstance(cols, list):
             usecols = list
@@ -80,11 +114,7 @@ class swuds:
         if 'FROM_ALT_VA' in self.df_swuds.columns:
             self.df_swuds['FROM_ALT_VA'] = pd.to_numeric(self.df_swuds['FROM_ALT_VA'], errors='coerce')
 
-        # other attributes for object
-        self.aquifer_names = aq_codes_dict['aquifer_code_names']
-        self.regional_aquifers = aq_codes_dict['regional_aquifer']
-
-
+        
     def sort_sites(self, secondarysort=None):
         """ Sort the dataframe by site number and quantity, or passed parameter
 
@@ -113,14 +143,14 @@ class swuds:
         self.df_swuds['y_{0}'.format(to_code)] = y_reprj
         self.df_swuds['geometry'] = [Point(x, y) for x, y in zip(x_reprj, y_reprj)]
 
-        # drop if no location information
+        # drop entries if no location information
         self.df_swuds.dropna(subset=['x_{0}'.format(to_code), 'y_{0}'.format(to_code)], axis=0, inplace=True)
     
 
     def apply_footprint(self, bounding_shp, epsg=5070, outshp=None):
         """ Keep sites in the df_swuds pandas dataframe that fall
         into the passed bounding shapefile polygon. Requires
-        that df_swuds dataframe has a geometry column as assigned
+        that df_swuds dataframe has a Point geometry column as assigned
         in the reproject method. Method uses the first polygon
         in the bounding shapefile if it contains more than one.
         todo: dissolve multiple polygons in bounding_shp?
@@ -132,196 +162,221 @@ class swuds:
         epsg: int
             valid epsg code for coordinate system for df_swuds.  Defaults to 5070 - Albers
         outshp: str
-            optional path to output shapefile with points within the extent
+            optional path to output shapefile with points within the footprint
         """
         g2 = shp2df(bounding_shp, dest_crs=epsg)
         poly = g2.geometry.values[0]
-        within = [g.within(poly) for g in self.df_swuds['geometry']]
+        within = [g.within(poly) for g in self.df_swuds['geometry']]   # shapely within method
         self.df_swuds = self.df_swuds.loc[within].copy()
         if outshp is not None:
             df2shp(self.df_swuds, outshp)
 
 
-    # # cull sites to those within the MERAS footprint
-    # # meras_bound = '../../../meras3/source_data/extents/meras_extent.shp'
-    # delta_bound = '../source_data/extents/delta_active_area_boundary.shp'
-    # df_swuds = gpd.GeoDataFrame(df_swuds, crs='epsg:5070')
-    # g2 = gpd.GeoDataFrame.from_file(delta_bound)
-    # poly = g2.geometry.values[0]
-    # within = [g.within(poly) for g in df_swuds.geometry]
-    # df_swuds = df_swuds.loc[within].copy()
-    # print('national aquifer codes within remaining GW sites: {}'.format(set(df_swuds['FROM_NAT_AQFR_CD'].values.tolist())))
-    # # print('number of GW sites in MRVA, Embayment, Alluvial aquivers and NaN: {}'.format(len(df_swuds)))
+    def assign_missing_elev(self, top_raster, elev_field='FROM_ALT_VA', epsg=5070):
+        """ Use the top of model raster, or land-surface raster,
+        to assign the elevation for points where elevation is missing.
+        
+        Parameters
+        ----------
+        top_raster: str
+            path to raster data set with land surface or model top elevation, used
+            to assign missing values to water-use points
+        elev_field: str
+            field in df_swuds with elevation data, default is 'FROM_ALT_VA'
+        epsg: int
+            valid epsg code for coordinate system used in column name in df_swuds.  Defaults to 5070 - Albers
+        """
 
-    # # sample elevations for well with no elevation info
-    # no_elev = df_swuds['FROM_ALT_VA'].isnull()
-    # x_no_elev = df_swuds.loc[no_elev, 'x_5070'].values
-    # y_no_elev = df_swuds.loc[no_elev, 'y_5070'].values
-    # elevs = raster.get_values_at_points('../source_data/layers/model_top.tif',
-    #                                     x=x_no_elev,
-    #                                     y=y_no_elev
-    #                                     )
-    # df_swuds.loc[no_elev, 'FROM_ALT_VA'] = elevs
-    # assert not df_swuds['FROM_ALT_VA'].isnull().any()
+        no_elev = self.df_swuds['FROM_ALT_VA'].isnull()
+        x_no_elev = self.df_swuds.loc[no_elev, 'x_{0}'.format(epsg)].values
+        y_no_elev = self.df_swuds.loc[no_elev, 'y_{0}'.format(epsg)].values
+        elevs = raster.get_values_at_points(top_raster,
+                                            x=x_no_elev,
+                                            y=y_no_elev
+                                            )
+        self.df_swuds.loc[no_elev, 'FROM_ALT_VA'] = elevs
+        assert not self.df_swuds['FROM_ALT_VA'].isnull().any()
 
-    # # make dictionaries of location and elevation information by well
-    # locations = dict(list(zip(df_swuds['SITE_NO'], list(zip(df_swuds['x_5070'], df_swuds['y_5070'])))))
-    # depths_m = dict(list(zip(df_swuds['SITE_NO'], df_swuds['SCREEN_BOT'] * 0.3048)))
-    # well_elevations_m = dict(zip(df_swuds['SITE_NO'], df_swuds['FROM_ALT_VA'] * 0.3048))
+    
+    def __make_production_dicts(self, lcaq_top, lcqa_bot, mcaq_top, mcaq_bot, epsg=5070):
+        """ Make dictionary attributes for location, depths, well_elevations, and
+        production zones keyed by SITE_NO.  These dictionaries are used to assign
+        individual wells to production zones in another method.
 
-    # # get tops and bottoms of estimated production intervals at each well
-    # # make dictionaries to lookup by well
-    # lcaq_top = '../source_data/water_use/pz_lcaqp_top/pz_lcaqp_top.tif'
-    # lcaq_bot = '../source_data/water_use/pz_lcaqp_bot/pz_lcaqp_bot.tif'
-    # mcaq_top = '../source_data/water_use/pz_mcaqp_top/pz_mcaqp_top.tif'
-    # mcaq_bot = '../source_data/water_use/pz_mcaqp_bot/pz_mcaqp_bot.tif'
-    # x_5070 = df_swuds['x_5070'].values
-    # y_5070 = df_swuds['y_5070'].values
-    # lc_top = raster.get_values_at_points(lcaq_top,
-    #                                     x=x_5070,
-    #                                     y=y_5070) * 0.3048
-    # lc_top_m = dict(zip(df_swuds['SITE_NO'], lc_top))
-    # lc_bot = raster.get_values_at_points(lcaq_bot,
-    #                                     x=x_5070,
-    #                                     y=y_5070) * 0.3048
-    # lc_bot_m = dict(zip(df_swuds['SITE_NO'], lc_bot))
-    # mc_top = raster.get_values_at_points(mcaq_top,
-    #                                     x=x_5070,
-    #                                     y=y_5070) * 0.3048
-    # mc_top_m = dict(zip(df_swuds['SITE_NO'], mc_top))
-    # mc_bot = raster.get_values_at_points(mcaq_bot,
-    #                                     x=x_5070,
-    #                                     y=y_5070) * 0.3048
-    # mc_bot_m = dict(zip(df_swuds['SITE_NO'], mc_bot))
+        Parameters
+        ----------
+        lcaq_top: str
+            path to raster with top of Lower Claiborne
+        lcaq_bot: str
+            path to raster with bottom of Lower Claiborne
+        mcaq_top: str
+            path to raster with top of Middle Claiborne
+        mcaq_bot: str
+            path to raster to bottom of Middle Claiborne
+        epsg: int
+            valid epsg code for coordinate system used in column name in df_swuds.  Defaults to 5070 - Albers
+        """
 
-    # monthly_cols = ['JAN_VAL', 'FEB_VAL', 'MAR_VAL', 'APR_VAL', 'MAY_VAL',
-    #                 'JUN_VAL', 'JUL_VAL', 'AUG_VAL', 'SEP_VAL', 'OCT_VAL',
-    #                 'NOV_VAL', 'DEC_VAL']
-    # sim_start_dt = '2008-01-01'
-    # sim_end_dt = '2017-12-31'
-    # default_screen_len = 50 * 0.3048  # meters
-    # print('number of sites from SWUDS: {}'.format(len(df_swuds)))
-    # df_swuds = df_swuds.loc[(df_swuds['WATER_CD'] == 'GW') & ~(df_swuds['FROM_NAT_WATER_USE_CD'] == 'IR') &
-    #                         ~(df_swuds['FROM_NAT_WATER_USE_CD'] == 'AQ') & ~(df_swuds['FROM_NAT_WATER_USE_CD'] == 'TE')]
-    # print('number of GW sites, excluding IR and AQ = {}'.format(len(df_swuds)))
-    # df_swuds = df_swuds.loc[~np.isnan(df_swuds['FROM_DEC_LAT_VA'])]
-    # print('number of GW sites, excluding IR and AQ, with lat, lon information = {}'.format(len(df_swuds)))
-    # df_swuds.head()
+        # make dictionaries of location and elevation information by well
+        locations = dict(list(zip(df_swuds['SITE_NO'], list(zip(df_swuds['x_5070'], df_swuds['y_5070'])))))
+        depths_m = dict(list(zip(df_swuds['SITE_NO'], df_swuds['SCREEN_BOT'] * 0.3048)))
+        well_elevations_m = dict(zip(df_swuds['SITE_NO'], df_swuds['FROM_ALT_VA'] * 0.3048))
 
-    # for c in monthly_cols:
-    #     idx = df_swuds.loc[df_swuds[c].isnull()].index.values
-    #     df_swuds.loc[idx, c] = df_swuds.loc[idx, 'ANNUAL_VAL']
-    # df_swuds.head()
+        # get tops and bottoms of estimated production intervals at each well
+        # make dictionaries to lookup by well
+        x = df_swuds['x_{0}'.format(epsg)].values
+        y = df_swuds['y_{0}'.format(epsg)].values
+        lc_top = raster.get_values_at_points(lcaq_top,
+                                            x=x,
+                                            y=y) * 0.3048
+        self.lc_top_m = dict(zip(df_swuds['SITE_NO'], lc_top))
+        lc_bot = raster.get_values_at_points(lcaq_bot,
+                                            x=x,
+                                            y=y) * 0.3048
+        self.lc_bot_m = dict(zip(df_swuds['SITE_NO'], lc_bot))
+        mc_top = raster.get_values_at_points(mcaq_top,
+                                            x=x,
+                                            y=y) * 0.3048
+        self.mc_top_m = dict(zip(df_swuds['SITE_NO'], mc_top))
+        mc_bot = raster.get_values_at_points(mcaq_bot,
+                                            x=x,
+                                            y=y) * 0.3048
+        self.mc_bot_m = dict(zip(df_swuds['SITE_NO'], mc_bot))
 
-    # # reshape dataframe to have monthly values in same column
-    # stacked = pd.DataFrame(df_swuds[monthly_cols].stack())
-    # stacked.reset_index(inplace=True)
-    # stacked.rename(columns={'level_1': 'month',
-    #                         0: 'q_monthly'}, inplace=True)
-    # stacked.q_monthly = stacked.q_monthly
-    # stacked.index = stacked.level_0
-    # stacked = stacked.join(df_swuds)
-    # keep_cols = [c for c in stacked.columns if c not in monthly_cols]
-    # stacked = stacked[keep_cols]
-    # month = {name: i + 1 for i, name in enumerate(monthly_cols)}
-    # dates = ['{}-{:02d}'.format(year, month[month_column_name])
-    #         for year, month_column_name in zip(stacked.YEAR, stacked.month)]
-    # stacked['datetime'] = pd.to_datetime(dates)
-    # stacked.sort_values(by=['SITE_NO', 'datetime'], inplace=True)
+   def assign_monthly_production(self, lcaq_top, lcqa_bot, mcaq_top, mcaq_bot, epsg=5070):
+        """ Assign production wells for water use, skipping IR (irrigation) and
+        TE (thermal electric) to Lower Claiborne and Middle Claiborne production 
+        zones.
 
-    # groups = stacked.groupby('SITE_NO')
-    # all_groups = []
-    # for site_no, group in groups:
-    #     group = group.copy()
-    #     group.index = pd.to_datetime(group['datetime'])
-    #     start_date = pd.Timestamp(sim_start_dt)
-    #     end_date = pd.Timestamp(sim_end_dt)
+        Parameters
+        ----------
+        lcaq_top: str
+            path to raster with top of Lower Claiborne
+        lcaq_bot: str
+            path to raster with bottom of Lower Claiborne
+        mcaq_top: str
+            path to raster with top of Middle Claiborne
+        mcaq_bot: str
+            path to raster to bottom of Middle Claiborne
+        epsg: int
+            valid epsg code for coordinate system used in column name in df_swuds.  Defaults to 5070 - Albers
+        """
 
-    #     monthly_values_2010 = group.loc[group.datetime.dt.year == 2010]
-    #     monthly_values_2010 = dict(zip(monthly_values_2010.datetime.dt.month,
-    #                                 monthly_values_2010.q_monthly))
-    #     avg_monthly_values = group.groupby(group.index.month).mean().q_monthly.to_dict()
-    #     q_mean = group.q_monthly.mean()
+        self.__make_production_dicts(lcaq_top, lcaq_bot, mcaq_top, mcaq_bot, epsg=epsg)
 
-    #     # reindex the site data to include all months for simulation period
-    #     all_dates = pd.date_range(start_date, end_date, freq='MS')
-    #     group = group.reindex(all_dates)
-    #     # fill empty dates
-    #     q = []
-    #     for month, q_monthly in zip(group.index.month, group.q_monthly):
-    #         # try to use 2010 values if they exist
-    #         if np.isnan(q_monthly):
-    #             q_monthly = monthly_values_2010.get(month, np.nan)
-    #         # otherwise take the average value for each month
-    #         if np.isnan(q_monthly):
-    #             q_monthly = avg_monthly_values[month]
-    #         # fill missing months with the mean value for the site
-    #         if np.isnan(q_monthly):
-    #             q_monthly = q_mean
-    #         q.append(q_monthly)
-    #     # group['q'] = [monthly_values_2010[month] if np.isnan(q_monthly) else q_monthly
-    #     #            for month, q_monthly in zip(group.index.month, group.q_monthly)]
-    #     group['q'] = q
-    #     group['q'] = group['q'] * 3785.4  # convert from mgd to cubic m per d
+        # fill in missing monthly values with annual value
+        for c in self.monthly_cols:
+            idx = self.df_swuds.loc[self.df_swuds[c].isnull()].index.values
+            self.df_swuds.loc[idx, c] = self.df_swuds.loc[idx, 'ANNUAL_VAL']
 
-    #     group['site_no'] = site_no
-    #     group['well_elev_m'] = well_elevations_m[site_no]
-    #     group['depth_m'] = depths_m[site_no]
-    #     well_botm_depth = well_elevations_m[site_no] - depths_m[site_no]
-    #     group['x_5070'] = np.nanmin(group['x_5070'])
-    #     group['y_5070'] = np.nanmin(group['y_5070'])
+        # reshape dataframe to have monthly values in same column
+        stacked = pd.DataFrame(self.df_swuds[monthly_cols].stack())
+        stacked.reset_index(inplace=True)
+        stacked.rename(columns={'level_1': 'month',
+                                0: 'q_monthly'}, inplace=True)
+        stacked.q_monthly = stacked.q_monthly
+        stacked.index = stacked.level_0
+        stacked = stacked.join(self.df_swuds)
+        keep_cols = [c for c in stacked.columns if c not in monthly_cols]
+        stacked = stacked[keep_cols]
+        month = {name: i + 1 for i, name in enumerate(monthly_cols)}
+        dates = ['{}-{:02d}'.format(year, month[month_column_name])
+                for year, month_column_name in zip(stacked.YEAR, stacked.month)]
+        stacked['datetime'] = pd.to_datetime(dates)
+        stacked.sort_values(by=['SITE_NO', 'datetime'], inplace=True)
 
-    #     lc_top_at_well = lc_top_m[site_no]
-    #     lc_bot_at_well = lc_bot_m[site_no]
-    #     mc_top_at_well = mc_top_m[site_no]
-    #     mc_bot_at_well = mc_bot_m[site_no]
+        groups = stacked.groupby('SITE_NO')
+        all_groups = []
+        for site_no, group in groups:
+            group = group.copy()
+            group.index = pd.to_datetime(group['datetime'])
+            start_date = pd.Timestamp(sim_start_dt)
+            end_date = pd.Timestamp(sim_end_dt)
 
-    #     lccu_midpt = np.mean((lc_top_at_well, mc_bot_at_well))  # Lower Claiborne confining unit mid-point
-    #     production_zone = 'middle claiborne'
-    #     if not np.isnan(lccu_midpt):
-    #         if well_botm_depth < lccu_midpt:
-    #             production_zone = 'lower claiborne'
-    #     elif np.isnan(mc_bot_at_well) and np.isnan(lc_top_at_well):
-    #         raise NotImplementedError("Condition of no pumping surface not handled")
-    #     elif np.isnan(mc_bot_at_well):
-    #         production_zone = 'lower claiborne'
-    #     elif np.isnan(lc_bot_at_well):
-    #         production_zone = 'middle claiborne'
-    #     group['production_zone'] = production_zone
+            monthly_values_2010 = group.loc[group.datetime.dt.year == 2010]
+            monthly_values_2010 = dict(zip(monthly_values_2010.datetime.dt.month,
+                                        monthly_values_2010.q_monthly))
+            avg_monthly_values = group.groupby(group.index.month).mean().q_monthly.to_dict()
+            q_mean = group.q_monthly.mean()
 
-    #     # assign open intervals to wells coded as middle or lower claiborne
-    #     # based on estimated production zones
-    #     if production_zone == 'middle claiborne':
-    #         group['screen_bot_m'] = mc_bot_at_well
-    #         group['screen_top_m'] = mc_top_at_well
-    #     elif production_zone == 'lower claiborne':
-    #         group['screen_bot_m'] = lc_bot_at_well
-    #         group['screen_top_m'] = lc_top_at_well
+            # reindex the site data to include all months for simulation period
+            all_dates = pd.date_range(start_date, end_date, freq='MS')
+            group = group.reindex(all_dates)
+            # fill empty dates
+            q = []
+            for month, q_monthly in zip(group.index.month, group.q_monthly):
+                # try to use 2010 values if they exist
+                if np.isnan(q_monthly):
+                    q_monthly = monthly_values_2010.get(month, np.nan)
+                # otherwise take the average value for each month
+                if np.isnan(q_monthly):
+                    q_monthly = avg_monthly_values[month]
+                # fill missing months with the mean value for the site
+                if np.isnan(q_monthly):
+                    q_monthly = q_mean
+                q.append(q_monthly)
+            # group['q'] = [monthly_values_2010[month] if np.isnan(q_monthly) else q_monthly
+            #            for month, q_monthly in zip(group.index.month, group.q_monthly)]
+            group['q'] = q
+            group['q'] = group['q'] * 3785.4  # convert from mgd to cubic m per d
 
-    #     # assign open intervals to wells not coded as middle or lower claiborne
-    #     # based on well depth
-    #     group['open_int_method'] = 'production zone'
-    #     aquifer_name = aquifer_names.get(group["FROM_AQFR_CD"].values[0], 'unnamed')
-    #     if aquifer_name not in {'middle claiborne', 'lower claiborne'}:
-    #         group['screen_bot_m'] = well_elevations_m[site_no] - depths_m[site_no]
-    #         group['screen_top_m'] = well_elevations_m[site_no] - depths_m[site_no] + default_screen_len
-    #         group['open_int_method'] = 'well depth'
+            group['site_no'] = site_no
+            group['well_elev_m'] = well_elevations_m[site_no]
+            group['depth_m'] = depths_m[site_no]
+            well_botm_depth = well_elevations_m[site_no] - depths_m[site_no]
+            group['x_5070'] = np.nanmin(group['x_5070'])
+            group['y_5070'] = np.nanmin(group['y_5070'])
 
-    #     # add aquifer name
-    #     group['aquifer_name'] = aquifer_name
+            lc_top_at_well = lc_top_m[site_no]
+            lc_bot_at_well = lc_bot_m[site_no]
+            mc_top_at_well = mc_top_m[site_no]
+            mc_bot_at_well = mc_bot_m[site_no]
 
-    #     # lc_ovlp = overlaps([lc_bot,lc_top],[group['screen_bot_m'][0],group['screen_top_m'][0]])
-    #     # mc_ovlp = overlaps([mc_bot,mc_top],[group['screen_bot_m'][0],group['screen_top_m'][0]])
+            lccu_midpt = np.mean((lc_top_at_well, mc_bot_at_well))  # Lower Claiborne confining unit mid-point
+            production_zone = 'middle claiborne'
+            if not np.isnan(lccu_midpt):
+                if well_botm_depth < lccu_midpt:
+                    production_zone = 'lower claiborne'
+            elif np.isnan(mc_bot_at_well) and np.isnan(lc_top_at_well):
+                raise NotImplementedError("Condition of no pumping surface not handled")
+            elif np.isnan(mc_bot_at_well):
+                production_zone = 'lower claiborne'
+            elif np.isnan(lc_bot_at_well):
+                production_zone = 'middle claiborne'
+            group['production_zone'] = production_zone
 
-    #     cols = ['site_no', 'q', 'q_monthly', 'month', 'well_elev_m', 'depth_m',
-    #             'screen_bot_m', 'screen_top_m', 'x_5070', 'y_5070']
-    #     all_groups.append(group[cols])
+            # assign open intervals to wells coded as middle or lower claiborne
+            # based on estimated production zones
+            if production_zone == 'middle claiborne':
+                group['screen_bot_m'] = mc_bot_at_well
+                group['screen_top_m'] = mc_top_at_well
+            elif production_zone == 'lower claiborne':
+                group['screen_bot_m'] = lc_bot_at_well
+                group['screen_top_m'] = lc_top_at_well
 
-    # df = pd.concat(all_groups)
-    # df['datetime'] = df.index
-    # outfile = '../source_data/water_use/swuds_nonTE_{0}_{1}.csv'.format(sim_start_dt, sim_end_dt)
-    # df.to_csv(outfile, index=False)
-    # j = 2
+            # assign open intervals to wells not coded as middle or lower claiborne
+            # based on well depth
+            group['open_int_method'] = 'production zone'
+            aquifer_name = aquifer_names.get(group["FROM_AQFR_CD"].values[0], 'unnamed')
+            if aquifer_name not in {'middle claiborne', 'lower claiborne'}:
+                group['screen_bot_m'] = well_elevations_m[site_no] - depths_m[site_no]
+                group['screen_top_m'] = well_elevations_m[site_no] - depths_m[site_no] + default_screen_len
+                group['open_int_method'] = 'well depth'
+
+            # add aquifer name
+            group['aquifer_name'] = aquifer_name
+
+            # lc_ovlp = overlaps([lc_bot,lc_top],[group['screen_bot_m'][0],group['screen_top_m'][0]])
+            # mc_ovlp = overlaps([mc_bot,mc_top],[group['screen_bot_m'][0],group['screen_top_m'][0]])
+
+            cols = ['site_no', 'q', 'q_monthly', 'month', 'well_elev_m', 'depth_m',
+                    'screen_bot_m', 'screen_top_m', 'x_5070', 'y_5070']
+            all_groups.append(group[cols])
+
+        df = pd.concat(all_groups)
+        df['datetime'] = df.index
+        outfile = '../source_data/water_use/swuds_nonTE_{0}_{1}.csv'.format(sim_start_dt, sim_end_dt)
+        df.to_csv(outfile, index=False)
 
 
     def overlaps(self, a, b):
@@ -351,6 +406,7 @@ if __name__ == '__main__':
     swuds_input = os.path.join(data_path, 'LMG-withdrawals-2000-2018.xlsx')
     worksheet = 'LMG-withdrawals-2000-2018'
     outcsv = os.path.join(data_path, 'swuds_nonTE.csv')
+    dem = os.path.join(data_path, 'dem_mean_elevs.tif')
 
     meras_shp = os.path.join(data_path, 'MERAS_Extent.shp')
     wu_shp = os.path.join(data_path, 'WU_points.shp')
@@ -360,6 +416,7 @@ if __name__ == '__main__':
     swuds.sort_sites()
     swuds.reproject()
     swuds.apply_footprint(meras_shp, outshp=wu_shp)
+    swuds.assign_missing_elev(dem)
     print(swuds.df_swuds.head())
 
     # df_swuds = pd.read_csv(outcsv)
