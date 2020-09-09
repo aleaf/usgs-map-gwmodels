@@ -13,7 +13,7 @@ class swuds:
     as data at many sites are limited to survey years (e.g. 2010 and 2015).
     """
 
-    def __init__(self, xlsx=None, sheet=None, csvfile=None, cols=None):
+    def __init__(self, xlsx=None, sheet=None, csvfile=None, cols='default'):
         """ Constructor for the swuds class. Class methods will help pre-process
         water-use data for MAP models.  Dataframe produced by constructor
         has original SWUDS data, useful for debugging.
@@ -32,6 +32,8 @@ class swuds:
             Name of worksheet in xlsx to be read, ignored if xlsx is None.
         cols: list of str
             List of columns to read from xlsx or csv, if None all columns are read.
+            If 'default' (which is the default if nothing is specified) the default
+            list of columns coded in the script is read.  
 
         Attributes
         ----------
@@ -45,13 +47,25 @@ class swuds:
             dictionary of regional aquifers keyed by NWIS codes, read using import
             statement from mapgwm.lookups
         """
+        defaultcols=["SITE_NO","WATER_CD","FROM_DEC_LAT_VA","FROM_DEC_LONG_VA","FROM_WELL_DEPTH_VA",
+          "FROM_NAT_WATER_USE_CD","FROM_NAT_AQFR_CD","FROM_NAT_AQFR_NM","FROM_AQFR_CD",
+          "FROM_AQFR_NM","YEAR","SALINITY_CD","JAN_VAL","FEB_VAL","MAR_VAL","APR_VAL","MAY_VAL",
+          "JUN_VAL","JUL_VAL","AUG_VAL","SEP_VAL","OCT_VAL","NOV_VAL","DEC_VAL","ANNUAL_VAL",
+          "FROM_STATE_NM","FROM_COUNTY_NM","FROM_CONSTRUCTION_DT","FROM_INVENTORY_DT"]
+
+        if isinstance(cols, list):
+            usecols = list
+        elif cols is not None:
+            usecols = defaultcols
+        else:
+            usecols = None
 
         if xlsx is None and csvfile is None:
             sys.exit('both xlsx and csvfile cannont be None for SWUDS object')
         elif xlsx is None:
-            self.df_swuds = pd.read_csv(csvfile, usecols=cols)
+            self.df_swuds = pd.read_csv(csvfile, usecols=usecols)
         else:
-            self.df_swuds = pd.read_excel(xlsx, sheet_name=sheet, usecols=cols)
+            self.df_swuds = pd.read_excel(xlsx, sheet_name=sheet, usecols=usecols)
             if csvfile is not None:
                 self.df_swuds.to_csv(csvfile, index=False)
 
@@ -71,16 +85,18 @@ class swuds:
         self.regional_aquifers = aq_codes_dict['regional_aquifer']
 
 
-    def sort_sites(self, secondarysort='CN_QNTY_PF_FG'):
+    def sort_sites(self, secondarysort=None):
         """ Sort the dataframe by site number and quantity, or passed parameter
 
         Parameters
         ----------
         secondarysort: str
-            variable in dataframe to sort SITE_NO groups, default is CN_QNTY_PF_FG
+            variable in dataframe to sort SITE_NO groups, default is None
         """
-        self.df_swuds = self.df_swuds.sort_values(['SITE_NO', secondarysort]).groupby(['SITE_NO']).last().reset_index()
-
+        if secondarysort is not None:
+            self.df_swuds = self.df_swuds.sort_values(['SITE_NO', secondarysort]).groupby(['SITE_NO']).last().reset_index()
+        else:
+            self.df_swuds = self.df_swuds.sort_values(['SITE_NO']).groupby(['SITE_NO']).last().reset_index()
 
     def reproject(self, to_code=5070):
         """ Reproject from lat/lon to Albers (or passed epsg code) using gisutils
@@ -101,7 +117,7 @@ class swuds:
         self.df_swuds.dropna(subset=['x_{0}'.format(to_code), 'y_{0}'.format(to_code)], axis=0, inplace=True)
     
 
-    def apply_footprint(self, bounding_shp, epsg=5070):
+    def apply_footprint(self, bounding_shp, epsg=5070, outshp=None):
         """ Keep sites in the df_swuds pandas dataframe that fall
         into the passed bounding shapefile polygon. Requires
         that df_swuds dataframe has a geometry column as assigned
@@ -115,11 +131,15 @@ class swuds:
             path to shapefile with footprint for current analysis
         epsg: int
             valid epsg code for coordinate system for df_swuds.  Defaults to 5070 - Albers
+        outshp: str
+            optional path to output shapefile with points within the extent
         """
-        g2 = shp2df(bounding_shp, dest=epsg)
-        poly = gw.geometry.values[0]
+        g2 = shp2df(bounding_shp, dest_crs=epsg)
+        poly = g2.geometry.values[0]
         within = [g.within(poly) for g in self.df_swuds['geometry']]
         self.df_swuds = self.df_swuds.loc[within].copy()
+        if outshp is not None:
+            df2shp(self.df_swuds, outshp)
 
 
     # # cull sites to those within the MERAS footprint
@@ -328,18 +348,18 @@ if __name__ == '__main__':
 
     home = os.getcwd()
     data_path = os.path.join(os.path.dirname(home), 'working_data')
-    outcsv = os.path.join(data_path, 'swuds_nonTE_2008-01-01_2017-12-31.csv')
+    swuds_input = os.path.join(data_path, 'LMG-withdrawals-2000-2018.xlsx')
+    worksheet = 'LMG-withdrawals-2000-2018'
+    outcsv = os.path.join(data_path, 'swuds_nonTE.csv')
 
-    # used if reading in excel file
-    cols=["SITE_NO","WATER_CD","FROM_DEC_LAT_VA","FROM_DEC_LONG_VA","FROM_WELL_DEPTH_VA",
-          "FROM_NAT_WATER_USE_CD","FROM_NAT_AQFR_CD","FROM_NAT_AQFR_NM","FROM_AQFR_CD",
-          "FROM_AQFR_NM","YEAR","SALINITY_CD","JAN_VAL","FEB_VAL","MAR_VAL","APR_VAL","MAY_VAL",
-          "JUN_VAL","JUL_VAL","AUG_VAL","SEP_VAL","OCT_VAL","NOV_VAL","DEC_VAL","ANNUAL_VAL",
-          "FROM_STATE_NM","FROM_COUNTY_NM","FROM_CONSTRUCTION_DT","FROM_INVENTORY_DT"]
-    sheet = 'LMG-withdrawals-2000-2018'
-
+    meras_shp = os.path.join(data_path, 'MERAS_Extent.shp')
+    wu_shp = os.path.join(data_path, 'WU_points.shp')
     # make a swuds object
+    # swuds = swuds(xlsx=swuds_input, sheet=worksheet, csvfile=outcsv)
     swuds = swuds(xlsx=None, sheet=None, csvfile=outcsv, cols=None)
+    swuds.sort_sites()
+    swuds.reproject()
+    swuds.apply_footprint(meras_shp, outshp=wu_shp)
     print(swuds.df_swuds.head())
 
     # df_swuds = pd.read_csv(outcsv)
