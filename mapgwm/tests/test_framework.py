@@ -57,7 +57,7 @@ def model_layers_zones(test_data_path, test_output_folder, delta_inset_model_gri
 def test_setup_model_layers(model_layers_zones, test_output_folder):
 
     output_folder = os.path.join(test_output_folder, 'framework')
-    for folder in 'figures', 'layers', 'zones', 'zones/rasters':
+    for folder in 'figures', 'botm_array', 'zones', 'zones/rasters':
         assert os.path.getsize(os.path.join(output_folder, folder)) > 0
     j=2
 
