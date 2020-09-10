@@ -6,6 +6,8 @@ Model classes
 
 .. toctree::
 
+   mapgwm.Swuds
+
 
 Supporting modules
 -------------------
@@ -17,5 +19,6 @@ Supporting modules
    mapgwm.lookups
    mapgwm.nhdplus
    mapgwm.swb
+   
   
    
