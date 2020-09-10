@@ -6,7 +6,7 @@ Model classes
 
 .. toctree::
 
-   mapgwm.Swuds
+   mapgwm.swuds
 
 
 Supporting modules

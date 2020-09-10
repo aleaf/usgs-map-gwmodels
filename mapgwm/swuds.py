@@ -240,7 +240,7 @@ class Swuds:
         for z in zonelist:
             name = z[0]
             top_raster = z[1]
-            bot_raser = z[2]
+            bot_raster = z[2]
             x = self.df_swuds['x_{0}'.format(self.epsg)].values
             y = self.df_swuds['y_{0}'.format(self.epsg)].values
             lc_top = raster.get_values_at_points(top_raster,
@@ -396,7 +396,10 @@ if __name__ == '__main__':
     worksheet = 'LMG-withdrawals-2000-2018'
     outcsv = os.path.join(data_path, 'swuds_nonTE.csv')
     dem = os.path.join(data_path, 'dem_mean_elevs.tif')
-    mc_top = os.path.join(data_path, '')
+    mc_top = os.path.join(data_path, 'mcaq_surf.tif')
+    mc_bot = os.path.join(data_path, 'mccu_surf.tif')
+    lc_top = os.path.join(data_path, 'lcaq_surf.tif')
+    lc_bot = os.path.join(data_path, 'lccu_surf.tif')
 
     meras_shp = os.path.join(data_path, 'MERAS_Extent.shp')
     wu_shp = os.path.join(data_path, 'WU_points.shp')
@@ -411,7 +414,7 @@ if __name__ == '__main__':
     mc = ['middle_claiborne', mc_top, mc_bot]
     lc = ['lower_claiborne', lc_top, lc_bot]
     swuds.make_production_zones([mc, lc])
-
+    swuds.assign_monthly_production('processed_swuds.csv')
     print(swuds.df_swuds.head())
 
     
