@@ -283,9 +283,9 @@ class Swuds:
         stacked.q_monthly = stacked.q_monthly
         stacked.index = stacked.level_0
         stacked = stacked.join(self.df_swuds)
-        keep_cols = [c for c in stacked.columns if c not in monthly_cols]
+        keep_cols = [c for c in stacked.columns if c not in self.monthly_cols]
         stacked = stacked[keep_cols]
-        month = {name: i + 1 for i, name in enumerate(monthly_cols)}
+        month = {name: i + 1 for i, name in enumerate(self.monthly_cols)}
         dates = ['{}-{:02d}'.format(year, month[month_column_name])
                 for year, month_column_name in zip(stacked.YEAR, stacked.month)]
         stacked['datetime'] = pd.to_datetime(dates)
@@ -408,13 +408,14 @@ if __name__ == '__main__':
     swuds = Swuds(xlsx=None, sheet=None, csvfile=outcsv, cols=None)
     swuds.sort_sites()
     swuds.reproject()
+
     swuds.apply_footprint(meras_shp, outshp=wu_shp)
     swuds.assign_missing_elev(dem)
 
     mc = ['middle_claiborne', mc_top, mc_bot]
     lc = ['lower_claiborne', lc_top, lc_bot]
     swuds.make_production_zones([mc, lc])
-    swuds.assign_monthly_production('processed_swuds.csv')
+    swuds.assign_monthly_production(os.path.join(data_path, 'processed_swuds.csv'))
     print(swuds.df_swuds.head())
 
     
