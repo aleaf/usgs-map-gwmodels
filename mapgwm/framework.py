@@ -126,10 +126,12 @@ def plot_slice(layers_elevations, property_data=None,
         data = property_data[:, row, column].copy()
         vmin, vmax = property_data.min(), property_data.max()
 
-        x = x[loc].tolist()  # + [x[-1] + 1]
+        x = np.squeeze(x[loc])  # + [x[-1] + 1]
         zstart = voxel_start_layer
         zend = voxel_start_layer + property_data.shape[0] + 1
         z = np.squeeze(z[zstart:zend, loc])
+        if not np.any(z):
+            return
         data = np.squeeze(data[:, loc])
         thicknesses = np.squeeze(thicknesses[:, loc])
         if voxel_zones is not None:
@@ -152,45 +154,82 @@ def plot_slice(layers_elevations, property_data=None,
                          )
         pcm = ax.pcolormesh(x, z, data, alpha=0.5, cmap='copper',
                             vmin=vmin, vmax=vmax)
-        #fig.colorbar(pcm, ticks=unique_zones)
 
     plot_layer = np.any(thicknesses > 0, axis=1).data
-    #for i, layer in enumerate(layers_elevations[:, row, column]):
+    plot_ij = np.any(thicknesses > 0, axis=0).data
     for layer in z[:-1][plot_layer, :]:
-        ax.plot(layer, color='k', lw=0.1)
-    ax.set_xlim(0, ncells)
+        ax.plot(x, layer, color='k', lw=0.1)
+    xmin = x[plot_ij].min() 
+    xmax = x[plot_ij].max()
+    ax.set_xlim(xmin, xmax)
     ax.set_xlabel(xlabel)
     ax.set_ylabel('Elevation, in meters')
     ax.set_title(title)
 
     if property_data is not None:
         # make a discrete colors legend
-        from matplotlib.colors import Normalize
-
-        if isinstance(data, np.ma.masked_array):
-            unique_zones = np.unique(data).compressed()
-        else:
-            unique_zones = np.unique(data)
-        if not unit_labels:
-            unit_labels = dict(list(zip(unique_zones, unique_zones)))
-        else:
-            unit_labels = {k: v for k, v in unit_labels.items() if k in unique_zones and len(v) > 0}
-        cmap_obj = plt.get_cmap(cmap)
-
-        # now get corresponding colormap value and label for each category and make legend
-        norm = Normalize(vmin, vmax)  # normalize to range of 0-1
-        handles = []
-        labels_list = []
-        for value, label in unit_labels.items():
-            fc = cmap_obj(norm(value))
-            handles.append(plt.Rectangle((0, 0), 1, 1, fc=fc, alpha=0.5))
-            labels_list.append(label)
-        if len(handles) > 0:
-            title = "MERAS 2.0\nFramework Units"
-            ax.legend(handles, labels_list, bbox_to_anchor=(0.78, -0.45), loc='lower left',
-                      title=title, handleheight=2)
+        title = "MERAS 2.0\nFramework Units"
+        lg = add_discrete_colors_legend(ax, data, unit_labels=unit_labels,
+                                        cmap=cmap, vmin=vmin, vmax=vmax, alpha=0.5,
+                                        bbox_to_anchor=(0.78, -0.45), loc='lower left',
+                                        title=title, handleheight=2)
     plt.tight_layout()
     return ax
+
+
+def add_discrete_colors_legend(ax, data, unit_labels=None,
+                               cmap='copper', vmin=None, vmax=None, alpha=1,
+                               **kwargs):
+    """Add a legend with a colored rectangle and label for each
+    discrete value in data.
+
+    Parameters
+    ----------
+    ax : matplotlib axes object
+        An axes of the current figure.
+    data : np.array or list-like
+        Discrete data represented by legend.
+    unit_labels : dict, optional
+        Dictionary of unit labels keyed by integer value in data, 
+        by default None, in which case all values in data
+        are included with the integer value as the label.
+    cmap : str, optional
+        Matplotlib colormap, by default 'copper'
+    vmin : float, optional
+        Minimum value of colormap range, 
+        by default None
+    vmax : float, optional
+        Maximum value of colormap range, , by default None
+    **kwargs : keyword arguments to :class:`matplotlib.pyplot.legend`
+    
+    Return
+    lg : :class:`matplotlib.pyplot.legend` handle
+    
+    """
+    # make a discrete colors legend
+    from matplotlib.colors import Normalize
+
+    if isinstance(data, np.ma.masked_array):
+        unique_zones = np.unique(data).compressed()
+    else:
+        unique_zones = np.unique(data)
+    if not unit_labels:
+        unit_labels = dict(list(zip(unique_zones, unique_zones)))
+    else:
+        unit_labels = {k: v for k, v in unit_labels.items() if k in unique_zones and len(v) > 0}
+    cmap_obj = plt.get_cmap(cmap)
+
+    # now get corresponding colormap value and label for each category and make legend
+    norm = Normalize(vmin, vmax)  # normalize to range of 0-1
+    handles = []
+    labels_list = []
+    for value, label in unit_labels.items():
+        fc = cmap_obj(norm(value))
+        handles.append(plt.Rectangle((0, 0), 1, 1, fc=fc, alpha=alpha))
+        labels_list.append(label)
+    if len(handles) > 0:
+        lg = ax.legend(handles, labels_list, **kwargs)
+        return lg
 
 
 def plot_cross_sections(layers, out_pdf, property_data=None,
@@ -300,40 +339,17 @@ def plot_zone_maps(layers, out_pdf, zones=None,
             if voxel_zones is not None:
                 im2 = ax.imshow(voxel_data[k], cmap=voxel_cmap, vmin=voxel_vmin, vmax=voxel_vmax)
 
-            #fig.colorbar(im2, label='Resistivity facies class (in order of increasing resistivity)')
             fig.colorbar(im2, label='Resistivity facies class (in order of increasing resistivity)',
                          pad=0.1, shrink=0.5, orientation='horizontal',
                          ticks=voxel_zones[::2].astype(int),
                          )
-            #fig.colorbar(im, ticks=np.unique(zones).data.astype(int))
 
-            # make a discrete color map for existing framework botm_array
             # make a discrete colors legend
-            from matplotlib.colors import Normalize
-
-            if isinstance(array, np.ma.masked_array):
-                unique_zones = np.unique(array).compressed()
-            else:
-                unique_zones = np.unique(array)
-            if not unit_labels:
-                layer_unit_labels = dict(list(zip(unique_zones, unique_zones)))
-            else:
-                layer_unit_labels = {k: v for k, v in unit_labels.items() if k in unique_zones and len(v) > 0}
-            cmap_obj = plt.get_cmap(zones_cmap)
-
-            # now get corresponding colormap value and label for each category and make legend
-            norm = Normalize(vmin, vmax)  # normalize to range of 0-1
-            handles = []
-            labels_list = []
-            for value, label in layer_unit_labels.items():
-                fc = cmap_obj(norm(value))
-                handles.append(plt.Rectangle((0, 0), 1, 1, fc=fc))
-                labels_list.append(label)
-            if len(handles) > 0:
-                title = "MERAS 2.0\nFramework Units"
-                lg = ax.legend(handles, labels_list, bbox_to_anchor=(1, 0), loc='lower left',
-                          title=title, handleheight=1)
-                lg._legend_box.align='left'
+            title = "MERAS 2.0\nFramework Units"
+            lg = add_discrete_colors_legend(ax, array, unit_labels=unit_labels,
+                                            cmap=zones_cmap, vmin=vmin, vmax=vmax,
+                                            bbox_to_anchor=(1, 0), loc='lower left',
+                                            title=title, handleheight=1)
             plt.tight_layout()
             pdf.savefig()
             plt.close()
