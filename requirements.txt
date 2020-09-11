@@ -14,3 +14,4 @@ gis-utils
 sfrmaker
 modflow-export
 modflow-setup
+xlrd

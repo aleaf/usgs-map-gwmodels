@@ -2,11 +2,12 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-from osgeo import ogr
 from shapely.geometry import Point
 from gisutils import df2shp, project, raster, shp2df
 from mapgwm.lookups import aq_codes_dict
 from collections import defaultdict
+import yaml
+import re
 
 class Swuds:
     """ Code for preprocessing non-agricultural water use information
@@ -367,6 +368,76 @@ class Swuds:
         df.to_csv(outfile, index=False)
         print('processed SWUDS data written to {0}'.format(outfile))
 
+    @classmethod
+    def from_yaml(cls, yamlfile):
+        """ Read input and output files from yaml file
+        and run all the processing steps in the class to
+        produce the processed csv file.
+
+        Parameters
+        ----------
+        yamlfile: str
+            path to a yaml file containing input and output information
+
+        Returns
+        -------
+        swuds: Swuds object
+            returns a Swuds object and also generates processed csv file
+            specified in the yaml file.
+
+        """
+        with open(yamlfile, 'r') as inputs:
+            yaml_inputs = yaml.safe_load(inputs)
+        
+        data_path = yaml_inputs['raw_data']['data_path']
+        data_path = Swuds.fix_path(data_path)
+
+        swuds_input = os.path.join(data_path, yaml_inputs['raw_data']['swuds_input'])
+        worksheet = yaml_inputs['raw_data']['worksheet']
+
+        outcsv = os.path.join(data_path, yaml_inputs['output']['outcsv'])
+        processed_csv = os.path.join(data_path, yaml_inputs['output']['processed_csv'])
+        
+        dem = os.path.join(data_path,yaml_inputs['rasters']['dem'])
+        mc_top = os.path.join(data_path, yaml_inputs['rasters']['mc_top'])
+        mc_bot = os.path.join(data_path, yaml_inputs['rasters']['mc_bot'])
+        lc_top = os.path.join(data_path, yaml_inputs['rasters']['lc_top'])
+        lc_bot = os.path.join(data_path, yaml_inputs['rasters']['lc_bot'])
+
+        meras_shp = os.path.join(data_path, yaml_inputs['shapefiles']['extent'])
+        wu_shp = os.path.join(data_path, yaml_inputs['shapefiles']['wells_out'])
+
+        # make a swuds object
+        wu = cls(xlsx=swuds_input, sheet=worksheet, csvfile=outcsv)
+
+        # process
+        wu.sort_sites()
+        wu.reproject()
+
+        wu.apply_footprint(meras_shp, outshp=wu_shp)
+        wu.assign_missing_elev(dem)
+
+        for zn in yaml_inputs['zones']:
+            zn[1] = Swuds.fix_path(zn[1])
+            zn[2] = Swuds.fix_path(zn[2])
+
+        wu.make_production_zones(yaml_inputs['zones'])
+
+        # write results to csv file and return object
+        wu.assign_monthly_production(processed_csv)
+        return wu
+        
+    @staticmethod
+    def fix_path(data_path):
+        if re.search('/', data_path):
+            parts = re.split('/', data_path)
+            if re.search(':', parts[0]):
+                data_path = os.path.join(parts[0], os.path.sep)
+                del parts[0]
+                data_path = os.path.join(data_path, *parts)
+            else:
+                data_path = os.path.join(*parts)
+        return(data_path)
 
     # def overlaps(self, a, b):
     #     """ Return the amount of overlap, in bp
@@ -392,30 +463,31 @@ if __name__ == '__main__':
 
     home = os.getcwd()
     data_path = os.path.join(os.path.dirname(home), 'working_data')
-    swuds_input = os.path.join(data_path, 'LMG-withdrawals-2000-2018.xlsx')
-    worksheet = 'LMG-withdrawals-2000-2018'
-    outcsv = os.path.join(data_path, 'swuds_nonTE.csv')
-    dem = os.path.join(data_path, 'dem_mean_elevs.tif')
-    mc_top = os.path.join(data_path, 'mcaq_surf.tif')
-    mc_bot = os.path.join(data_path, 'mccu_surf.tif')
-    lc_top = os.path.join(data_path, 'lcaq_surf.tif')
-    lc_bot = os.path.join(data_path, 'lccu_surf.tif')
+    # swuds_input = os.path.join(data_path, 'LMG-withdrawals-2000-2018.xlsx')
+    # worksheet = 'LMG-withdrawals-2000-2018'
+    # outcsv = os.path.join(data_path, 'swuds_nonTE.csv')
+    # dem = os.path.join(data_path, 'dem_mean_elevs.tif')
+    # mc_top = os.path.join(data_path, 'mcaq_surf.tif')
+    # mc_bot = os.path.join(data_path, 'mccu_surf.tif')
+    # lc_top = os.path.join(data_path, 'lcaq_surf.tif')
+    # lc_bot = os.path.join(data_path, 'lccu_surf.tif')
 
-    meras_shp = os.path.join(data_path, 'MERAS_Extent.shp')
-    wu_shp = os.path.join(data_path, 'WU_points.shp')
-    # make a swuds object
-    # swuds = Swuds(xlsx=swuds_input, sheet=worksheet, csvfile=outcsv)
-    swuds = Swuds(xlsx=None, sheet=None, csvfile=outcsv, cols=None)
-    swuds.sort_sites()
-    swuds.reproject()
+    # meras_shp = os.path.join(data_path, 'MERAS_Extent.shp')
+    # wu_shp = os.path.join(data_path, 'WU_points.shp')
+    # # make a swuds object
+    # # swuds = Swuds(xlsx=swuds_input, sheet=worksheet, csvfile=outcsv)
+    # swuds = Swuds(xlsx=None, sheet=None, csvfile=outcsv, cols=None)
+    # swuds.sort_sites()
+    # swuds.reproject()
 
-    swuds.apply_footprint(meras_shp, outshp=wu_shp)
-    swuds.assign_missing_elev(dem)
+    # swuds.apply_footprint(meras_shp, outshp=wu_shp)
+    # swuds.assign_missing_elev(dem)
 
-    mc = ['middle_claiborne', mc_top, mc_bot]
-    lc = ['lower_claiborne', lc_top, lc_bot]
-    swuds.make_production_zones([mc, lc])
-    swuds.assign_monthly_production(os.path.join(data_path, 'processed_swuds.csv'))
-    print(swuds.df_swuds.head())
+    # mc = ['middle_claiborne', mc_top, mc_bot]
+    # lc = ['lower_claiborne', lc_top, lc_bot]
+    # swuds.make_production_zones([mc, lc])
+    # swuds.assign_monthly_production(os.path.join(data_path, 'processed_swuds.csv'))
+    # print(swuds.df_swuds.head())
 
-    
+    yml_file = os.path.join(data_path, 'swuds_input.yml')
+    wu = Swuds.from_yaml(yml_file)

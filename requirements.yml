@@ -24,6 +24,7 @@ dependencies:
   - pyproj>=2.2
   - pyshp
   - pytest
+  - xlrd
   - pip
   - pip:
     - gis-utils
