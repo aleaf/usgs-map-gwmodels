@@ -14,11 +14,11 @@ def test_preprocess_swuds(test_output_folder, test_data_path):
     worksheet = 'LMG-withdrawals-2000-2018'
 
     # required rasters and shapefile
-    dem = os.path.join(test_data_path, 'extents', 'dem_mean_elevs_1000.tif')
-    mc_top = os.path.join(test_data_path, 'extents', 'mcaq_surf.tif')
-    mc_bot = os.path.join(test_data_path, 'extents', 'mccu_surf.tif')
-    lc_top = os.path.join(test_data_path, 'extents', 'lcaq_surf.tif')
-    lc_bot = os.path.join(test_data_path, 'extents', 'lccu_surf.tif')
+    dem = os.path.join(test_data_path, 'rasters', 'dem_mean_elevs.tif')
+    mc_top = os.path.join(test_data_path, 'rasters', 'mcaq_surf.tif')
+    mc_bot = os.path.join(test_data_path, 'rasters', 'mccu_surf.tif')
+    lc_top = os.path.join(test_data_path, 'rasters', 'lcaq_surf.tif')
+    lc_bot = os.path.join(test_data_path, 'rasters', 'lccu_surf.tif')
     meras_shp = os.path.join(test_data_path, 'extents', 'MERAS_Extent.shp')
 
     # make a swuds object and process it
@@ -33,7 +33,7 @@ def test_preprocess_swuds(test_output_folder, test_data_path):
     wu.make_production_zones([mc, lc])
     wu.assign_monthly_production(processed_csv)
 
-    assert os.path.exists(outputfile)
+    assert os.path.exists(outcsv)
     assert os.path.exists(outputshp)
     assert os.path.exists(processed_csv)
     
