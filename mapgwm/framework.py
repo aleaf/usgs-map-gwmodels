@@ -16,9 +16,11 @@ from mfsetup.units import convert_length_units
 
 def get_layer(botm_array, i, j, elev):
     """Return the botm_array for elevations at i, j locations.
+
     Parameters
     ----------
-    botm_array : 3D numpy array of layer bottom elevations
+    botm_array : 3D numpy array
+        layer bottom elevations
     i : scaler or sequence
         row index (zero-based)
     j : scaler or sequence
@@ -233,10 +235,10 @@ def add_discrete_colors_legend(ax, data, unit_labels=None,
         by default None
     vmax : float, optional
         Maximum value of colormap range, , by default None
-    **kwargs : keyword arguments to :class:`matplotlib.pyplot.legend`
+    **kwargs : keyword arguments to :func:`matplotlib.pyplot.legend`
     
     Return
-    lg : :class:`matplotlib.pyplot.legend` handle
+    lg : :func:`matplotlib.pyplot.legend` handle
     
     """
     # make a discrete colors legend
@@ -397,7 +399,7 @@ def rasters_to_grid(modelgrid, dem, rasters,
 
     Parameters
     ----------
-    modelgrid : mfsetup.MFsetupGrid instance
+    modelgrid : Modflow-setup :class:`~mfsetup.grid.MFsetupGrid` instance
         Modflow-setup grid instance describing the model grid
     dem : str (filepath)
         Raster representing the land surface, at the highest resolution being contemplated for the model.
@@ -414,9 +416,8 @@ def rasters_to_grid(modelgrid, dem, rasters,
 
     References
     ----------
-    See the `modflow-setup documentation
-    <https://aleaf.github.io/modflow-setup/api/mfsetup.discretization.html#mfsetup.discretization.fill_cells_vertically>`
-    for an explanation of the filling process.
+    See the documentation for the :func:`fill_cells_vertically <mfsetup.discretization.fill_cells_vertically>`
+    function in Modflow-setup for an explanation of the filling process.
 
     """
     grid = modelgrid
