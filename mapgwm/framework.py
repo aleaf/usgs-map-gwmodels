@@ -56,7 +56,7 @@ def get_layer(botm_array, i, j, elev):
     return layers
 
 
-def plot_slice(layers_elevations, property_data=None,
+def plot_slice(layer_elevations, property_data=None,
                row=0, column=slice(None),
                voxel_start_layer=0, voxel_zones=None, cmap='copper',
                voxel_cmap='viridis', unit_labels=None):
@@ -64,7 +64,7 @@ def plot_slice(layers_elevations, property_data=None,
 
     Parameters
     ----------
-    layers_elevations : 3D numpy array 
+    layer_elevations : 3D numpy array
         Array of layer elevations, starting with the model top. 
         (Length equal to the number of botm_array + 1)
     property_data : 3D numpy array 
@@ -94,10 +94,9 @@ def plot_slice(layers_elevations, property_data=None,
     Returns
     -------
     ax : matplotlib AxesSubplot instance for figure
-    """    
+    """
     # cross section code
-    fig, ax = plt.subplots(figsize=(11, 8.5))
-    nlay, nrow, ncol = layers_elevations.shape
+    nlay, nrow, ncol = layer_elevations.shape
     # create meshgrid for rows or columns
     # along a row
     if isinstance(column, slice):
@@ -114,27 +113,52 @@ def plot_slice(layers_elevations, property_data=None,
         title = 'Column {}'.format(column)
         xlabel = 'Row in model'
     x = np.arange(ncells)
-    z = layers_elevations[:, row, column]
-    z = np.ma.masked_where(np.isnan(z), z)
+    z = layer_elevations[:, row, column].copy()
+    # since z is used to define cell edges in the pcolormesh (below)
+    # z cannot be masked or have nan values
+    # set missing data values (outside of the model footprint) in z
+    # to -9999
+    # pcolormesh will still skip these cells, as they are defined
+    # as no data by the mask for the property array
+    z_nodata = -9999
+    z[np.isnan(z)] = z_nodata
+    # zero values will result in pcolormesh edges that dip to zero
+    # on the edge of nodata areas
+    # fill these with previous value in either direction
+    # first drop any indices along the edges
+    for side in -1, 1:
+        k, j = np.where(z == z_nodata)
+        interior_zeros = (j > 0) & (j < z.shape[1] - 1)
+        j = j[interior_zeros]
+        k = k[interior_zeros]
+        # then reassign the zero elevations
+        z[k, j] = z[k, j+side]
+
+    #z = np.ma.masked_where(np.isnan(z), z)
     thicknesses = np.diff(z, axis=0) * -1
     thicknesses[thicknesses <= 0] = 0.
+
+    fig, ax = plt.subplots(figsize=(11, 8.5))
+
     # optionally plot a property such as resistivity facies
     if property_data is not None:
         # drop na values
         # (areas with no voxel data at any depth)
-        loc = ~np.all(z.mask, axis=0)
+        #loc = ~np.all(z.mask, axis=0)
         data = property_data[:, row, column].copy()
         vmin, vmax = property_data.min(), property_data.max()
 
-        x = np.squeeze(x[loc])  # + [x[-1] + 1]
+        #x = np.squeeze(x[loc])  # + [x[-1] + 1]
+        #x = np.ma.masked_array(x, mask=~loc)
         zstart = voxel_start_layer
         zend = voxel_start_layer + property_data.shape[0] + 1
-        z = np.squeeze(z[zstart:zend, loc])
-        if not np.any(z):
-            return
-        data = np.squeeze(data[:, loc])
-        thicknesses = np.squeeze(thicknesses[:, loc])
-        if voxel_zones is not None:
+        z = np.squeeze(z[zstart:zend, :])
+
+        #if not np.any(z):
+        #    return
+        #data = np.squeeze(data[:, loc])
+        #thicknesses = np.squeeze(thicknesses[:, loc])
+        if np.any(z) and voxel_zones is not None:
             # get the min max values for the existing framework
             # and voxel-based property data
             is_voxel_3D = np.isin(property_data, voxel_zones)
@@ -144,8 +168,10 @@ def plot_slice(layers_elevations, property_data=None,
             voxel_vmax = np.max(voxel_zones)
 
             is_voxel = np.isin(data, voxel_zones)
-            voxel_data = np.ma.masked_array(data, mask=(thicknesses <= 0) | ~is_voxel)
-            data = np.ma.masked_array(data, mask=(thicknesses <= 0) | is_voxel)
+            voxel_mask = (thicknesses <= 0) | ~is_voxel
+            data_mask = (thicknesses <= 0) | is_voxel
+            voxel_data = np.ma.masked_array(data, mask=voxel_mask)
+            data = np.ma.masked_array(data, mask=data_mask)
             pcm2 = ax.pcolormesh(x, z, voxel_data, alpha=0.5, cmap=voxel_cmap,
                                  vmin=voxel_vmin, vmax=voxel_vmax)
             fig.colorbar(pcm2, label='Resistivity facies class (in order of increasing resistivity)',
@@ -155,25 +181,32 @@ def plot_slice(layers_elevations, property_data=None,
         pcm = ax.pcolormesh(x, z, data, alpha=0.5, cmap='copper',
                             vmin=vmin, vmax=vmax)
 
-    plot_layer = np.any(thicknesses > 0, axis=1).data
-    plot_ij = np.any(thicknesses > 0, axis=0).data
-    for layer in z[:-1][plot_layer, :]:
-        ax.plot(x, layer, color='k', lw=0.1)
-    xmin = x[plot_ij].min() 
-    xmax = x[plot_ij].max()
-    ax.set_xlim(xmin, xmax)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel('Elevation, in meters')
-    ax.set_title(title)
+    # plot the layer bottom elevations
+    plot_layer = np.any(thicknesses > 0, axis=1)
+    plot_layer = np.append(plot_layer, True)
+    plot_ij = np.any(thicknesses > 0, axis=0)
+    z[z == z_nodata] = np.nan
+    if np.any(plot_ij):
+        for layer_edge in z[plot_layer, :]:
+            ax.plot(x, layer_edge, color='k', lw=0.1)
+        xmin = x[plot_ij].min()
+        xmax = x[plot_ij].max()
+        ymin = np.nanmin(z[plot_layer, :])
+        ymax = np.nanmax(z[plot_layer, :])
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel('Elevation, in meters')
+        ax.set_title(title)
 
-    if property_data is not None:
-        # make a discrete colors legend
-        title = "MERAS 2.0\nFramework Units"
-        lg = add_discrete_colors_legend(ax, data, unit_labels=unit_labels,
-                                        cmap=cmap, vmin=vmin, vmax=vmax, alpha=0.5,
-                                        bbox_to_anchor=(0.78, -0.45), loc='lower left',
-                                        title=title, handleheight=2)
-    plt.tight_layout()
+        if property_data is not None:
+            # make a discrete colors legend
+            title = "MERAS 2.0\nFramework Units"
+            lg = add_discrete_colors_legend(ax, data, unit_labels=unit_labels,
+                                            cmap=cmap, vmin=vmin, vmax=vmax, alpha=0.5,
+                                            bbox_to_anchor=(0.78, -0.45), loc='lower left',
+                                            title=title, handleheight=2)
+        plt.tight_layout()
     return ax
 
 
@@ -442,6 +475,11 @@ def layers_to_zones(botm_array, model_cell_z_centers):
         cell in model_cell_z_centers.
     """
 
+    # convert from 2D to 3D
+    is2D = False
+    if len(model_cell_z_centers.shape) == 2:
+        is2D = True
+        model_cell_z_centers = np.array([model_cell_z_centers])
     assert model_cell_z_centers.shape[1:] == botm_array.shape[1:]
 
     # for each, i, j location and cell midpoint in the model_cell_z_centers array
@@ -455,7 +493,9 @@ def layers_to_zones(botm_array, model_cell_z_centers):
         layer_in_botm_array = get_layer(botm_array, i, j, layer_centers.ravel())
         layer_in_botm_array = np.reshape(layer_in_botm_array, layer_centers.shape)
         zones.append(layer_in_botm_array)
-    zones = np.array(zones)
+    zones = np.array(zones, dtype=int)
+    if is2D:
+        zones = zones[0]
     return zones
 
 
