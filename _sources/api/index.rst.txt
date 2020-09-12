@@ -14,8 +14,9 @@ Supporting modules
 
 .. toctree::
 
-   mapgwm.headobs
    mapgwm.checkdatasets
+   mapgwm.framework
+   mapgwm.headobs
    mapgwm.lookups
    mapgwm.nhdplus
    mapgwm.swb

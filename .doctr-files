@@ -1,5 +1,6 @@
 ./_modules/index.html
 ./_modules/mapgwm/check_input_datasets.html
+./_modules/mapgwm/framework.html
 ./_modules/mapgwm/headobs.html
 ./_modules/mapgwm/lookups.html
 ./_modules/mapgwm/nhdplus.html
@@ -7,6 +8,7 @@
 ./_modules/mapgwm/swuds.html
 ./_sources/api/index.rst.txt
 ./_sources/api/mapgwm.checkdatasets.rst.txt
+./_sources/api/mapgwm.framework.rst.txt
 ./_sources/api/mapgwm.headobs.rst.txt
 ./_sources/api/mapgwm.lookups.rst.txt
 ./_sources/api/mapgwm.nhdplus.rst.txt
@@ -63,6 +65,7 @@
 ./_static/underscore.js
 ./api/index.html
 ./api/mapgwm.checkdatasets.html
+./api/mapgwm.framework.html
 ./api/mapgwm.headobs.html
 ./api/mapgwm.lookups.html
 ./api/mapgwm.nhdplus.html
