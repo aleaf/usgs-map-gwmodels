@@ -4,12 +4,14 @@
 ./_modules/mapgwm/lookups.html
 ./_modules/mapgwm/nhdplus.html
 ./_modules/mapgwm/swb.html
+./_modules/mapgwm/swuds.html
 ./_sources/api/index.rst.txt
 ./_sources/api/mapgwm.checkdatasets.rst.txt
 ./_sources/api/mapgwm.headobs.rst.txt
 ./_sources/api/mapgwm.lookups.rst.txt
 ./_sources/api/mapgwm.nhdplus.rst.txt
 ./_sources/api/mapgwm.swb.rst.txt
+./_sources/api/mapgwm.swuds.rst.txt
 ./_sources/contributing.rst.txt
 ./_sources/examples.rst.txt
 ./_sources/index.rst.txt
@@ -65,6 +67,7 @@
 ./api/mapgwm.lookups.html
 ./api/mapgwm.nhdplus.html
 ./api/mapgwm.swb.html
+./api/mapgwm.swuds.html
 ./contributing.html
 ./examples.html
 ./genindex.html
