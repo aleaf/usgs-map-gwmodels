@@ -1,17 +1,21 @@
+from collections import defaultdict
 import os
+import re
 import sys
-import pandas as pd
+
 import numpy as np
+import pandas as pd
 from shapely.geometry import Point
+import yaml
+
 from gisutils import df2shp, project, raster, shp2df
 from mapgwm.lookups import aq_codes_dict
-from collections import defaultdict
-import yaml
-import re
+
 
 class Swuds:
     """ Code for preprocessing non-agricultural water use information
-    into clean CSV input to MODFLOW setup. Includes logic to fill missing  data,
+    into clean CSV input to MODFLOW setup. Class excludes AQ, IR, and TE
+    water use from a swuds excel dataset. Includes logic to fill missing  data,
     as data at many sites are limited to survey years (e.g. 2010 and 2015).
     """
 
@@ -100,7 +104,7 @@ class Swuds:
           "FROM_STATE_NM","FROM_COUNTY_NM","FROM_CONSTRUCTION_DT","FROM_INVENTORY_DT"]
 
         if isinstance(cols, list):
-            usecols = list
+            usecols = cols
         elif cols is not None:
             usecols = defaultcols
         else:
@@ -133,27 +137,34 @@ class Swuds:
         self.well_elevations_m = dict(zip(self.df_swuds['SITE_NO'], self.df_swuds['FROM_ALT_VA'] * 0.3048))
 
         
-    def sort_sites(self, secondarysort=None):
+    def sort_sites(self, primarysort='SITE_NO', secondarysort=None):
         """ Sort the dataframe by site number and quantity, or passed parameter
 
         Parameters
         ----------
+        primarysort: str
+            string to sort group groups, defaults to SITE_NO
         secondarysort: str
             variable in dataframe to sort SITE_NO groups, default is None
         """
         if secondarysort is not None:
-            self.df_swuds = self.df_swuds.sort_values(['SITE_NO', secondarysort]).groupby(['SITE_NO']).last().reset_index()
+            self.df_swuds = self.df_swuds.sort_values([primarysort, secondarysort]).groupby([primarysort]).last().reset_index()
         else:
-            self.df_swuds = self.df_swuds.sort_values(['SITE_NO']).groupby(['SITE_NO']).last().reset_index()
+            self.df_swuds = self.df_swuds.sort_values([primarysort]).groupby([primarysort]).last().reset_index()
 
-    def reproject(self):
+    def reproject(self, long='FROM_DEC_LONG_VA', lat='FROM_DEC_LAT_VA', key='SITE_NO'):
         """ Reproject from lat/lon to self.epsg using gisutils
 
         Parameters
         ----------
-        None
+        long: str
+            string variable name (column in dataframe) with longitude for input
+        lat: str
+            string variable name (column in dataframe) with latitude 
+        key: str
+            key for the dictionary made, defaults to SITE_NO
         """
-        x_reprj, y_reprj = project(zip(self.df_swuds['FROM_DEC_LONG_VA'], self.df_swuds['FROM_DEC_LAT_VA']), 
+        x_reprj, y_reprj = project(zip(self.df_swuds[long], self.df_swuds[lat]), 
                                  'epsg:4269', 
                                  'epsg:{0}'.format(self.epsg))
         self.df_swuds['x_{0}'.format(self.epsg)] = x_reprj
@@ -164,7 +175,7 @@ class Swuds:
         self.df_swuds.dropna(subset=['x_{0}'.format(self.epsg), 'y_{0}'.format(self.epsg)], axis=0, inplace=True)
 
         # make dictionary of location 
-        self.locations = dict(list(zip(self.df_swuds['SITE_NO'], list(zip(self.df_swuds['x_{0}'.format(self.epsg)], self.df_swuds['y_{0}'.format(self.epsg)])))))
+        self.locations = dict(list(zip(self.df_swuds[key], list(zip(self.df_swuds['x_{0}'.format(self.epsg)], self.df_swuds['y_{0}'.format(self.epsg)])))))
         
     
     def apply_footprint(self, bounding_shp, outshp=None):
@@ -276,6 +287,15 @@ class Swuds:
             idx = self.df_swuds.loc[self.df_swuds[c].isnull()].index.values
             self.df_swuds.loc[idx, c] = self.df_swuds.loc[idx, 'ANNUAL_VAL']
 
+        # pull out groundwater sites that are not IR, AQ or TE
+        self.df_swuds = self.df_swuds.loc[
+                                (self.df_swuds['WATER_CD'] == 'GW') & 
+                                ~(self.df_swuds['FROM_NAT_WATER_USE_CD'] == 'IR') & 
+                                ~(self.df_swuds['FROM_NAT_WATER_USE_CD'] == 'AQ') & 
+                                ~(self.df_swuds['FROM_NAT_WATER_USE_CD'] == 'TE')
+                                ]
+
+
         # reshape dataframe to have monthly values in same column
         stacked = pd.DataFrame(self.df_swuds[self.monthly_cols].stack())
         stacked.reset_index(inplace=True)
@@ -381,7 +401,7 @@ class Swuds:
 
         Returns
         -------
-        swuds: Swuds object
+        wu: Swuds object
             returns a Swuds object and also generates processed csv file
             specified in the yaml file.
 
@@ -429,6 +449,27 @@ class Swuds:
         
     @staticmethod
     def fix_path(data_path):
+        """ Convert simple path string with forward slashes
+        to a path used by python using os.path.join().  This
+        function allows the user to specify a path in the
+        yaml file simply, for example:
+        d:/home/MAP/source_data/wateruse.csv
+
+        The string is split on '/' and resulting list
+        is passed to os.path.join().  If the first entry
+        has a colon, then os.path.join(entry[0], os.path.sep)
+        is used to specify a windows drive properly.
+
+        Parameters
+        ----------
+        data_path: str
+            path read from yaml file 
+
+        Returns
+        -------
+        data_path: str
+            path built using os.path.join()
+        """
         if re.search('/', data_path):
             parts = re.split('/', data_path)
             if re.search(':', parts[0]):
