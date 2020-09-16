@@ -157,151 +157,179 @@ class ThermalUse(Swuds):
             if keys[i] is not None:
                 te.set_index(keys[i], inplace=True)
             tes.append(te)
-        self.df_swuds = pd.concat(tes, axis=1)
-        self.df_swuds = self.df_swuds.loc[:, ~self.df_swuds.columns.duplicated()]  # get rid of repeated columns from concat
+        # merge the individual dataframes if there is more than one
+        if len(tes) > 1:
+            self.df_swuds = pd.concat(tes, axis=1)
+            # get rid of repeated columns from concat, duplicated() returns true
+            # for repeated names, so select the columns not-duplicated()
+            self.df_swuds = self.df_swuds.loc[:, ~self.df_swuds.columns.duplicated()]  
+        else:
+            self.df_swuds = tes[0]
 
 
+    def assign_monthly_production(self, outfile, year_cols):
+        """ Assign production wells for TE water use.  Overrides the method
+        from Swuds() class.  The TE model does not include well information, 
+        so the production zones assigned to the object are used with the
+        default screen length to define the pumping interval.  If a location
+        does not have have production zone information, then nan is assigned
+        and the user will have to assign tops and bottoms to the dataframe
+        and final csv.  
 
-# # convert 2010 thermoelectric .xlsx to .csv (for quicker reading)
-# xlsx_te = '../source_data/water_use/2010_thermo_model_estimates.xlsx'
-# outcsv_2010 = '../source_data/water_use/2010_thermo_model_estimates.csv'
-# cols=['PLANT CODE', 'NAME OF WATER SOURCE',
-#       'Latitude, decimal degrees','Longitude, decimal degrees',
-#       'USGS WATER SOURCE CODE','USGS-Estimated Annual Withdrawal (Mgal/d)',
-#       'USGS-Estimated Annual Minimum Withdrawal (Mgal/d)',
-#       'USGS-Estimated Annual Maximum Withdrawal (Mgal/d)']
-# sheet = 'Report_table_UPDATED'
-# skiprows = [0,1]
-# header = 2
+        Production is given in cubic m per day.
 
-# # convert 2015 thermoelectric .xlsx to .csv (for quicker reading)
-# xlsx_te = '../source_data/water_use/2015_te_model_estimates_lat.long_comids.xlsx'
-# outcsv_2015 = '../source_data/water_use/2015_thermo_model_estimates.csv'
-# cols=['EIA_PLANT_ID', 'NAME_OF_WATER_SOURCE','LATITUDE','LONGITUDE',
-#       'WATER_SOURCE_CODE','WITHDRAWAL','MIN_WITHDRAWAL','MAX_WITHDRAWAL']
-# sheet = '2015_ANNUAL_WD_CU'
-# header = 0
+        todo:  add unit conversion parameter so other units can be used?
 
-# # df_te_2010 = xlsx2csv(xlsx_te,sheet,cols,outcsv_2010,header,skiprows)
-# # df_te_2015 = xlsx2csv(xlsx_te,sheet,cols,outcsv_2015,header)
+        Parameters
+        ----------
+        outfile: str
+            path to final processed monthly TE water-use file.
+        year_cols: list of str
+            list with columns to be gathered to assign monthly values
+            Usually these are from 5-year TE model runs.  Should contain
+            a 4-digit year data that can be matched in each string. These
+            will correpond to the names assigned in the constructor.
+        """
 
-# df_2010 = pd.read_csv(outcsv_2010)
-# df_2010.rename(columns={'NAME OF WATER SOURCE':'src_name', 'Latitude, decimal degrees':'lat_dd',
-#                       'Longitude, decimal degrees':'lon_dd', 'USGS WATER SOURCE CODE':'src_code',
-#                       'USGS-Estimated Annual Withdrawal (Mgal/d)':'2010_q_mgd',
-#                       'USGS-Estimated Annual Minimum Withdrawal (Mgal/d)':'2010_min_q_mgd',
-#                       'USGS-Estimated Annual Maximum Withdrawal (Mgal/d)':'2010_max_q_mgd',
-#                       'PLANT CODE':'plant_code'},
-#                inplace=True)
+        # pull out groundwater sites 
+        self.df_swuds = self.df_swuds.loc[self.df_swuds['src_code'] == 'GW']
 
-# # reproject from lat/lon to albers
-# x_5070, y_5070 = project(zip(df_2010['lon_dd'], df_2010['lat_dd']), 'epsg:4269', 'epsg:5070')
-# df_2010['x_5070'] = x_5070
-# df_2010['y_5070'] = y_5070
-# df_2010['geometry'] = [Point(x, y) for x, y in zip(x_5070, y_5070)]
+        # get years from year_cols
+        years = []
+        col_dict = dict()
+        for col in year_cols:
+            m = re.search('(\d\d\d\d)', col)
+            if m:
+                years.append(int(m[1]))
+                col_dict[int(m[1])] = col
 
-# # drop wells with no location information (for now)
-# df_2010.dropna(subset=['x_5070', 'y_5070'], axis=0, inplace=True)
+        firstyear = pd.to_datetime('{0}-1-1'.format(min(years)))
+        midpoints = []
+        for i in range(0, len(years)-1):
+            y, r = divmod((years[i]+years[i+1]), 2)
+            days = r/2. * 365.
+            midpoints.append(pd.to_datetime('{0}-1-1'.format(y)) + pd.to_timedelta(days, unit='days'))
 
-# # cull sites to those within the Delta footprint
-# # meras_bound = '../../../meras3/source_data/extents/meras_extent.shp'
-# delta_bound = '../source_data/extents/delta_active_area_boundary.shp'
-# df_2010 = gpd.GeoDataFrame(df_2010, crs='epsg:5070')
-# g2 = gpd.GeoDataFrame.from_file(delta_bound)
-# poly = g2.geometry.values[0]
-# within = [g.within(poly) for g in df_2010.geometry]
-# df_2010 = df_2010.loc[within].copy()
+        df = self.df_swuds.copy()
+        
+        df['start_date'] = firstyear
+        
+        groups = df.groupby('plant_code')
+        all_groups = []
+        for plant_code, group in groups:
+            group = group.copy()
+            group.index = group['start_date']
+            start_date = pd.Timestamp(self.sim_start_dt)
+            end_date = pd.Timestamp(self.sim_end_dt)
+            parts = list(map(int, re.split('-', self.sim_start_dt)))
+            start_datetime = pd.to_datetime(self.sim_start_dt)
 
-# # cull sites to groundwater sites
-# df_2010['src_name'] = df_2010['src_name'].str.lower()
-# df_2010 = df_2010[(df_2010['src_code']=='GW') | (df_2010['src_name'].str.contains('well'))]
+            monthly_values=dict()
+            for y in years:
+                monthly_values[y] = group.loc[group.start_date == firstyear,col_dict[y]].values[0]
 
-# df_2015 = pd.read_csv(outcsv_2015)
-# df_2015.rename(columns={'NAME_OF_WATER_SOURCE':'src_name', 'LATITUDE':'lat_dd',
-#                         'LONGITUDE':'lon_dd', 'WATER_SOURCE_CODE':'src_code',
-#                         'WITHDRAWAL':'2015_q_mgd', 'MIN_WITHDRAWAL':'2015_min_q_mgd',
-#                         'MAX_WITHDRAWAL':'2015_max_q_mgd', 'EIA_PLANT_ID':'plant_code'},
-#                inplace=True)
+            all_dates = pd.date_range(start_date, end_date, freq='MS')
+            group = group.reindex(all_dates)
 
-# # reproject from lat/lon to albers
-# x_5070, y_5070 = project(zip(df_2015['lon_dd'], df_2015['lat_dd']), 'epsg:4269', 'epsg:5070')
-# df_2015['x_5070'] = x_5070
-# df_2015['y_5070'] = y_5070
-# df_2015['geometry'] = [Point(x, y) for x, y in zip(x_5070, y_5070)]
+            # fill empty dates
+            mask = ((group.index >= start_datetime) & (group.index < midpoints[0]))
+            group.loc[mask, 'q_m3d'] = monthly_values[years[0]] * 3785.4   # convert to m3 per day
 
-# # drop wells with no location information (for now)
-# df_2015.dropna(subset=['x_5070', 'y_5070'], axis=0, inplace=True)
+            for i in range(1, len(midpoints)):
+                mask = (group.index >= datetime.date(midpoints[i-1]) & (group.index < midpoints[i]))
+                group.loc[mask, 'q_m3d'] = monthly_values[years[i]] * 3785.4
 
-# # cull sites to those within the Delta footprint
-# df_2015 = gpd.GeoDataFrame(df_2015, crs='epsg:5070')
-# poly = g2.geometry.values[0]
-# within = [g.within(poly) for g in df_2015.geometry]
-# df_2015 = df_2015.loc[within].copy()
+            # take the first key in the production zones if more than one
+            prod_zone = list(self.prod_zone_top_m.keys())[0]
+            
+            group['screen_top_m'] = self.prod_zone_top_m[prod_zone][plant_code]
+            group['screen_bot_m'] = self.prod_zone_top_m[prod_zone][plant_code]
+            group['x_5070'] = np.nanmin(group['x_5070'])
+            group['y_5070'] = np.nanmin(group['y_5070'])
+            group['plant_code'] = plant_code
 
-# # cull sites to groundwater sites
-# df_2015['src_name'] = df_2015['src_name'].str.lower()
-# df_2015 = df_2015[(df_2015['src_code']=='GW') | (df_2015['src_name'].str.contains('well'))]
+            cols = ['plant_code', 'q_m3d', 'screen_bot_m',
+                    'screen_top_m', 'x_5070', 'y_5070']
+            all_groups.append(group[cols])
 
-# # merge 2015 annual withdrawals with 2010 dataframe
-# df = pd.merge(df_2010, df_2015[['plant_code','2015_q_mgd']], left_on=['plant_code'],
-#               right_on=['plant_code'], how='left')
+        self.df_swuds = pd.concat(all_groups)
+        self.df_swuds['datetime'] = self.df_swuds.index
+        self.df_swuds.to_csv(outfile, index=False)
+        print('processed TE SWUDS data written to {0} and in dataframe attribute'.format(outfile))
 
-# # get tops and bottoms of estimated production intervals at each well
-# # make dictionaries to lookup by well
-# mcaq_top = '../source_data/water_use/pz_mcaqp_top/pz_mcaqp_top.tif'
-# mcaq_bot = '../source_data/water_use/pz_mcaqp_bot/pz_mcaqp_bot.tif'
-# x_5070 = df['x_5070'].values
-# y_5070 = df['y_5070'].values
-# mc_top = raster.get_values_at_points(mcaq_top,
-#                                      x=x_5070,
-#                                      y=y_5070)*0.3048
-# mc_top_m = dict(zip(df['plant_code'], mc_top))
-# mc_bot = raster.get_values_at_points(mcaq_bot,
-#                                      x=x_5070,
-#                                      y=y_5070)*0.3048
-# mc_bot_m = dict(zip(df['plant_code'], mc_bot))
+    @classmethod
+    def from_yaml(cls, yamlfile):
+        """ Read input and output files from yaml file
+        and run all the processing steps in the class to
+        produce the processed csv file.  Overrided method
+        from Swuds class to do the steps for 
+        ThermalUse object. 
 
-# sim_start_dt = '2008-01-01'
-# sim_end_dt = '2017-12-31'
-# df['start_date'] = pd.to_datetime('1/1/2010')
-# groups = df.groupby('plant_code')
-# all_groups = []
-# for plant_code, group in groups:
-#     group = group.copy()
-#     group.index = group['start_date']
-#     start_date = pd.Timestamp(sim_start_dt)
-#     end_date = pd.Timestamp(sim_end_dt)
+        Parameters
+        ----------
+        yamlfile: str
+            path to a yaml file containing input and output information
 
-#     monthly_values_2010 = group.loc[group.start_date == pd.to_datetime('1/1/2010'),'2010_q_mgd'].values[0]
-#     monthly_values_2015 = group.loc[group.start_date == pd.to_datetime('1/1/2010'),'2015_q_mgd'].values[0]
+        Returns
+        -------
+        te: ThermalUse object
+            returns a ThermalUse object and also generates processed csv file
+            specified in the yaml file.
 
-#     all_dates = pd.date_range(start_date, end_date, freq='MS')
-#     group = group.reindex(all_dates)
+        """
+        with open(yamlfile, 'r') as inputs:
+            yaml_inputs = yaml.safe_load(inputs)
+        
+        data_path = ThermalUse.fix_path(yaml_inputs['raw_data']['data_path'])
 
-#     # fill empty dates
-#     mask = (group.index < pd.to_datetime('1/1/2013'))
-#     group.loc[mask,'q_m3d'] = monthly_values_2010*3785.4
-#     mask = (group.index > pd.to_datetime('12/31/2012'))
-#     group.loc[mask,'q_m3d'] = monthly_values_2015*3785.4
+        te_input = []
+        for f in yaml_inputs['raw_data']['te_input']:
+            te_input.append(os.path.join(data_path, f))
+        worksheets = yaml_inputs['raw_data']['worksheet']
 
-#     mc_top_at_well = mc_top_m[plant_code]
-#     mc_bot_at_well = mc_bot_m[plant_code]
-#     group['screen_top_m'] = mc_top_at_well
-#     group['screen_bot_m'] = mc_bot_at_well
-#     group['x_5070'] = np.nanmin(group['x_5070'])
-#     group['y_5070'] = np.nanmin(group['y_5070'])
-#     group['plant_code'] = plant_code
+        outcsvs = []
+        for f in yaml_inputs['output']['outcsv']:
+            outcsvs.append(os.path.join(data_path, f))
+        
+        processed_csv = os.path.join(data_path, yaml_inputs['output']['processed_csv'])
+        
+        dem = os.path.join(data_path,yaml_inputs['rasters']['dem'])
+        mc_top = os.path.join(data_path, yaml_inputs['rasters']['mc_top'])
+        mc_bot = os.path.join(data_path, yaml_inputs['rasters']['mc_bot'])
+        lc_top = os.path.join(data_path, yaml_inputs['rasters']['lc_top'])
+        lc_bot = os.path.join(data_path, yaml_inputs['rasters']['lc_bot'])
 
-#     cols = ['plant_code', 'q_m3d', 'screen_bot_m',
-#             'screen_top_m', 'x_5070', 'y_5070']
-#     all_groups.append(group[cols])
+        meras_shp = os.path.join(data_path, yaml_inputs['shapefiles']['extent'])
+        te_shp = os.path.join(data_path, yaml_inputs['shapefiles']['wells_out'])
 
-# df_all = pd.concat(all_groups)
-# df_all['datetime'] = df_all.index
-# outfile = '../source_data/water_use/TE_model_est_{0}_{1}.csv'.format(sim_start_dt,sim_end_dt)
-# df_all.to_csv(outfile, index=False)
-# j=2
+        # make a te object
+        te = cls(xlsx=te_input, 
+                    sheet=worksheets, 
+                    csvfile=outcsvs, 
+                    cols=yaml_inputs['raw_data']['cols'], 
+                    skiprows=yaml_inputs['raw_data']['skiprows'], 
+                    newheaders=yaml_inputs['raw_data']['newheaders'], 
+                    epsg=5070)
 
+        # process
+        te.sort_sites(primarysort=yaml_inputs['options']['primarysort'])
+        te.reproject(long=yaml_inputs['options']['long'], 
+                     lat=yaml_inputs['options']['lat'],
+                     key=yaml_inputs['options']['primarysort'])
+
+        te.apply_footprint(meras_shp, outshp=te_shp)
+
+        for zn in yaml_inputs['zones']:
+            zn[1] = Swuds.fix_path(zn[1])
+            zn[2] = Swuds.fix_path(zn[2])
+
+        te.make_production_zones(yaml_inputs['zones'],
+                                 key=yaml_inputs['options']['primarysort'])
+
+        # write results to csv file and return object
+        te.assign_monthly_production(processed_csv, 
+                                     year_cols=yaml_inputs['options']['year_cols'])
+        return te
 
 if __name__ == '__main__':
 
@@ -322,7 +350,9 @@ if __name__ == '__main__':
                     newheaders=['2010', '2015'], 
                     epsg=5070)
 
-    
+    # write the combined dataframe 
+    te.df_swuds.to_csv(os.path.join(data_path, 'TE_combined.csv'))
+
     dem = os.path.join(data_path, 'dem_mean_elevs.tif')
     mc_top = os.path.join(data_path, 'mcaq_surf.tif')
     mc_bot = os.path.join(data_path, 'mccu_surf.tif')
@@ -336,14 +366,15 @@ if __name__ == '__main__':
     te.reproject(long='lon_dd', lat='lat_dd', key='plant_code')
 
     te.apply_footprint(meras_shp, outshp=wu_shp)
+    
+    mc = ['middle_claiborne', mc_top, mc_bot]
+    te.make_production_zones([mc], key='plant_code')
+    
+    te.assign_monthly_production(os.path.join(data_path, 'processed_thermal.csv'), 
+                                 year_cols=['2010_q_mgd', '2015_q_mgd'])
     print(te.df_swuds.head())
-    # swuds.assign_missing_elev(dem)
 
-    # mc = ['middle_claiborne', mc_top, mc_bot]
-    # lc = ['lower_claiborne', lc_top, lc_bot]
-    # swuds.make_production_zones([mc, lc])
-    # swuds.assign_monthly_production(os.path.join(data_path, 'processed_swuds.csv'))
-    # print(swuds.df_swuds.head())
-
-    # yml_file = os.path.join(data_path, 'swuds_input.yml')
-    # wu = Swuds.from_yaml(yml_file)
+    # try the yaml method
+    yml_file = os.path.join(data_path, 'thermal_input.yml')
+    te = ThermalUse.from_yaml(yml_file)
+    print(te.df_swuds.head())

@@ -225,7 +225,7 @@ class Swuds:
         assert not self.df_swuds['FROM_ALT_VA'].isnull().any()
 
     
-    def make_production_zones(self, zonelist):
+    def make_production_zones(self, zonelist, key='SITE_NO'):
         """ Make dictionary attributes for production zones.
         These are used to assign individual wells to production zones.
         The defaultdict is keyed by zone_name and then SITE_NO.
@@ -241,6 +241,9 @@ class Swuds:
             path to raster with top of zone
         zone_bot: str
             path to raster to bottom of zone
+        key: str
+            key (column name) to use in the resulting
+            parameter zone dictionaries.  Defaults to SITE_NO
         """
 
         # if only one list is passed, put it into a list.
@@ -258,11 +261,11 @@ class Swuds:
             lc_top = raster.get_values_at_points(top_raster,
                                                 x=x,
                                                 y=y) * 0.3048
-            self.prod_zone_top_m[name] = dict(zip(self.df_swuds['SITE_NO'], lc_top))
+            self.prod_zone_top_m[name] = dict(zip(self.df_swuds[key], lc_top))
             lc_bot = raster.get_values_at_points(bot_raster,
                                                 x=x,
                                                 y=y) * 0.3048
-            self.prod_zone_bot_m[name] = dict(zip(self.df_swuds['SITE_NO'], lc_bot))
+            self.prod_zone_bot_m[name] = dict(zip(self.df_swuds[key], lc_bot))
             
 
     def assign_monthly_production(self, outfile):
@@ -383,10 +386,10 @@ class Swuds:
                     'screen_bot_m', 'screen_top_m', 'x_{0}'.format(self.epsg), 'y_{0}'.format(self.epsg)]
             all_groups.append(group[cols])
 
-        df = pd.concat(all_groups)
-        df['datetime'] = df.index
-        df.to_csv(outfile, index=False)
-        print('processed SWUDS data written to {0}'.format(outfile))
+        self.df_swuds = pd.concat(all_groups)
+        self.df_swuds['datetime'] = self.df_swuds.index
+        self.df_swuds.to_csv(outfile, index=False)
+        print('processed SWUDS data written to {0} and in dataframe attribute'.format(outfile))
 
     @classmethod
     def from_yaml(cls, yamlfile):
