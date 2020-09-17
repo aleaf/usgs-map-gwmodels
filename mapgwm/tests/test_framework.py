@@ -56,7 +56,7 @@ def model_layers_zones(test_data_path, test_output_folder, delta_inset_model_gri
 
 def test_setup_model_layers(model_layers_zones, test_output_folder):
     output_folder = os.path.join(test_output_folder, 'framework')
-    for folder in 'figures', 'botm_array', 'zones', 'layers', os.path.join('zones', 'rasters'):
+    for folder in 'figures', 'botm_array', 'zones', os.path.join('zones', 'rasters'):
         flist = os.listdir(os.path.join(output_folder, folder))
         for f in flist:
             fullpath = os.path.join(output_folder, folder, f)
