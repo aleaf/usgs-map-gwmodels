@@ -12,8 +12,8 @@ def test_preprocess_thermal(test_output_folder, test_data_path):
     combined = os.path.join(test_output_folder, 'TE_combined.csv')
 
     # required data
-    xlsx_2010 = os.path.join(test_data_path, 'swuds', '2010_thermo_model_estimates.xlsx')
-    xlsx_2015 = os.path.join(test_data_path, 'swuds','2015_te_model_estimates_lat.long_comids.xlsx')
+    xlsx_2010 = os.path.join(test_data_path, 'swuds', '2010_Thermo_Model_Estimates.xlsx')
+    xlsx_2015 = os.path.join(test_data_path, 'swuds','2015_TE_Model_Estimates_lat.long_COMIDs.xlsx')
     skiprows = [2, 0]
     worksheets = ['Report_table_UPDATED', '2015_ANNUAL_WD_CU']
 
