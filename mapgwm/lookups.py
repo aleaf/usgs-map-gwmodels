@@ -16,6 +16,7 @@ path, _ = os.path.split(__file__)
 inflows_lookup_file = os.path.join(path, 'lookups', 'streamflow_site_comids.csv')
 nhdplus_vs_flowline_routing = os.path.join(path, 'lookups', 'nhdplus_v2_flowline_routing.csv')
 aquifer_codes_data = os.path.join(path, 'lookups', 'aquifer_codes.yml')
+gwlevels_column_renames = os.path.join(path, 'lookups', 'gwlevels_column_renames.yml')
 
 
 def get_nhdplus_v2_flowline_routing():
@@ -53,14 +54,20 @@ def get_streamflow_site_comids(group=None, groups=None):
     lookup = dict(zip(lookup.site_no, lookup.comid))
     return lookup
 
+
 def get_aq_cd_names():
     with open(aquifer_codes_data, 'r') as AQ:
         lookup = yaml.safe_load(AQ)
     return lookup
 
+def get_gwlevels_col_renames():
+    with open(gwlevels_column_renames, 'r') as src:
+        lookup = yaml.safe_load(src)
+    return lookup
 
 # execute the functions to read the data
 # (each function only gets executed if its output variable is imported)
 streamflow_site_comids = get_streamflow_site_comids()
 flowline_routing = get_nhdplus_v2_flowline_routing()
 aq_codes_dict = get_aq_cd_names()
+gwlevels_col_renames = get_gwlevels_col_renames()

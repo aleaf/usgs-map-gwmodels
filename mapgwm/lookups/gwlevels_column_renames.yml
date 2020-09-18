@@ -1,0 +1,23 @@
+# Default column renames for gw level source data
+# columns from the source data (left) are renamed
+# to the names on the right
+# data columns in "monthly rollup"
+SITE_BADGE: site_no
+DEC_LAT_VA: lat
+DEC_LONG_VA: lon
+MONTHLY_LEV_ALT_VA: head_m
+MONTHLY_STDEV_LEV_ALT_VA: head_std_m
+MONTHLY_LAST_LEV_ALT_VA: last_head_m
+MONTHLY_LEV_COUNT: n
+YEAR: year
+MONTH: month
+# columns in version with statistical estimates
+LEV_DT: datetime
+EST_LEV_ALT_STDEV: head_std_m
+# metadata column renames
+WELL_DEPTH_VA: well_depth
+OPEN_TOP_VA: screen_top
+OPEN_BOTTOM_VA: screen_botm
+ALT_VA: well_el_m
+AQFR_CD: aqfr_cd
+NAT_AQFR_CD: nat_aqfr_cd

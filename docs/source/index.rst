@@ -22,18 +22,15 @@ usgs-map-gwmodels |version|
 
 .. toctree::
   :maxdepth: 1
-  :caption: Code reference
+  :caption: Reference
 
-   Modules <api/index>
-
-.. toctree::
-  :maxdepth: 1
-  :caption: Release history
-
+   Code reference <api/index>
+   Input Data Descriptions <inputs>
    Release History <release-history>
+   Contributing to usgs-map-gwmodels <contributing>
 
 .. toctree::
   :maxdepth: 1
-  :caption: Developer
+  :caption: Bibliography
 
-  Contributing to usgs-map-gwmodels <contributing>
+   References cited <references>

@@ -28,7 +28,9 @@ aquifer_code_names:
 # mapping of local aquifer codes to
 # to embayment-wide aquifer names
 regional_aquifer:
+  110ALVM: mrva  # for the purposes of MAP modeling (this may inadvertently lump alluvium outside of the MAP)
   112MRVA: mrva
+  112MRVAA: mrva
   123FRHL: vicksburg  # Forest Hills Sands (Kathy classifies this as Vicksburg)
   124CCKF: upper claiborne  # Cockfield Formation of Claiborne Group
   124CKFJ: upper claiborne  # Cockfield Through Jackson Formations
