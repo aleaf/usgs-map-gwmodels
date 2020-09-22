@@ -23,14 +23,26 @@ aquifer_code_names:
   112ALVL: Alluvial Aquifers Undifferentiated
   124WLCX: Wilcox Group 
   124FRPL: Fort Pillow Sand of Wilcox Group
+  110QRNR: Quaternary System
+  111ALVM: Holocene Alluvium
+  111HLCN: Holocene Series
+  112LOSS: Loess
+  112ORVA: Ouachita River Alluvial Aquifer
+  112TRRC: Terrace Deposits
   N100MSRVVL: MRVA
 
 # mapping of local aquifer codes to
 # to embayment-wide aquifer names
 regional_aquifer:
   110ALVM: mrva  # for the purposes of MAP modeling (this may inadvertently lump alluvium outside of the MAP)
-  112MRVA: mrva
+  112MRVA: mrva  # for the 3-layer model, this just means that observations get put in the top layer
   112MRVAA: mrva
+  110QRNR: mrva
+  111ALVM: mrva
+  111HLCN: mrva
+  112LOSS: mrva
+  112ORVA: mrva
+  112TRRC: mrva
   123FRHL: vicksburg  # Forest Hills Sands (Kathy classifies this as Vicksburg)
   124CCKF: upper claiborne  # Cockfield Formation of Claiborne Group
   124CKFJ: upper claiborne  # Cockfield Through Jackson Formations
