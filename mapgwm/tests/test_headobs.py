@@ -18,8 +18,9 @@ def test_preprocess_headobs(test_output_folder, test_data_path):
            }
 
     # read the data
-    data, metadata = get_data(data_file, metadata_file)
-    data, metadata = preprocess_headobs(data, metadata,
+    data_orig, metadata_orig = get_data(data_file, metadata_file)
+    data, metadata = preprocess_headobs(data_orig, metadata_orig,
+                                        head_data_columns=['head', 'last_head'],
                                         data_length_units='feet',
                                         active_area=os.path.join(test_data_path, 'extents/MERAS_Extent.shp'),
                                         src_crs=4269, dest_crs=5070,
@@ -28,8 +29,15 @@ def test_preprocess_headobs(test_output_folder, test_data_path):
     assert os.path.exists(os.path.join(test_output_folder, 'preprocessed_monthly_output_info.shp'))
     assert os.path.exists(os.path.join(test_output_folder, 'preprocessed_monthly_output_info.csv'))
     assert np.all(data.columns ==
-                  ['site_no', 'datetime', 'head_m', 'last_head_m', 'head_std_m', 'n', 'obsprefix'])
+                  ['site_no', 'datetime', 'head', 'last_head', 'head_std', 'n', 'obsprefix'])
     assert metadata.index.name == 'site_no'
     assert not any(set(data.obsprefix).difference(metadata.obsprefix))
-    assert not any({'x_5070', 'y_5070', 'screen_botm', 'screen_top',
+    assert not any({'x', 'x', 'screen_botm', 'screen_top',
                     'category', 'group'}.difference(metadata.columns))
+    # unit conversion was applied evenly
+    assert np.allclose(data['head'].values, data.last_head.values, rtol=0.1)
+    assert np.allclose(metadata['head'].values, metadata.last_head.values, rtol=0.1)
+    assert np.allclose(np.nanmean(data_orig.head_std)/np.nanmean(data.head_std), 3.28, rtol=0.1)
+
+    # no negative open intervals
+    assert not np.any((metadata.screen_top - metadata.screen_botm) < 0)

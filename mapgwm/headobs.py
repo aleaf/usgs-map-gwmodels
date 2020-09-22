@@ -210,7 +210,7 @@ def get_data(data_file, metadata_files, aquifer_names=None,
     return data, metadata
 
 
-def preprocess_headobs(data, metadata, head_data_columns=['head_m', 'last_head_m'],
+def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', 'head_std'],
                        dem=None, dem_units='meters',
                        start_date='1998-04-01', active_area=None,
                        active_area_id_column=None,
@@ -230,9 +230,10 @@ def preprocess_headobs(data, metadata, head_data_columns=['head_m', 'last_head_m
     metadata : DataFrame
         Well information
     head_data_columns : list of strings
-        Columns in data with head values.
-        By default, 'head_m', 'last_head_m', which allows both
-        the average and last head values for the stress period to be considered.
+        Columns in data with head values or their statistics.
+        By default, 'head', 'last_head', 'head_std', which allows both
+        the average and last head values for the stress period to be considered,
+        as well as the variability of water levels contributing to an average value.
     dem : str, optional
         DEM raster of the land surface. Used for estimating missing wellhead elevations.
         Any reprojection to dest_crs is handled automatically, assuming
@@ -340,7 +341,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head_m', 'last_head_m
     # collapse dataset to mean values at each site
     groups = df.groupby('site_no')
     well_info = groups.mean().copy()
-    well_info = well_info.join(metadata, rsuffix='_met')
+    well_info = well_info.join(metadata, rsuffix='_meta')
     well_info['start_dt'] = groups.datetime.min()
     well_info['end_dt'] = groups.datetime.max()
     well_info.drop(labels=['year', 'month'], axis=1, inplace=True)
@@ -348,8 +349,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head_m', 'last_head_m
     # project x, y to model crs
     x_pr, y_pr = project((well_info.lon.values, well_info.lat.values), src_crs, dest_crs)
     well_info.drop(['lon', 'lat'], axis=1, inplace=True)
-    xcol, ycol = 'x_{}'.format(dest_crs), 'y_{}'.format(dest_crs)
-    well_info[xcol], well_info[ycol] = x_pr, y_pr
+    well_info['x'], well_info['y'] = x_pr, y_pr
     well_info['geometry'] = [Point(x, y) for x, y in zip(x_pr, y_pr)]
 
     # cull data to that within the model area
@@ -369,23 +369,24 @@ def preprocess_headobs(data, metadata, head_data_columns=['head_m', 'last_head_m
         df_within = df.site_no.isin(well_info.index)
         df = df.loc[df_within]
 
-    # convert to meters; convert screen tops and botms to depths
-    missing_elevations = well_info.well_el_m.isna()
+    # convert length units; convert screen tops and botms to depths
+    missing_elevations = well_info.well_el.isna()
     if dem is not None and np.any(missing_elevations):
-        well_location_elevations = get_values_at_points(dem, well_info[xcol], well_info[ycol], points_crs=dest_crs)
+        well_location_elevations = get_values_at_points(dem, well_info['x'], well_info['y'], points_crs=dest_crs)
         well_location_elevations *= convert_length_units(dem_units, model_length_units)
-        well_info.loc[missing_elevations, 'well_el_m'] = well_location_elevations[missing_elevations]
+        well_info.loc[missing_elevations, 'well_el'] = well_location_elevations[missing_elevations]
 
-    for col in ['well_el_m', 'head_m', 'head_std_m', 'screen_top', 'screen_botm']:
+    length_columns = ['well_el'] + head_data_columns + ['screen_top', 'screen_botm']
+    for col in length_columns:
         if col in well_info.columns:
             well_info[col] *= unit_conversion
 
-    well_info['well_botm'] = well_info['well_el_m'] - well_info['well_depth']
-    well_info['screen_top'] = well_info['well_el_m'] - well_info['screen_top']
-    well_info['screen_botm'] = well_info['well_el_m'] - well_info['screen_botm']
+    well_info['well_botm'] = well_info['well_el'] - well_info['well_depth']
+    well_info['screen_top'] = well_info['well_el'] - well_info['screen_top']
+    well_info['screen_botm'] = well_info['well_el'] - well_info['screen_botm']
 
     # just the data, site numbers, times and aquifer
-    head_data_columns = head_data_columns + ['head_std_m']
+    head_data_columns = head_data_columns + ['head_std']
     transient_cols = ['site_no', 'datetime'] + head_data_columns + ['n']
     transient_cols = [c for c in transient_cols if c in df.columns]
     df = df[transient_cols].copy()
@@ -396,13 +397,13 @@ def preprocess_headobs(data, metadata, head_data_columns=['head_m', 'last_head_m
     # #### trim down to only well_info with both estimated water levels and standard deviation
     # monthly measured levels may not have standard deviation
     # (as opposed to monthly statistical estimates)
-    criteria = pd.notnull(well_info['head_m'])
-    if 'head_std_m' in df.columns:
-        criteria = criteria & pd.notnull(well_info['head_std_m'])
+    criteria = pd.notnull(well_info['head'])
+    if 'head_std' in df.columns:
+        criteria = criteria & pd.notnull(well_info['head_std'])
     well_info = well_info[criteria]
 
     # verify that all well_info have a wellhead elevation
-    assert not np.any(np.isnan(well_info.well_el_m))
+    assert not np.any(np.isnan(well_info.well_el))
 
     # categorize wells based on quality of open interval information
     # estimate missing open intervals where possible
@@ -418,8 +419,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head_m', 'last_head_m
                       .format(np.sum(~has_metadata)))
         df = df.loc[has_metadata].copy()
 
-    # make unique n-character names for each observation
-    # names indicate site location
+    # make unique n-character prefixes (site identifiers) for each observation location
     # 13 character length allows for prefix_yyyymmm in 20 character observation names
     # (BeoPEST limit)
     unique_obsnames = set()
@@ -447,7 +447,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head_m', 'last_head_m
             well_info.loc[within, 'group'] = name
 
     # save out the results
-    df2shp(well_info.drop(['x_5070', 'y_5070'], axis=1),
+    df2shp(well_info.drop(['x', 'y'], axis=1),
            out_shapefile, index=True, crs=dest_crs)
     print('writing {}'.format(out_info_csvfile))
     well_info.drop('geometry', axis=1).to_csv(out_info_csvfile, index=True, float_format='%.2f')
@@ -538,8 +538,8 @@ def fill_well_open_intervals(well_info, out_plot='open_interval_lengths.pdf'):
     plt.close()
     median = open_interval_length.median()
     ind = well_info.category == 2
-    well_info.loc[ind, 'top'] = well_info.loc[ind, 'well_depth'] - median
-    well_info.loc[ind, 'botm'] = well_info.loc[ind, 'well_depth']
+    well_info.loc[ind, 'top'] = well_info.loc[ind, 'well_botm'] + median
+    well_info.loc[ind, 'botm'] = well_info.loc[ind, 'well_botm']
 
     # verify that the assigned top and bottom depths are consistent with
     # original columns
