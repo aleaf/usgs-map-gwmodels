@@ -1,16 +1,4 @@
-API reference
---------------
-
-Model classes
---------------
-
-.. toctree::
-
-   mapgwm.swuds
-   mapgwm.thermal
-
-
-Supporting modules
+Modules
 -------------------
 
 .. toctree::
@@ -21,6 +9,8 @@ Supporting modules
    mapgwm.lookups
    mapgwm.nhdplus
    mapgwm.swb
-   
+   mapgwm.swuds
+   mapgwm.thermal
+
   
    

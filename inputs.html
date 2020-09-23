@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Additional description of input data &mdash; usgs-map-gwmodels 0.post30.dev0+g9e3f5cc documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release History" href="release-history.html" />
+    <link rel="prev" title="mapgwm.ThermalUse Class" href="api/mapgwm.thermal.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> usgs-map-gwmodels
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post30.dev0+g9e3f5cc
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage.html"> More details on how to use the package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="api/index.html"> Code reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> Input Data Descriptions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#head-observation-input">Head Observation Input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aquifer-code-names">Aquifer Code Names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#regional-aquifer-code-names">Regional Aquifer Code Names</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="references.html"> References cited</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">usgs-map-gwmodels</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Additional description of input data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/inputs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="additional-description-of-input-data">
+<h1>Additional description of input data<a class="headerlink" href="#additional-description-of-input-data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="head-observation-input">
+<h2>Head Observation Input<a class="headerlink" href="#head-observation-input" title="Permalink to this headline">¶</a></h2>
+<p>Description of input fields for groundwater level times series:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#   SITE_BADGE         -- Agency code and site identification number</span>
+<span class="c1">#   DEC_LAT_VA         -- Decimal latitude in North American Datum of 1983 (NAD83)</span>
+<span class="c1">#   DEC_LONG_VA        -- Decimal longitude in North American Datum of 1983 (NAD83)</span>
+<span class="c1">#   YEAR               -- The calender year of the groundwater level(s)</span>
+<span class="c1">#   MONTH              -- The month of the groundwater level(s)</span>
+<span class="c1">#   MONTHLY_LEV_ALT_VA -- The monthly mean rollup of the water-level altitudes(s)</span>
+<span class="c1">#   MONTHLY_STDEV_LEV_ALT_VA -- The monthly standard deviation of the water-level altitudes(s) (NA if sample of size 1)</span>
+<span class="c1">#   MONTHLY_LAST_LEV_ALT_VA -- The last water-level altitude for whatever the latest observation was in the month</span>
+<span class="c1">#   MONTHLY_LEV_COUNT  -- The water-level count in the month and can exceed days in the month (see documentation)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Description of input fields for groundwater level metadata:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#   SITE_BADGE         -- Agency code and site identification number</span>
+<span class="c1">#   AGENCY_CD          -- Agency code</span>
+<span class="c1">#   SITE_NO            -- Site identification number</span>
+<span class="c1">#   OPEN_COUNT         -- Number of openings</span>
+<span class="c1">#   OPEN_TOP_VA        -- Minimum top opening (screen) of the well and is a depth below land surface, in feet</span>
+<span class="c1">#   OPEN_BOTTOM_VA     -- Maximum bottom opening (screen) of the well and is a depth below land surface, in feet</span>
+<span class="c1">#   OPEN_TOTAL_VA      -- Difference between OPEN_TOP_VA and OPEN_BOTTOM_VA, in feet</span>
+<span class="c1">#   CSNG_COUNT         -- Number of casings</span>
+<span class="c1">#   CSNG_TOP_VA        -- Minimum top casing of the well and is a depth below land surface, in feet</span>
+<span class="c1">#   CSNG_BOTTOM_VA     -- Maximum bottom casing of the well and is a depth below land surface, in feet</span>
+<span class="c1">#   GEOH_COUNT         -- The number of lithologic records for a well</span>
+<span class="c1">#   LITH_TOP_VA        -- Minimum top of lithology and is a depth below land surface, in feet</span>
+<span class="c1">#   LITH_BOTTOM_VA     -- Maximum bottom of lithology and is a depth below land surface, in feet</span>
+<span class="c1">#   HOLE_COUNT         -- Number of holes</span>
+<span class="c1">#   HOLE_TOP_VA        -- Minimum top hole opening and is a depth below land surface, in feet</span>
+<span class="c1">#   HOLE_BOTTOM_VA     -- Maximum bottom hole opening and is a depth below land surface, in feet</span>
+<span class="c1">#   STATION_NM         -- Site name</span>
+<span class="c1">#   DEC_LAT_VA         -- Decimal latitude in North American Datum of 1983 (NAD83)</span>
+<span class="c1">#   DEC_LONG_VA        -- Decimal longitude in North American Datum of 1983 (NAD83)</span>
+<span class="c1">#   HORZ_DATUM         -- The horizontal datum and exclusively North American Datum of 1983 (NAD83)</span>
+<span class="c1">#   COORD_METH_CD      -- Latitude-longitude method</span>
+<span class="c1">#   COORD_ACY_CD       -- Latitude-longitude accuracy</span>
+<span class="c1">#   LAND_NET_DS        -- Land net location description</span>
+<span class="c1">#   COUNTRY_CD         -- Country code</span>
+<span class="c1">#   STATE_CD           -- State code</span>
+<span class="c1">#   COUNTY_CD          -- County code</span>
+<span class="c1">#   ALT_VA             -- Altitude of land surface</span>
+<span class="c1">#   ALT_METH_CD        -- Method altitude determined</span>
+<span class="c1">#   ALT_ACY_VA         -- Altitude accuracy</span>
+<span class="c1">#   ALT_DATUM_CD       -- Altitude datum code</span>
+<span class="c1">#   HUC_CD             -- Hydrologic unit code</span>
+<span class="c1">#   SITE_TP_CD         -- Site type code</span>
+<span class="c1">#   CONSTRUCTION_DT    -- Construction date and time</span>
+<span class="c1">#   RELIABILITY_CD     -- Reliability of the data available for the well</span>
+<span class="c1">#   AQFR_CD            -- Local aquifer code</span>
+<span class="c1">#   NAT_AQFR_CD        -- National aquifer code</span>
+<span class="c1">#   SITE_USE_1_CD      -- Site use no. 1 code</span>
+<span class="c1">#   SITE_USE_2_CD      -- Site use no. 2 code</span>
+<span class="c1">#   SITE_USE_3_CD      -- Site use no. 3 code</span>
+<span class="c1">#   WATER_USE_1_CD     -- Water use no. 1 code</span>
+<span class="c1">#   WATER_USE_2_CD     -- Water use no. 2 code</span>
+<span class="c1">#   WATER_USE_3_CD     -- Water use no. 3 code</span>
+<span class="c1">#   NAT_WATER_USE_CD   -- National water use code</span>
+<span class="c1">#   AQFR_TYPE_CD       -- Local aquifer type code</span>
+<span class="c1">#   WELL_DEPTH_VA      -- Well depth, in feet</span>
+<span class="c1">#   HOLE_DEPTH_VA      -- Total hole depth, in feet</span>
+<span class="c1">#   OTID_ID            -- Other identifiers for a well</span>
+<span class="c1">#   PROJ_EASTING       -- Projected easting coordinate of DEC_LONG_VA</span>
+<span class="c1">#   PROJ_NORTHING      -- Projected northing coordinate of DEC_LAT_VA</span>
+<span class="c1">#   IS_NWIS            -- Are any measurements in the USGS National Water Information System</span>
+<span class="c1">#   AQFR_BOTTOM_ALT_VA -- Altitude of aquifer bottom (not depth below land surface), in feet</span>
+<span class="c1">#   AQFR_TOP_ALT_VA    -- Altitude of aquifer top (not depth below land surface), in feet</span>
+<span class="c1">#   AQFR_ALT_DATUM_CD  -- Vertical datum code of the aquifer bottom and top</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="aquifer-code-names">
+<h2>Aquifer Code Names<a class="headerlink" href="#aquifer-code-names" title="Permalink to this headline">¶</a></h2>
+<p>Local aquifer codes are mapped to the following names</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">124SPRT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Sparta Sand</span> 
+<span class="nt">110ALVM</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Quaternary Alluvium</span> 
+<span class="nt">124MUWX</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Meridian-Upper Wilcox Aquifer</span> 
+<span class="nt">111ALVM</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Holocene Alluvium</span> 
+<span class="nt">124MMPS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Memphis Sand</span> 
+<span class="nt">112TRRC</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Terrace Deposits</span>
+<span class="nt">211MCNR</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">McNairy Formation</span> 
+<span class="nt">124WLCXG</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Wilcox Group</span> 
+<span class="nt">12405MP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">500-foot Sand (Memphis Aquifer)</span> 
+<span class="nt">112MRVA</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MRVA</span> 
+<span class="nt">112MRVAA</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MRVA</span>
+<span class="nt">112VLTR</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Valley Trains Pleistocene</span>
+<span class="nt">112ACFL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Atchafalaya Aquifer</span>
+<span class="nt">112ORVA</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ouachita River Alluvial Aquifer</span>
+<span class="nt">110QRNR</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Quaternary System</span>
+<span class="nt">112ABVL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Abbeville Aquifer Pleistocene Age</span>
+<span class="nt">112PRIR</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Prairie Formation</span>
+<span class="nt">112LOSS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Loess</span>
+<span class="nt">111HLCN</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Holocene Series</span>
+<span class="nt">112ALVL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Alluvial Aquifers Undifferentiated</span>
+<span class="nt">124WLCX</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Wilcox Group</span> 
+<span class="nt">124FRPL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Fort Pillow Sand of Wilcox Group</span>
+<span class="nt">110QRNR</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Quaternary System</span>
+<span class="nt">111ALVM</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Holocene Alluvium</span>
+<span class="nt">111HLCN</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Holocene Series</span>
+<span class="nt">112LOSS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Loess</span>
+<span class="nt">112ORVA</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Ouachita River Alluvial Aquifer</span>
+<span class="nt">112TRRC</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Terrace Deposits</span>
+<span class="nt">N100MSRVVL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MRVA</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="regional-aquifer-code-names">
+<h2>Regional Aquifer Code Names<a class="headerlink" href="#regional-aquifer-code-names" title="Permalink to this headline">¶</a></h2>
+<p>For the purposes of the MAP project, local aquifer codes
+are generalized to the following names that represent the equivalent unit(s)
+across the Mississippi Embayment:</p>
+<blockquote>
+<div><div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">110ALVM</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>  <span class="c1"># for the purposes of MAP modeling (this may inadvertently lump alluvium outside of the MAP)</span>
+<span class="nt">112MRVA</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>  <span class="c1"># for the 3-layer model, this just means that observations get put in the top layer</span>
+<span class="nt">112MRVAA</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>
+<span class="nt">110QRNR</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>
+<span class="nt">111ALVM</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>
+<span class="nt">111HLCN</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>
+<span class="nt">112LOSS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>
+<span class="nt">112ORVA</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>
+<span class="nt">112TRRC</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mrva</span>
+<span class="nt">123FRHL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">vicksburg</span>  <span class="c1"># Forest Hills Sands (Kathy classifies this as Vicksburg)</span>
+<span class="nt">124CCKF</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">upper claiborne</span>  <span class="c1"># Cockfield Formation of Claiborne Group</span>
+<span class="nt">124CKFJ</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">upper claiborne</span>  <span class="c1"># Cockfield Through Jackson Formations</span>
+<span class="nt">124CCKFJ</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">upper claiborne</span>  <span class="c1"># Cockfield Through Jackson Formations, undivided</span>
+<span class="nt">12405MP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124BGFD</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124LRDO</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124MMPS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124QCSP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124QNCT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124RKLW</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124SPRT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124WCHS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124SPAR</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124SPT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124SPRT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124WNSB</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124LSBN</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="nt">124SPRTC</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle clairborne</span>
+<span class="c1"># lower claiborne and upper wilcox are difficult to differentiate</span>
+<span class="c1"># the &#39;lower claiborne&#39; classification therefore covers both</span>
+<span class="nt">112MUWX</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Meridian-Upper Wilcox Aquifer</span>
+<span class="nt">124CPRS</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Cypress Aquifer</span>
+<span class="nt">124CRRZ</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Carrizo Sand</span>
+<span class="nt">124CZWX</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Carrizo Sand and Wilcox Group, Undifferentiated</span>
+<span class="nt">124MRDN</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Meridian Sand Member of Tallahatta Formation</span>
+<span class="nt">124MUWX</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Meridian-Upper Wilcox Aquifer</span>
+<span class="nt">124WLCX</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Wilcox Group</span>
+<span class="nt">124TLLT</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Tallahatta Formation</span>
+<span class="nt">124BSCC</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Basic City Shale Member of Tallahatta Formation</span>
+<span class="nt">124CRWL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower claiborne</span>  <span class="c1"># Carrizo-Wilcox Aquifer</span>
+<span class="nt">124WLCXM</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">middle wilcox</span>
+<span class="c1"># lower wilcox units</span>
+<span class="nt">124FRPL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower wilcox</span>  <span class="c1"># Fort Pillow Sand of Wilcox Group</span>
+<span class="nt">12414MP</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower wilcox</span>  <span class="c1"># 1400-foot Sand of Memphis Area (local name for Fort Pillow)</span>
+<span class="nt">124WLCXL</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lower wilcox</span>  <span class="c1"># Lower Wilcox Aquifer</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="release-history.html" class="btn btn-neutral float-right" title="Release History" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="api/mapgwm.thermal.html" class="btn btn-neutral float-left" title="mapgwm.ThermalUse Class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">
+        Last updated on Sep 23, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

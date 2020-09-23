@@ -19,9 +19,11 @@
 ./_sources/contributing.rst.txt
 ./_sources/examples.rst.txt
 ./_sources/index.rst.txt
+./_sources/inputs.rst.txt
 ./_sources/installation.rst.txt
 ./_sources/notebooks/Example.ipynb.txt
 ./_sources/philosophy.rst.txt
+./_sources/references.rst.txt
 ./_sources/release-history.rst.txt
 ./_sources/usage.rst.txt
 ./_static/basic.css
@@ -78,12 +80,14 @@
 ./examples.html
 ./genindex.html
 ./index.html
+./inputs.html
 ./installation.html
 ./notebooks/Example.html
 ./notebooks/Example.ipynb
 ./objects.inv
 ./philosophy.html
 ./py-modindex.html
+./references.html
 ./release-history.html
 ./search.html
 ./searchindex.js

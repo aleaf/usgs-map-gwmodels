@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.lookups &mdash; usgs-map-gwmodels 0.post26.dev0+gf44f876 documentation</title>
+  <title>mapgwm.lookups &mdash; usgs-map-gwmodels 0.post30.dev0+g9e3f5cc documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post26.dev0+gf44f876
+                0.post30.dev0+g9e3f5cc
               </div>
             
           
@@ -98,19 +98,16 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../usage.html"> More details on how to use the package</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Code reference</span></p>
+<p class="caption"><span class="caption-text">Reference</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/index.html#model-classes">Model classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/index.html#supporting-modules">Supporting modules</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Release history</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html"> Code reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html"> Input Data Descriptions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html"> Contributing to usgs-map-gwmodels</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Developer</span></p>
+<p class="caption"><span class="caption-text">Bibliography</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to usgs-map-gwmodels</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html"> References cited</a></li>
 </ul>
 
             
@@ -193,6 +190,7 @@
 <span class="n">inflows_lookup_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;lookups&#39;</span><span class="p">,</span> <span class="s1">&#39;streamflow_site_comids.csv&#39;</span><span class="p">)</span>
 <span class="n">nhdplus_vs_flowline_routing</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;lookups&#39;</span><span class="p">,</span> <span class="s1">&#39;nhdplus_v2_flowline_routing.csv&#39;</span><span class="p">)</span>
 <span class="n">aquifer_codes_data</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;lookups&#39;</span><span class="p">,</span> <span class="s1">&#39;aquifer_codes.yml&#39;</span><span class="p">)</span>
+<span class="n">gwlevels_column_renames</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;lookups&#39;</span><span class="p">,</span> <span class="s1">&#39;gwlevels_column_renames.yml&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="get_nhdplus_v2_flowline_routing"><a class="viewcode-back" href="../../api/mapgwm.lookups.html#mapgwm.lookups.get_nhdplus_v2_flowline_routing">[docs]</a><span class="k">def</span> <span class="nf">get_nhdplus_v2_flowline_routing</span><span class="p">():</span>
@@ -230,17 +228,23 @@
     <span class="n">lookup</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">lookup</span><span class="o">.</span><span class="n">site_no</span><span class="p">,</span> <span class="n">lookup</span><span class="o">.</span><span class="n">comid</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">lookup</span></div>
 
+
 <div class="viewcode-block" id="get_aq_cd_names"><a class="viewcode-back" href="../../api/mapgwm.lookups.html#mapgwm.lookups.get_aq_cd_names">[docs]</a><span class="k">def</span> <span class="nf">get_aq_cd_names</span><span class="p">():</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">aquifer_codes_data</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">AQ</span><span class="p">:</span>
         <span class="n">lookup</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">AQ</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">lookup</span></div>
 
+<div class="viewcode-block" id="get_gwlevels_col_renames"><a class="viewcode-back" href="../../api/mapgwm.lookups.html#mapgwm.lookups.get_gwlevels_col_renames">[docs]</a><span class="k">def</span> <span class="nf">get_gwlevels_col_renames</span><span class="p">():</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gwlevels_column_renames</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="n">lookup</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lookup</span></div>
 
 <span class="c1"># execute the functions to read the data</span>
 <span class="c1"># (each function only gets executed if its output variable is imported)</span>
 <span class="n">streamflow_site_comids</span> <span class="o">=</span> <span class="n">get_streamflow_site_comids</span><span class="p">()</span>
 <span class="n">flowline_routing</span> <span class="o">=</span> <span class="n">get_nhdplus_v2_flowline_routing</span><span class="p">()</span>
 <span class="n">aq_codes_dict</span> <span class="o">=</span> <span class="n">get_aq_cd_names</span><span class="p">()</span>
+<span class="n">gwlevels_col_renames</span> <span class="o">=</span> <span class="n">get_gwlevels_col_renames</span><span class="p">()</span>
 </pre></div>
 
            </div>
