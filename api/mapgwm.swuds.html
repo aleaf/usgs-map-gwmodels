@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.Swuds Class &mdash; usgs-map-gwmodels 0.post25.dev0+g376fe7f documentation</title>
+  <title>mapgwm.Swuds Class &mdash; usgs-map-gwmodels 0.post26.dev0+gf44f876 documentation</title>
   
 
   
@@ -40,7 +40,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mapgwm.check_input_datasets module" href="mapgwm.checkdatasets.html" />
+    <link rel="next" title="mapgwm.ThermalUse Class" href="mapgwm.thermal.html" />
     <link rel="prev" title="API reference" href="index.html" /> 
 </head>
 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post25.dev0+g376fe7f
+                0.post26.dev0+gf44f876
               </div>
             
           
@@ -105,6 +105,7 @@
 <li class="toctree-l1"><a class="reference internal" href="index.html">API reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html#model-classes">Model classes</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.Swuds Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.thermal.html">mapgwm.ThermalUse Class</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="index.html#supporting-modules">Supporting modules</a></li>
@@ -214,7 +215,8 @@
 <em class="property">class </em><code class="sig-prename descclassname">mapgwm.swuds.</code><code class="sig-name descname">Swuds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xlsx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sheet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">csvfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cols</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">epsg</span><span class="o">=</span><span class="default_value">5070</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Code for preprocessing non-agricultural water use information
-into clean CSV input to MODFLOW setup. Includes logic to fill missing  data,
+into clean CSV input to MODFLOW setup. Class excludes AQ, IR, and TE
+water use from a swuds excel dataset. Includes logic to fill missing  data,
 as data at many sites are limited to survey years (e.g. 2010 and 2015).</p>
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.__init__">
@@ -347,7 +349,30 @@ information</p>
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.fix_path">
 <em class="property">static </em><code class="sig-name descname">fix_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.fix_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.fix_path" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convert simple path string with forward slashes
+to a path used by python using os.path.join().  This
+function allows the user to specify a path in the
+yaml file simply, for example:
+d:/home/MAP/source_data/wateruse.csv</p>
+<p>The string is split on ‘/’ and resulting list
+is passed to os.path.join().  If the first entry
+has a colon, then os.path.join(entry[0], os.path.sep)
+is used to specify a windows drive properly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data_path: str</strong></dt><dd><p>path read from yaml file</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>data_path: str</dt><dd><p>path built using os.path.join()</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.from_yaml">
@@ -364,7 +389,7 @@ produce the processed csv file.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>swuds: Swuds object</dt><dd><p>returns a Swuds object and also generates processed csv file
+<dt>wu: Swuds object</dt><dd><p>returns a Swuds object and also generates processed csv file
 specified in the yaml file.</p>
 </dd>
 </dl>
@@ -374,7 +399,7 @@ specified in the yaml file.</p>
 
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.make_production_zones">
-<code class="sig-name descname">make_production_zones</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zonelist</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.make_production_zones"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.make_production_zones" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">make_production_zones</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zonelist</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'SITE_NO'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.make_production_zones"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.make_production_zones" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make dictionary attributes for production zones.
 These are used to assign individual wells to production zones.
 The defaultdict is keyed by zone_name and then SITE_NO.</p>
@@ -390,6 +415,9 @@ list with [zone_name, zone_top, zone_bot]</p>
 </dd>
 <dt><strong>zone_bot: str</strong></dt><dd><p>path to raster to bottom of zone</p>
 </dd>
+<dt><strong>key: str</strong></dt><dd><p>key (column name) to use in the resulting
+parameter zone dictionaries.  Defaults to SITE_NO</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -397,12 +425,17 @@ list with [zone_name, zone_top, zone_bot]</p>
 
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.reproject">
-<code class="sig-name descname">reproject</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.reproject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.reproject" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">reproject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">long</span><span class="o">=</span><span class="default_value">'FROM_DEC_LONG_VA'</span></em>, <em class="sig-param"><span class="n">lat</span><span class="o">=</span><span class="default_value">'FROM_DEC_LAT_VA'</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'SITE_NO'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.reproject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.reproject" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reproject from lat/lon to self.epsg using gisutils</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>None</strong></dt><dd></dd>
+<dt><strong>long: str</strong></dt><dd><p>string variable name (column in dataframe) with longitude for input</p>
+</dd>
+<dt><strong>lat: str</strong></dt><dd><p>string variable name (column in dataframe) with latitude</p>
+</dd>
+<dt><strong>key: str</strong></dt><dd><p>key for the dictionary made, defaults to SITE_NO</p>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -410,11 +443,13 @@ list with [zone_name, zone_top, zone_bot]</p>
 
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.sort_sites">
-<code class="sig-name descname">sort_sites</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">secondarysort</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.sort_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.sort_sites" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sort_sites</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">primarysort</span><span class="o">=</span><span class="default_value">'SITE_NO'</span></em>, <em class="sig-param"><span class="n">secondarysort</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.sort_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.sort_sites" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort the dataframe by site number and quantity, or passed parameter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>primarysort: str</strong></dt><dd><p>string to sort group groups, defaults to SITE_NO</p>
+</dd>
 <dt><strong>secondarysort: str</strong></dt><dd><p>variable in dataframe to sort SITE_NO groups, default is None</p>
 </dd>
 </dl>
@@ -434,7 +469,7 @@ list with [zone_name, zone_top, zone_bot]</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mapgwm.checkdatasets.html" class="btn btn-neutral float-right" title="mapgwm.check_input_datasets module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mapgwm.thermal.html" class="btn btn-neutral float-right" title="mapgwm.ThermalUse Class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="API reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -447,7 +482,7 @@ list with [zone_name, zone_top, zone_bot]</p>
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Sep 14, 2020.
+        Last updated on Sep 23, 2020.
       </span>
 
     </p>

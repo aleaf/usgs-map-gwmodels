@@ -7,6 +7,7 @@ Model classes
 .. toctree::
 
    mapgwm.swuds
+   mapgwm.thermal
 
 
 Supporting modules

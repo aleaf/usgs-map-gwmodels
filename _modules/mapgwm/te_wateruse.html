@@ -1,0 +1,607 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mapgwm.te_wateruse &mdash; usgs-map-gwmodels 0.post26.dev0+gf44f876 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> usgs-map-gwmodels
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post26.dev0+gf44f876
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html"> More details on how to use the package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Code reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html#model-classes">Model classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html#supporting-modules">Supporting modules</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Release history</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing to usgs-map-gwmodels</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">usgs-map-gwmodels</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mapgwm.te_wateruse</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mapgwm.te_wateruse</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+<span class="kn">from</span> <span class="nn">gisutils</span> <span class="kn">import</span> <span class="n">df2shp</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">raster</span><span class="p">,</span> <span class="n">shp2df</span>
+<span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">aq_codes_dict</span>
+<span class="kn">from</span> <span class="nn">mapgwm.swuds</span> <span class="kn">import</span> <span class="n">Swuds</span>
+
+
+<div class="viewcode-block" id="ThermalUse"><a class="viewcode-back" href="../../api/mapgwm.thermal.html#mapgwm.te_wateruse.ThermalUse">[docs]</a><span class="k">class</span> <span class="nc">ThermalUse</span><span class="p">(</span><span class="n">Swuds</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Code for preprocessing thermal electric (TE) water use information</span>
+<span class="sd">    into clean CSV input to MODFLOW setup. Original functions were hard-coded</span>
+<span class="sd">    for 2010 and 2015 data, and the input data from these years had different</span>
+<span class="sd">    column headings.  This class repeats that code, but it should be general</span>
+<span class="sd">    enough to use other data.</span>
+
+<span class="sd">    This is a derived class ecause many of the functions needed to pre-process</span>
+<span class="sd">    the data are in the Swuds() class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ThermalUse.__init__"><a class="viewcode-back" href="../../api/mapgwm.thermal.html#mapgwm.te_wateruse.ThermalUse.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlsx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">csvfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2010&#39;</span><span class="p">,</span> <span class="s1">&#39;2015&#39;</span><span class="p">],</span> 
+                 <span class="n">skiprows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">newheaders</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2010&#39;</span><span class="p">,</span> <span class="s1">&#39;2015&#39;</span><span class="p">],</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;plant_code&#39;</span><span class="p">,</span> <span class="s1">&#39;plant_code&#39;</span><span class="p">],</span>
+                 <span class="n">epsg</span><span class="o">=</span><span class="mi">5070</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Constructor for the ThermalUse class. Unlike the Swuds() class,</span>
+<span class="sd">        ThermalUse will accept a list of xlsx names, sheetnames, and csvfiles.</span>
+<span class="sd">        If multiple input datasets are sent, they are read in and combined to a single</span>
+<span class="sd">        dataframe. The cols and header parameters map the columns read to common </span>
+<span class="sd">        names used for the join.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        xlsx: str</span>
+<span class="sd">            Path to xlsx data to be read.  If xlsx file is passed, then a</span>
+<span class="sd">            selected worksheet from it will be converted to a csv file unless</span>
+<span class="sd">            the csvfile parameter is specified as None.  If a list is passed,</span>
+<span class="sd">            each will be read in, converted, and the dataframes combined.</span>
+<span class="sd">        csvfile: str</span>
+<span class="sd">            Path to csv file with data (if xlsx if None) or to a csvfile</span>
+<span class="sd">            that is created from the selected worksheet.  If xlsx is None,</span>
+<span class="sd">            then csvfile must be provided. If a list is passed,</span>
+<span class="sd">            each will be read in or used for output of the xlsx. Individual</span>
+<span class="sd">            dataframes will be combined.</span>
+<span class="sd">        sheet: str</span>
+<span class="sd">            Name of worksheet(s) in xlsx to be read, ignored if xlsx is None.</span>
+<span class="sd">            Must be a list of xlsx is a list.</span>
+<span class="sd">        cols: list of str</span>
+<span class="sd">            List of columns to read from xlsx or csv, if None all columns are read.</span>
+<span class="sd">            If &#39;[&#39;2010&#39;, &#39;2015&#39;]&#39; (which is the default if nothing is specified) the default</span>
+<span class="sd">            list of columns for 2010 and 2015 hard-coded in the script are used.  This</span>
+<span class="sd">            parameter will be a list of lists of strings if xlsx is a list and defaults or</span>
+<span class="sd">            None is not used.</span>
+<span class="sd">        skiprows: int</span>
+<span class="sd">            Number of rows to skip when reading in the xlsx file. Must be a list of ints</span>
+<span class="sd">            if xlsx is a list.</span>
+<span class="sd">        newheaders: dict</span>
+<span class="sd">            Dictionary converting column names in input to common columns </span>
+<span class="sd">            used to combine data frames. If the default is used, </span>
+<span class="sd">            dictionaries for 2010 and 2015 hard-coded </span>
+<span class="sd">            in the script are used.  This parameter will be a list of</span>
+<span class="sd">            dictionaries if xlsx is a list and the default is not used. </span>
+<span class="sd">            If None is passed the column names are not changed.</span>
+<span class="sd">        keys: str</span>
+<span class="sd">            keys used to join dataframes into a single dataframe, pass None if only</span>
+<span class="sd">            one dataset is read in.  Defaults to plant_code used in 2010, 2015 datasets.</span>
+<span class="sd">        epsg: int</span>
+<span class="sd">            valid epsg code for coordinate system used in column name in df_swuds.  </span>
+<span class="sd">            Defaults to 5070 - Albers</span>
+
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        same as the Swuds() class.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># set some attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monthly_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;JAN_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;FEB_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;MAR_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;APR_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;MAY_VAL&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;JUN_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;JUL_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;AUG_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;SEP_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;OCT_VAL&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;NOV_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;DEC_VAL&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aquifer_names</span> <span class="o">=</span> <span class="n">aq_codes_dict</span><span class="p">[</span><span class="s1">&#39;aquifer_code_names&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regional_aquifers</span> <span class="o">=</span> <span class="n">aq_codes_dict</span><span class="p">[</span><span class="s1">&#39;regional_aquifer&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_start_dt</span> <span class="o">=</span> <span class="s1">&#39;2008-01-01&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_end_dt</span> <span class="o">=</span> <span class="s1">&#39;2017-12-31&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_screen_len</span> <span class="o">=</span> <span class="mf">50.</span> <span class="o">*</span> <span class="mf">0.3028</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsg</span> <span class="o">=</span> <span class="n">epsg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_bot_m</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1"># set defaults for 2010 and 2015</span>
+        <span class="n">default2010</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PLANT CODE&#39;</span><span class="p">,</span> <span class="s1">&#39;NAME OF WATER SOURCE&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;Latitude, decimal degrees&#39;</span><span class="p">,</span><span class="s1">&#39;Longitude, decimal degrees&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;USGS WATER SOURCE CODE&#39;</span><span class="p">,</span><span class="s1">&#39;USGS-Estimated Annual Withdrawal (Mgal/d)&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;USGS-Estimated Annual Minimum Withdrawal (Mgal/d)&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;USGS-Estimated Annual Maximum Withdrawal (Mgal/d)&#39;</span><span class="p">]</span>
+        <span class="n">rename2010</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;NAME OF WATER SOURCE&#39;</span><span class="p">:</span><span class="s1">&#39;src_name&#39;</span><span class="p">,</span> <span class="s1">&#39;Latitude, decimal degrees&#39;</span><span class="p">:</span><span class="s1">&#39;lat_dd&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;Longitude, decimal degrees&#39;</span><span class="p">:</span><span class="s1">&#39;lon_dd&#39;</span><span class="p">,</span> <span class="s1">&#39;USGS WATER SOURCE CODE&#39;</span><span class="p">:</span><span class="s1">&#39;src_code&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;USGS-Estimated Annual Withdrawal (Mgal/d)&#39;</span><span class="p">:</span><span class="s1">&#39;2010_q_mgd&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;USGS-Estimated Annual Minimum Withdrawal (Mgal/d)&#39;</span><span class="p">:</span><span class="s1">&#39;2010_min_q_mgd&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;USGS-Estimated Annual Maximum Withdrawal (Mgal/d)&#39;</span><span class="p">:</span><span class="s1">&#39;2010_max_q_mgd&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;PLANT CODE&#39;</span><span class="p">:</span><span class="s1">&#39;plant_code&#39;</span><span class="p">}</span>
+        <span class="n">default2015</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EIA_PLANT_ID&#39;</span><span class="p">,</span> <span class="s1">&#39;NAME_OF_WATER_SOURCE&#39;</span><span class="p">,</span><span class="s1">&#39;LATITUDE&#39;</span><span class="p">,</span><span class="s1">&#39;LONGITUDE&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;WATER_SOURCE_CODE&#39;</span><span class="p">,</span><span class="s1">&#39;WITHDRAWAL&#39;</span><span class="p">,</span><span class="s1">&#39;MIN_WITHDRAWAL&#39;</span><span class="p">,</span><span class="s1">&#39;MAX_WITHDRAWAL&#39;</span><span class="p">]</span>
+        <span class="n">rename2015</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;NAME_OF_WATER_SOURCE&#39;</span><span class="p">:</span><span class="s1">&#39;src_name&#39;</span><span class="p">,</span> <span class="s1">&#39;LATITUDE&#39;</span><span class="p">:</span><span class="s1">&#39;lat_dd&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;LONGITUDE&#39;</span><span class="p">:</span><span class="s1">&#39;lon_dd&#39;</span><span class="p">,</span> <span class="s1">&#39;WATER_SOURCE_CODE&#39;</span><span class="p">:</span><span class="s1">&#39;src_code&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;WITHDRAWAL&#39;</span><span class="p">:</span><span class="s1">&#39;2015_q_mgd&#39;</span><span class="p">,</span> <span class="s1">&#39;MIN_WITHDRAWAL&#39;</span><span class="p">:</span><span class="s1">&#39;2015_min_q_mgd&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;MAX_WITHDRAWAL&#39;</span><span class="p">:</span><span class="s1">&#39;2015_max_q_mgd&#39;</span><span class="p">,</span> <span class="s1">&#39;EIA_PLANT_ID&#39;</span><span class="p">:</span><span class="s1">&#39;plant_code&#39;</span><span class="p">}</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">xlsx</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">xlsx</span> <span class="o">=</span> <span class="p">[</span><span class="n">xlsx</span><span class="p">]</span>
+            <span class="n">csvfile</span> <span class="o">=</span> <span class="p">[</span><span class="n">csvfile</span><span class="p">]</span>
+            <span class="n">sheet</span> <span class="o">=</span> <span class="p">[</span><span class="n">sheet</span><span class="p">]</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">cols</span><span class="p">]</span>
+            <span class="n">newheaders</span> <span class="o">=</span> <span class="p">[</span><span class="n">newheaders</span><span class="p">]</span>
+            <span class="n">skiprows</span> <span class="o">=</span> <span class="p">[</span><span class="n">skiprows</span><span class="p">]</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">keys</span><span class="p">]</span>
+
+        <span class="n">tes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">xlsx</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">usecols</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;2010&#39;</span><span class="p">,</span> <span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">usecols</span> <span class="o">=</span> <span class="n">default2010</span>
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;2015&#39;</span><span class="p">,</span> <span class="n">cols</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">usecols</span> <span class="o">=</span> <span class="n">default2015</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">usecols</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">xlsx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">csvfile</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;both xlsx and csvfile cannot be None for ThermalUse object&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">xlsx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">te</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">usecols</span><span class="o">=</span><span class="n">usecols</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">te</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">xlsx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sheet_name</span><span class="o">=</span><span class="n">sheet</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">usecols</span><span class="o">=</span><span class="n">usecols</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">csvfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">te</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># te.columns = te.columns.str.upper()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">newheaders</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="n">renamedict</span> <span class="o">=</span> <span class="n">newheaders</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;2010&#39;</span><span class="p">,</span> <span class="n">newheaders</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">renamedict</span> <span class="o">=</span> <span class="n">rename2010</span>
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;2015&#39;</span><span class="p">,</span> <span class="n">newheaders</span><span class="p">[</span><span class="n">i</span><span class="p">]):</span>
+                <span class="n">renamedict</span> <span class="o">=</span> <span class="n">rename2015</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">renamedict</span> <span class="o">=</span> <span class="kc">None</span>
+            
+            <span class="k">if</span> <span class="n">renamedict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">te</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">renamedict</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">te</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">keys</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">tes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">te</span><span class="p">)</span>
+        <span class="c1"># merge the individual dataframes if there is more than one</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">tes</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># get rid of repeated columns from concat, duplicated() returns true</span>
+            <span class="c1"># for repeated names, so select the columns not-duplicated()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()]</span>  
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="n">tes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ThermalUse.assign_monthly_production"><a class="viewcode-back" href="../../api/mapgwm.thermal.html#mapgwm.te_wateruse.ThermalUse.assign_monthly_production">[docs]</a>    <span class="k">def</span> <span class="nf">assign_monthly_production</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">year_cols</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Assign production wells for TE water use.  Overrides the method</span>
+<span class="sd">        from Swuds() class.  The TE model does not include well information, </span>
+<span class="sd">        so the production zones assigned to the object are used with the</span>
+<span class="sd">        default screen length to define the pumping interval.  If a location</span>
+<span class="sd">        does not have have production zone information, then nan is assigned</span>
+<span class="sd">        and the user will have to assign tops and bottoms to the dataframe</span>
+<span class="sd">        and final csv.  </span>
+
+<span class="sd">        Production is given in cubic m per day.</span>
+
+<span class="sd">        todo:  add unit conversion parameter so other units can be used?</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        outfile: str</span>
+<span class="sd">            path to final processed monthly TE water-use file.</span>
+<span class="sd">        year_cols: list of str</span>
+<span class="sd">            list with columns to be gathered to assign monthly values</span>
+<span class="sd">            Usually these are from 5-year TE model runs.  Should contain</span>
+<span class="sd">            a 4-digit year data that can be matched in each string. These</span>
+<span class="sd">            will correpond to the names assigned in the constructor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># pull out groundwater sites </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;src_code&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GW&#39;</span><span class="p">]</span>
+
+        <span class="c1"># get years from year_cols</span>
+        <span class="n">years</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">col_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">year_cols</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;(\d\d\d\d)&#39;</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">years</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="n">col_dict</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">m</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">col</span>
+
+        <span class="n">firstyear</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">-1-1&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">years</span><span class="p">)))</span>
+        <span class="n">midpoints</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">years</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">y</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">((</span><span class="n">years</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="n">years</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">days</span> <span class="o">=</span> <span class="n">r</span><span class="o">/</span><span class="mf">2.</span> <span class="o">*</span> <span class="mf">365.</span>
+            <span class="n">midpoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">-1-1&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">+</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">days</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;days&#39;</span><span class="p">))</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">firstyear</span>
+        
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;plant_code&#39;</span><span class="p">)</span>
+        <span class="n">all_groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">plant_code</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">]</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_start_dt</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_end_dt</span><span class="p">)</span>
+            <span class="n">parts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_start_dt</span><span class="p">)))</span>
+            <span class="n">start_datetime</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_start_dt</span><span class="p">)</span>
+
+            <span class="n">monthly_values</span><span class="o">=</span><span class="nb">dict</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
+                <span class="n">monthly_values</span><span class="p">[</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">start_date</span> <span class="o">==</span> <span class="n">firstyear</span><span class="p">,</span><span class="n">col_dict</span><span class="p">[</span><span class="n">y</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">all_dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">)</span>
+            <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">all_dates</span><span class="p">)</span>
+
+            <span class="c1"># fill empty dates</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="p">((</span><span class="n">group</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">start_datetime</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">midpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">group</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s1">&#39;q_m3d&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">monthly_values</span><span class="p">[</span><span class="n">years</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">*</span> <span class="mf">3785.4</span>   <span class="c1"># convert to m3 per day</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">midpoints</span><span class="p">)):</span>
+                <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">midpoints</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">midpoints</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="n">group</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">,</span> <span class="s1">&#39;q_m3d&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">monthly_values</span><span class="p">[</span><span class="n">years</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">*</span> <span class="mf">3785.4</span>
+
+            <span class="c1"># take the first key in the production zones if more than one</span>
+            <span class="n">prod_zone</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+            
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;screen_top_m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="p">[</span><span class="n">prod_zone</span><span class="p">][</span><span class="n">plant_code</span><span class="p">]</span>
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;screen_bot_m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="p">[</span><span class="n">prod_zone</span><span class="p">][</span><span class="n">plant_code</span><span class="p">]</span>
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;x_5070&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;x_5070&#39;</span><span class="p">])</span>
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;y_5070&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;y_5070&#39;</span><span class="p">])</span>
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;plant_code&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">plant_code</span>
+
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;plant_code&#39;</span><span class="p">,</span> <span class="s1">&#39;q_m3d&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_bot_m&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;screen_top_m&#39;</span><span class="p">,</span> <span class="s1">&#39;x_5070&#39;</span><span class="p">,</span> <span class="s1">&#39;y_5070&#39;</span><span class="p">]</span>
+            <span class="n">all_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="n">cols</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;processed TE SWUDS data written to </span><span class="si">{0}</span><span class="s1"> and in dataframe attribute&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ThermalUse.from_yaml"><a class="viewcode-back" href="../../api/mapgwm.thermal.html#mapgwm.te_wateruse.ThermalUse.from_yaml">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Read input and output files from yaml file</span>
+<span class="sd">        and run all the processing steps in the class to</span>
+<span class="sd">        produce the processed csv file.  Overrided method</span>
+<span class="sd">        from Swuds class to do the steps for </span>
+<span class="sd">        ThermalUse object. </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        yamlfile: str</span>
+<span class="sd">            path to a yaml file containing input and output information</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        te: ThermalUse object</span>
+<span class="sd">            returns a ThermalUse object and also generates processed csv file</span>
+<span class="sd">            specified in the yaml file.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yamlfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">inputs</span><span class="p">:</span>
+            <span class="n">yaml_inputs</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+        
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">ThermalUse</span><span class="o">.</span><span class="n">fix_path</span><span class="p">(</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;raw_data&#39;</span><span class="p">][</span><span class="s1">&#39;data_path&#39;</span><span class="p">])</span>
+
+        <span class="n">te_input</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;raw_data&#39;</span><span class="p">][</span><span class="s1">&#39;te_input&#39;</span><span class="p">]:</span>
+            <span class="n">te_input</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+        <span class="n">worksheets</span> <span class="o">=</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;raw_data&#39;</span><span class="p">][</span><span class="s1">&#39;worksheet&#39;</span><span class="p">]</span>
+
+        <span class="n">outcsvs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;outcsv&#39;</span><span class="p">]:</span>
+            <span class="n">outcsvs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+        
+        <span class="n">processed_csv</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">][</span><span class="s1">&#39;processed_csv&#39;</span><span class="p">])</span>
+        
+        <span class="n">dem</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;rasters&#39;</span><span class="p">][</span><span class="s1">&#39;dem&#39;</span><span class="p">])</span>
+        <span class="n">mc_top</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;rasters&#39;</span><span class="p">][</span><span class="s1">&#39;mc_top&#39;</span><span class="p">])</span>
+        <span class="n">mc_bot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;rasters&#39;</span><span class="p">][</span><span class="s1">&#39;mc_bot&#39;</span><span class="p">])</span>
+        <span class="n">lc_top</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;rasters&#39;</span><span class="p">][</span><span class="s1">&#39;lc_top&#39;</span><span class="p">])</span>
+        <span class="n">lc_bot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;rasters&#39;</span><span class="p">][</span><span class="s1">&#39;lc_bot&#39;</span><span class="p">])</span>
+
+        <span class="n">meras_shp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;shapefiles&#39;</span><span class="p">][</span><span class="s1">&#39;extent&#39;</span><span class="p">])</span>
+        <span class="n">te_shp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;shapefiles&#39;</span><span class="p">][</span><span class="s1">&#39;wells_out&#39;</span><span class="p">])</span>
+
+        <span class="c1"># make a te object</span>
+        <span class="n">te</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">xlsx</span><span class="o">=</span><span class="n">te_input</span><span class="p">,</span> 
+                    <span class="n">sheet</span><span class="o">=</span><span class="n">worksheets</span><span class="p">,</span> 
+                    <span class="n">csvfile</span><span class="o">=</span><span class="n">outcsvs</span><span class="p">,</span> 
+                    <span class="n">cols</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;raw_data&#39;</span><span class="p">][</span><span class="s1">&#39;cols&#39;</span><span class="p">],</span> 
+                    <span class="n">skiprows</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;raw_data&#39;</span><span class="p">][</span><span class="s1">&#39;skiprows&#39;</span><span class="p">],</span> 
+                    <span class="n">newheaders</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;raw_data&#39;</span><span class="p">][</span><span class="s1">&#39;newheaders&#39;</span><span class="p">],</span> 
+                    <span class="n">epsg</span><span class="o">=</span><span class="mi">5070</span><span class="p">)</span>
+
+        <span class="c1"># process</span>
+        <span class="n">te</span><span class="o">.</span><span class="n">sort_sites</span><span class="p">(</span><span class="n">primarysort</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">][</span><span class="s1">&#39;primarysort&#39;</span><span class="p">])</span>
+        <span class="n">te</span><span class="o">.</span><span class="n">reproject</span><span class="p">(</span><span class="n">long</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">][</span><span class="s1">&#39;long&#39;</span><span class="p">],</span> 
+                     <span class="n">lat</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">][</span><span class="s1">&#39;lat&#39;</span><span class="p">],</span>
+                     <span class="n">key</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">][</span><span class="s1">&#39;primarysort&#39;</span><span class="p">])</span>
+
+        <span class="n">te</span><span class="o">.</span><span class="n">apply_footprint</span><span class="p">(</span><span class="n">meras_shp</span><span class="p">,</span> <span class="n">outshp</span><span class="o">=</span><span class="n">te_shp</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">zn</span> <span class="ow">in</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;zones&#39;</span><span class="p">]:</span>
+            <span class="n">zn</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Swuds</span><span class="o">.</span><span class="n">fix_path</span><span class="p">(</span><span class="n">zn</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">zn</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">Swuds</span><span class="o">.</span><span class="n">fix_path</span><span class="p">(</span><span class="n">zn</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="n">te</span><span class="o">.</span><span class="n">make_production_zones</span><span class="p">(</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;zones&#39;</span><span class="p">],</span>
+                                 <span class="n">key</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">][</span><span class="s1">&#39;primarysort&#39;</span><span class="p">])</span>
+
+        <span class="c1"># write results to csv file and return object</span>
+        <span class="n">te</span><span class="o">.</span><span class="n">assign_monthly_production</span><span class="p">(</span><span class="n">processed_csv</span><span class="p">,</span> 
+                                     <span class="n">year_cols</span><span class="o">=</span><span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">][</span><span class="s1">&#39;year_cols&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">te</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">home</span><span class="p">),</span> <span class="s1">&#39;working_data&#39;</span><span class="p">)</span>
+    <span class="n">xlsx_2010</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;2010_thermo_model_estimates.xlsx&#39;</span><span class="p">)</span>
+    <span class="n">xlsx_2015</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;2015_te_model_estimates_lat.long_comids.xlsx&#39;</span><span class="p">)</span>
+    <span class="n">outcsv_2010</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;2010_thermo_model_estimates.csv&#39;</span><span class="p">)</span>
+    <span class="n">outcsv_2015</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;2015_thermo_model_estimates.csv&#39;</span><span class="p">)</span>
+    <span class="n">skiprows</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">worksheets</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Report_table_UPDATED&#39;</span><span class="p">,</span> <span class="s1">&#39;2015_ANNUAL_WD_CU&#39;</span><span class="p">]</span>
+
+    <span class="n">te</span> <span class="o">=</span> <span class="n">ThermalUse</span><span class="p">(</span><span class="n">xlsx</span><span class="o">=</span><span class="p">[</span><span class="n">xlsx_2010</span><span class="p">,</span> <span class="n">xlsx_2015</span><span class="p">],</span> 
+                    <span class="n">sheet</span><span class="o">=</span><span class="n">worksheets</span><span class="p">,</span> 
+                    <span class="n">csvfile</span><span class="o">=</span><span class="p">[</span><span class="n">outcsv_2010</span><span class="p">,</span> <span class="n">outcsv_2015</span><span class="p">],</span> 
+                    <span class="n">cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2010&#39;</span><span class="p">,</span> <span class="s1">&#39;2015&#39;</span><span class="p">],</span> 
+                    <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">,</span> 
+                    <span class="n">newheaders</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2010&#39;</span><span class="p">,</span> <span class="s1">&#39;2015&#39;</span><span class="p">],</span> 
+                    <span class="n">epsg</span><span class="o">=</span><span class="mi">5070</span><span class="p">)</span>
+
+    <span class="c1"># write the combined dataframe </span>
+    <span class="n">te</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;TE_combined.csv&#39;</span><span class="p">))</span>
+
+    <span class="n">dem</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;dem_mean_elevs.tif&#39;</span><span class="p">)</span>
+    <span class="n">mc_top</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;mcaq_surf.tif&#39;</span><span class="p">)</span>
+    <span class="n">mc_bot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;mccu_surf.tif&#39;</span><span class="p">)</span>
+    <span class="n">lc_top</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;lcaq_surf.tif&#39;</span><span class="p">)</span>
+    <span class="n">lc_bot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;lccu_surf.tif&#39;</span><span class="p">)</span>
+
+    <span class="n">meras_shp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MERAS_Extent.shp&#39;</span><span class="p">)</span>
+    <span class="n">wu_shp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;TE_points.shp&#39;</span><span class="p">)</span>
+    
+    <span class="n">te</span><span class="o">.</span><span class="n">sort_sites</span><span class="p">(</span><span class="n">primarysort</span><span class="o">=</span><span class="s1">&#39;plant_code&#39;</span><span class="p">)</span>
+    <span class="n">te</span><span class="o">.</span><span class="n">reproject</span><span class="p">(</span><span class="n">long</span><span class="o">=</span><span class="s1">&#39;lon_dd&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="s1">&#39;lat_dd&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;plant_code&#39;</span><span class="p">)</span>
+
+    <span class="n">te</span><span class="o">.</span><span class="n">apply_footprint</span><span class="p">(</span><span class="n">meras_shp</span><span class="p">,</span> <span class="n">outshp</span><span class="o">=</span><span class="n">wu_shp</span><span class="p">)</span>
+    
+    <span class="n">mc</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;middle_claiborne&#39;</span><span class="p">,</span> <span class="n">mc_top</span><span class="p">,</span> <span class="n">mc_bot</span><span class="p">]</span>
+    <span class="n">te</span><span class="o">.</span><span class="n">make_production_zones</span><span class="p">([</span><span class="n">mc</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;plant_code&#39;</span><span class="p">)</span>
+    
+    <span class="n">te</span><span class="o">.</span><span class="n">assign_monthly_production</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;processed_thermal.csv&#39;</span><span class="p">),</span> 
+                                 <span class="n">year_cols</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2010_q_mgd&#39;</span><span class="p">,</span> <span class="s1">&#39;2015_q_mgd&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">te</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+    <span class="c1"># try the yaml method</span>
+    <span class="n">yml_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;thermal_input.yml&#39;</span><span class="p">)</span>
+    <span class="n">te</span> <span class="o">=</span> <span class="n">ThermalUse</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">yml_file</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">te</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">
+        Last updated on Sep 23, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

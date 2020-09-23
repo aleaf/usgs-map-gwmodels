@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.swuds &mdash; usgs-map-gwmodels 0.post25.dev0+g376fe7f documentation</title>
+  <title>mapgwm.swuds &mdash; usgs-map-gwmodels 0.post26.dev0+gf44f876 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post25.dev0+g376fe7f
+                0.post26.dev0+gf44f876
               </div>
             
           
@@ -175,20 +175,24 @@
            <div itemprop="articleBody">
             
   <h1>Source code for mapgwm.swuds</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
 <span class="kn">from</span> <span class="nn">gisutils</span> <span class="kn">import</span> <span class="n">df2shp</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">raster</span><span class="p">,</span> <span class="n">shp2df</span>
 <span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">aq_codes_dict</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">re</span>
+
 
 <div class="viewcode-block" id="Swuds"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds">[docs]</a><span class="k">class</span> <span class="nc">Swuds</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Code for preprocessing non-agricultural water use information</span>
-<span class="sd">    into clean CSV input to MODFLOW setup. Includes logic to fill missing  data,</span>
+<span class="sd">    into clean CSV input to MODFLOW setup. Class excludes AQ, IR, and TE</span>
+<span class="sd">    water use from a swuds excel dataset. Includes logic to fill missing  data,</span>
 <span class="sd">    as data at many sites are limited to survey years (e.g. 2010 and 2015).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -277,7 +281,7 @@
           <span class="s2">&quot;FROM_STATE_NM&quot;</span><span class="p">,</span><span class="s2">&quot;FROM_COUNTY_NM&quot;</span><span class="p">,</span><span class="s2">&quot;FROM_CONSTRUCTION_DT&quot;</span><span class="p">,</span><span class="s2">&quot;FROM_INVENTORY_DT&quot;</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">usecols</span> <span class="o">=</span> <span class="nb">list</span>
+            <span class="n">usecols</span> <span class="o">=</span> <span class="n">cols</span>
         <span class="k">elif</span> <span class="n">cols</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">usecols</span> <span class="o">=</span> <span class="n">defaultcols</span>
         <span class="k">else</span><span class="p">:</span>
@@ -310,27 +314,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations_m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.3048</span><span class="p">))</span></div>
 
         
-<div class="viewcode-block" id="Swuds.sort_sites"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.sort_sites">[docs]</a>    <span class="k">def</span> <span class="nf">sort_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">secondarysort</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Swuds.sort_sites"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.sort_sites">[docs]</a>    <span class="k">def</span> <span class="nf">sort_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">primarysort</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">,</span> <span class="n">secondarysort</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sort the dataframe by site number and quantity, or passed parameter</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        primarysort: str</span>
+<span class="sd">            string to sort group groups, defaults to SITE_NO</span>
 <span class="sd">        secondarysort: str</span>
 <span class="sd">            variable in dataframe to sort SITE_NO groups, default is None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">secondarysort</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">,</span> <span class="n">secondarysort</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="n">primarysort</span><span class="p">,</span> <span class="n">secondarysort</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Swuds.reproject"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.reproject">[docs]</a>    <span class="k">def</span> <span class="nf">reproject</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Swuds.reproject"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.reproject">[docs]</a>    <span class="k">def</span> <span class="nf">reproject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LONG_VA&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LAT_VA&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Reproject from lat/lon to self.epsg using gisutils</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        None</span>
+<span class="sd">        long: str</span>
+<span class="sd">            string variable name (column in dataframe) with longitude for input</span>
+<span class="sd">        lat: str</span>
+<span class="sd">            string variable name (column in dataframe) with latitude </span>
+<span class="sd">        key: str</span>
+<span class="sd">            key for the dictionary made, defaults to SITE_NO</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x_reprj</span><span class="p">,</span> <span class="n">y_reprj</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_DEC_LONG_VA&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_DEC_LAT_VA&#39;</span><span class="p">]),</span> 
+        <span class="n">x_reprj</span><span class="p">,</span> <span class="n">y_reprj</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">long</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">lat</span><span class="p">]),</span> 
                                  <span class="s1">&#39;epsg:4269&#39;</span><span class="p">,</span> 
                                  <span class="s1">&#39;epsg:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span> <span class="o">=</span> <span class="n">x_reprj</span>
@@ -341,7 +352,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">),</span> <span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># make dictionary of location </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)])))))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)])))))</span></div>
         
     
 <div class="viewcode-block" id="Swuds.apply_footprint"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.apply_footprint">[docs]</a>    <span class="k">def</span> <span class="nf">apply_footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounding_shp</span><span class="p">,</span> <span class="n">outshp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -391,7 +402,7 @@
         <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span></div>
 
     
-<div class="viewcode-block" id="Swuds.make_production_zones"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.make_production_zones">[docs]</a>    <span class="k">def</span> <span class="nf">make_production_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zonelist</span><span class="p">):</span>
+<div class="viewcode-block" id="Swuds.make_production_zones"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.make_production_zones">[docs]</a>    <span class="k">def</span> <span class="nf">make_production_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zonelist</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Make dictionary attributes for production zones.</span>
 <span class="sd">        These are used to assign individual wells to production zones.</span>
 <span class="sd">        The defaultdict is keyed by zone_name and then SITE_NO.</span>
@@ -407,6 +418,9 @@
 <span class="sd">            path to raster with top of zone</span>
 <span class="sd">        zone_bot: str</span>
 <span class="sd">            path to raster to bottom of zone</span>
+<span class="sd">        key: str</span>
+<span class="sd">            key (column name) to use in the resulting</span>
+<span class="sd">            parameter zone dictionaries.  Defaults to SITE_NO</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># if only one list is passed, put it into a list.</span>
@@ -424,11 +438,11 @@
             <span class="n">lc_top</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">get_values_at_points</span><span class="p">(</span><span class="n">top_raster</span><span class="p">,</span>
                                                 <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
                                                 <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3048</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="n">lc_top</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">lc_top</span><span class="p">))</span>
             <span class="n">lc_bot</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">get_values_at_points</span><span class="p">(</span><span class="n">bot_raster</span><span class="p">,</span>
                                                 <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
                                                 <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3048</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_bot_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="n">lc_bot</span><span class="p">))</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_bot_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">lc_bot</span><span class="p">))</span></div>
             
 
 <div class="viewcode-block" id="Swuds.assign_monthly_production"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.assign_monthly_production">[docs]</a>    <span class="k">def</span> <span class="nf">assign_monthly_production</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">):</span>
@@ -452,6 +466,15 @@
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monthly_cols</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;ANNUAL_VAL&#39;</span><span class="p">]</span>
+
+        <span class="c1"># pull out groundwater sites that are not IR, AQ or TE</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;WATER_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GW&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
+                                <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;IR&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
+                                <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;AQ&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
+                                <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">)</span>
+                                <span class="p">]</span>
+
 
         <span class="c1"># reshape dataframe to have monthly values in same column</span>
         <span class="n">stacked</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">monthly_cols</span><span class="p">]</span><span class="o">.</span><span class="n">stack</span><span class="p">())</span>
@@ -540,10 +563,10 @@
                     <span class="s1">&#39;screen_bot_m&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_top_m&#39;</span><span class="p">,</span> <span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">),</span> <span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span>
             <span class="n">all_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="n">cols</span><span class="p">])</span>
 
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
-        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;processed SWUDS data written to </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;processed SWUDS data written to </span><span class="si">{0}</span><span class="s1"> and in dataframe attribute&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Swuds.from_yaml"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.from_yaml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">):</span>
@@ -558,7 +581,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        swuds: Swuds object</span>
+<span class="sd">        wu: Swuds object</span>
 <span class="sd">            returns a Swuds object and also generates processed csv file</span>
 <span class="sd">            specified in the yaml file.</span>
 
@@ -606,6 +629,27 @@
         
 <div class="viewcode-block" id="Swuds.fix_path"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.fix_path">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">fix_path</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Convert simple path string with forward slashes</span>
+<span class="sd">        to a path used by python using os.path.join().  This</span>
+<span class="sd">        function allows the user to specify a path in the</span>
+<span class="sd">        yaml file simply, for example:</span>
+<span class="sd">        d:/home/MAP/source_data/wateruse.csv</span>
+
+<span class="sd">        The string is split on &#39;/&#39; and resulting list</span>
+<span class="sd">        is passed to os.path.join().  If the first entry</span>
+<span class="sd">        has a colon, then os.path.join(entry[0], os.path.sep)</span>
+<span class="sd">        is used to specify a windows drive properly.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_path: str</span>
+<span class="sd">            path read from yaml file </span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data_path: str</span>
+<span class="sd">            path built using os.path.join()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">data_path</span><span class="p">):</span>
             <span class="n">parts</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">data_path</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
@@ -681,7 +725,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Sep 14, 2020.
+        Last updated on Sep 23, 2020.
       </span>
 
     </p>
