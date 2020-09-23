@@ -11,23 +11,23 @@ from mapgwm.framework import setup_model_layers, plot_cross_sections, plot_zone_
 def model_layers_zones(test_data_path, test_output_folder, delta_inset_model_grid):
 
     # mean dem values for each 1 km gridcell, elevation units of feet
-    dem_means_raster = os.path.join(test_data_path, 'rasters/dem_mean_elevs_1000.tif')
+    dem_means_raster = os.path.join(test_data_path, 'rasters', 'dem_mean_elevs_1000.tif')
 
     # AEM electrical resistivity-based facies classes from tempest and resolve surveys
     # (All facies classes version)
-    facies_classes_netcdf = os.path.join(test_data_path, 'netcdf/RSTM_res_fac_depth_15m.nc')
+    facies_classes_netcdf = os.path.join(test_data_path, 'netcdf', 'RSTM_res_fac_depth_15m.nc')
 
     # Original MERAS framework (1 mi resolution), elevation units of feet
     framework_rasters = [
-        os.path.join(test_data_path, 'rasters/vkbg_surf.tif'),  # Vicksburg-Jackson Group (top)
-        os.path.join(test_data_path, 'rasters/ucaq_surf.tif'),  # Upper Claiborne aquifer (top)
-        os.path.join(test_data_path, 'rasters/mccu_surf.tif'),  # Middle Claiborne confining unit (t
-        os.path.join(test_data_path, 'rasters/mcaq_surf.tif'),  # Middle Claiborne aquifer (top)
-        os.path.join(test_data_path, 'rasters/lccu_surf.tif'),  # Lower Claiborne confining unit (to
-        os.path.join(test_data_path, 'rasters/lcaq_surf.tif'),  # Lower Claiborne aquifer (top)
-        os.path.join(test_data_path, 'rasters/mwaq_surf.tif'),  # Middle Wilcox aquifer (top)
-        os.path.join(test_data_path, 'rasters/lwaq_surf.tif'),  # Lower Wilcox aquifer (top)
-        os.path.join(test_data_path, 'rasters/mdwy_surf.tif'),  # Midway confining unit (top)
+        os.path.join(test_data_path, 'rasters', 'vkbg_surf.tif'),  # Vicksburg-Jackson Group (top)
+        os.path.join(test_data_path, 'rasters', 'ucaq_surf.tif'),  # Upper Claiborne aquifer (top)
+        os.path.join(test_data_path, 'rasters', 'mccu_surf.tif'),  # Middle Claiborne confining unit (t
+        os.path.join(test_data_path, 'rasters', 'mcaq_surf.tif'),  # Middle Claiborne aquifer (top)
+        os.path.join(test_data_path, 'rasters', 'lccu_surf.tif'),  # Lower Claiborne confining unit (to
+        os.path.join(test_data_path, 'rasters', 'lcaq_surf.tif'),  # Lower Claiborne aquifer (top)
+        os.path.join(test_data_path, 'rasters', 'mwaq_surf.tif'),  # Middle Wilcox aquifer (top)
+        os.path.join(test_data_path, 'rasters', 'lwaq_surf.tif'),  # Lower Wilcox aquifer (top)
+        os.path.join(test_data_path, 'rasters', 'mdwy_surf.tif'),  # Midway confining unit (top)
     ]
     framework_unit_names = [
         'Undifferentiated sediments\nabove the Vicksburg',
@@ -55,23 +55,25 @@ def model_layers_zones(test_data_path, test_output_folder, delta_inset_model_gri
 
 
 def test_setup_model_layers(model_layers_zones, test_output_folder):
-
     output_folder = os.path.join(test_output_folder, 'framework')
-    for folder in 'figures', 'botm_array', 'zones', 'zones/rasters':
-        assert os.path.getsize(os.path.join(output_folder, folder)) > 0
-    j=2
+    for folder in 'figures', 'botm_array', 'zones', os.path.join('zones', 'rasters'):
+        flist = os.listdir(os.path.join(output_folder, folder))
+        for f in flist:
+            fullpath = os.path.join(output_folder, folder, f)
+            if os.path.isfile(fullpath):
+                assert os.path.getsize(fullpath) > 0
 
 
 def test_plot_cross_sections(model_layers_zones, test_output_folder):
     layers, zone_array = model_layers_zones
-    out_pdf = os.path.join(test_output_folder, 'framework/figures/x_sections.pdf')
+    out_pdf = os.path.join(test_output_folder, 'framework', 'figures', 'x_sections.pdf')
     plot_cross_sections(layers, out_pdf, property_data=zone_array,
                         voxel_start_layer=0)
 
 
 def test_plot_zone_maps(model_layers_zones, test_output_folder):
     layers, zone_array = model_layers_zones
-    out_pdf = os.path.join(test_output_folder, 'framework/figures/maps.pdf')
+    out_pdf = os.path.join(test_output_folder, 'framework', 'figures', 'maps.pdf')
 
     plot_zone_maps(layers, out_pdf, zones=zone_array,
                    voxel_zones=np.arange(1, 21))
