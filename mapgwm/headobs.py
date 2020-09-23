@@ -75,6 +75,20 @@ def read_metadata(metadata_files, column_renames=None,
     -------
     metadata : DataFrame
         Head observation metadata, e.g. for input to func:`mapgwm.headobs.preprocess_headobs`
+
+        Key columns:
+
+        ================= ==========================================================================
+        site_no (index)   site identifier
+        aqfr_cd           Local aquifer code
+        nat_aqfr_cd       National aquifer code
+        screen_botm       Well screen bottom, as a depth below land surface, in feet
+        screen_top        Well screen top, as a depth below land surface, in feet
+        well_depth        Well depth, in feet
+        well_el           Altitude of land surface, in feet
+        local_aquifer     Local aquifer name corresponding to aqfr_cd, see :ref:`Aquifer Code Names`
+        regional_aquifer  Lumped regional aquifer, see :ref:`Regional Aquifer Code Names`
+        ================= ==========================================================================
     """
     # update the default column renames
     # with any supplied via column_renames parameter
@@ -184,8 +198,37 @@ def get_data(data_file, metadata_files, aquifer_names=None,
     -------
     data : DataFrame
         Head observation timeseries, e.g. for input to func:`mapgwm.headobs.preprocess_headobs`
+
+        Key columns:
+
+        ========= ================================================================
+        site_no   site identifier
+        lat       lattitude
+        lon       longitude
+        datetime  measurement dates in pandas datetime format
+        head      average head for the period represented by the datetime
+        last_head last head measurement for the period represented by the datetime
+        head_std  standard deviation of measured heads within the datetime period
+        n         number of measured heads within the period represented
+        ========= ================================================================
+
     metadata : DataFrame
         Head observation metadata, e.g. for input to func:`mapgwm.headobs.preprocess_headobs`
+
+        Key columns:
+
+        ================= ==========================================================================
+        site_no (index)   site identifier
+        aqfr_cd           Local aquifer code
+        nat_aqfr_cd       National aquifer code
+        screen_botm       Well screen bottom, as a depth below land surface, in feet
+        screen_top        Well screen top, as a depth below land surface, in feet
+        well_depth        Well depth, in feet
+        well_el           Altitude of land surface, in feet
+        local_aquifer     Local aquifer name corresponding to aqfr_cd, see :ref:`Aquifer Code Names`
+        regional_aquifer  Lumped regional aquifer, see :ref:`Regional Aquifer Code Names`
+        ================= ==========================================================================
+
     """
     # update the default column renames
     # with any supplied via column_renames parameter
@@ -202,6 +245,8 @@ def get_data(data_file, metadata_files, aquifer_names=None,
         datetimes = ['{}-{:02d}'.format(year, month) 
                      for year, month in zip(data.year, data.month)]
         data['datetime'] = pd.to_datetime(datetimes)
+    else:
+        data['datetime'] = pd.to_datetime(data['datetime'])
     
     # read in the metadata
     metadata = read_metadata(metadata_files, column_renames=col_renames,
@@ -221,14 +266,59 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
                        aoi=None,
                        max_obsname_len=None,
                        outfile='../source_data/observations/head_obs/preprocessed_head_obs.csv'):
-    """
+
+    """Preprocess head observation data, for example, groundwater level data output from the
+    `visGWDB program <https://doi.org/10.5066/P9W004O6>`_.
+
+    * Data are reprojected from a `src_crs` (Coordinate reference system; assumed to be in geographic coordinates)
+      to the CRS of the model (`dest_crs`)
+    * Data are culled to a `start_date` and optionally, a polygon or set of polygons defining the model area
+    * length units are converted to those of the groundwater model. Open intervals for the wells are
+      converted from depths to elevations
+    * missing open intervals are filled based on well bottom depths (if availabile) and the median open
+      interval length for the dataset.
+    * Wells are categorized based on the quality of the open interval information (see the documentation
+      for :func:`mapgwm.headobs.fill_well_open_intervals`).
+    * Prefixes for observation names (with an optional length limit) that identify the location are generated
+    * Preliminary observation groups can also be assigned, based on geographic areas defined by polygons
+      (`aoi` parameter)
 
     Parameters
     ----------
     data : DataFrame
-        Head observation data
+        Head observation data, e.g. as output from :func:`mapgwm.headobs.get_data`.
+        Columns:
+
+        ========= ================================================================
+        site_no   site identifier
+        lat       lattitude
+        lon       longitude
+        datetime  measurement dates in pandas datetime format
+        head      average head for the period represented by the datetime
+        last_head last head measurement for the period represented by the datetime
+        head_std  standard deviation of measured heads within the datetime period
+        ========= ================================================================
+
+        Notes:
+
+        * lat and lon columns can alternatively be in the metadata table
+        * `last_head` and `head_std` only need to be included if they are in
+          `head_data_columns`
+
     metadata : DataFrame
-        Well information
+        Head observation data, e.g. as output from :func:`mapgwm.headobs.get_data`.
+
+        Must have the following columns:
+
+        ================= ==========================================================================
+        site_no (index)   site identifier
+        aqfr_cd           Local aquifer code
+        screen_botm       Well screen bottom, as a depth below land surface, in feet
+        screen_top        Well screen top, as a depth below land surface, in feet
+        well_depth        Well depth, in feet
+        well_el           Altitude of land surface, in feet
+        ================= ==========================================================================
+
     head_data_columns : list of strings
         Columns in data with head values or their statistics.
         By default, 'head', 'last_head', 'head_std', which allows both
