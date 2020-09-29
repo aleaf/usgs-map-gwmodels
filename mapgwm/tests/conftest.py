@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import shutil
 import numpy as np
 import pytest
@@ -19,7 +20,7 @@ def test_data_path(project_root_path):
     """Root folder for the project (with setup.py),
     two levels up from the location of this file.
     """
-    return os.path.join(project_root_path, 'mapgwm', 'tests', 'data')
+    return Path(project_root_path, 'mapgwm', 'tests', 'data')
 
 
 @pytest.fixture(scope="session", autouse=True)

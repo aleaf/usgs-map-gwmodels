@@ -3,20 +3,14 @@ import os
 import warnings
 import numpy as np
 import pandas as pd
+from mapgwm.utils import makedirs
 from shapely.geometry import Point, MultiPolygon
 import matplotlib.pyplot as plt
 from gisutils import shp2df, df2shp, project, get_values_at_points
 from mfsetup.obs import make_obsname
 from mfsetup.units import convert_length_units
 from mapgwm.lookups import aq_codes_dict, gwlevels_col_renames
-
-
-def makedirs(path):
-    dirs = [os.path.join(path, 'shps/'),
-            os.path.join(path, 'figures/')]
-    for folder in dirs:
-        if not os.path.isdir(folder):
-            os.makedirs(folder)
+from mapgwm.utils import makedirs
 
 
 def get_header_length(sitefile, col0='SITE_BADGE'):
@@ -260,7 +254,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
                        start_date='1998-04-01', active_area=None,
                        active_area_id_column=None,
                        active_area_feature_id=None,
-                       src_crs=4269, dest_crs=5070,
+                       source_crs=4269, dest_crs=5070,
                        data_length_units='meters',
                        model_length_units='meters',
                        aoi=None,
@@ -270,7 +264,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     """Preprocess head observation data, for example, groundwater level data output from the
     `visGWDB program <https://doi.org/10.5066/P9W004O6>`_.
 
-    * Data are reprojected from a `src_crs` (Coordinate reference system; assumed to be in geographic coordinates)
+    * Data are reprojected from a `source_crs` (Coordinate reference system; assumed to be in geographic coordinates)
       to the CRS of the model (`dest_crs`)
     * Data are culled to a `start_date` and optionally, a polygon or set of polygons defining the model area
     * length units are converted to those of the groundwater model. Open intervals for the wells are
@@ -371,7 +365,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     model_length_units : str; 'meters', 'feet', etc.
         Length units of model.
     aoi : dict  (name: shapefile path)
-        Option to group observations by area of interest. For example::
+        Option to group observations by area(s) of interest. For example::
 
             aoi={'mscha': '../source_data/extents/CompositeHydrographArea.shp'
                  }
@@ -387,7 +381,9 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
         If None, observation names will not be truncated. PEST++ does not have
         a limit on observation name length.
     outfile : str
-        Where output file will be written
+        Where output file will be written. Metadata are written to a file
+        with the same name, with an additional "_info" suffix prior to
+        the file extension.
 
     Returns
     -------
@@ -437,7 +433,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     well_info.drop(labels=['year', 'month'], axis=1, inplace=True)
 
     # project x, y to model crs
-    x_pr, y_pr = project((well_info.lon.values, well_info.lat.values), src_crs, dest_crs)
+    x_pr, y_pr = project((well_info.lon.values, well_info.lat.values), source_crs, dest_crs)
     well_info.drop(['lon', 'lat'], axis=1, inplace=True)
     well_info['x'], well_info['y'] = x_pr, y_pr
     well_info['geometry'] = [Point(x, y) for x, y in zip(x_pr, y_pr)]

@@ -22,7 +22,7 @@ def test_preprocess_headobs(test_output_folder, test_data_path):
     data, metadata = preprocess_headobs(data_orig, metadata_orig,
                                         head_data_columns=['head', 'last_head'],
                                         data_length_units='feet',
-                                        active_area=os.path.join(test_data_path, 'extents/MERAS_Extent.shp'),
+                                        active_area=os.path.join(test_data_path, 'extents/extents/ms_delta.shp'),
                                         src_crs=4269, dest_crs=5070,
                                         aoi=aoi, start_date=start_date,
                                         outfile=outputfile)
@@ -32,7 +32,7 @@ def test_preprocess_headobs(test_output_folder, test_data_path):
                   ['site_no', 'datetime', 'head', 'last_head', 'head_std', 'n', 'obsprefix'])
     assert metadata.index.name == 'site_no'
     assert not any(set(data.obsprefix).difference(metadata.obsprefix))
-    assert not any({'x', 'x', 'screen_botm', 'screen_top',
+    assert not any({'x', 'y', 'screen_botm', 'screen_top',
                     'category', 'group'}.difference(metadata.columns))
     # unit conversion was applied evenly
     assert np.allclose(data['head'].values, data.last_head.values, rtol=0.1)

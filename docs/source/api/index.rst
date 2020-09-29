@@ -9,6 +9,7 @@ Modules
    mapgwm.lookups
    mapgwm.nhdplus
    mapgwm.swb
+   mapgwm.swflows
    mapgwm.swuds
    mapgwm.thermal
 
