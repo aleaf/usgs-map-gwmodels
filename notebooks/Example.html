@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Placeholder Example &mdash; usgs-map-gwmodels 0.post33+g85e2b80 documentation</title>
+  <title>How to use USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post34.dev0+g3352616 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post33+g85e2b80
+                0.post34.dev0+g3352616
               </div>
             
           
@@ -95,7 +95,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../philosophy.html">Philosophy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Example Notebook</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Example Notebook</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Define-some-input-for-all-preprocessing">Define some input for all preprocessing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Set-up-the-model-layering-and-property-zones">Set up the model layering and property zones</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#Define-some-input">Define some input</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -161,7 +168,7 @@
         
           <li><a href="../examples.html">Examples</a> &raquo;</li>
         
-      <li>Placeholder Example</li>
+      <li>How to use USGS-MAP-gwmodels</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -435,9 +442,240 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="Placeholder-Example">
-<h1>Placeholder Example<a class="headerlink" href="#Placeholder-Example" title="Permalink to this headline">¶</a></h1>
-<p>Any notebooks in this “examples” folder will be executed in the test suite by <code class="docutils literal notranslate"><span class="pre">tests/test_notebooks.py</span></code> and then copied to <code class="docutils literal notranslate"><span class="pre">docs/source/notebooks</span></code> where they can be rendered by <code class="docutils literal notranslate"><span class="pre">nbsphinx</span></code> and included in the documentation. * To add a notebook to the documentation, included it in the <code class="docutils literal notranslate"><span class="pre">..</span> <span class="pre">toctree::</span></code> in <code class="docutils literal notranslate"><span class="pre">docs/source/examples.rst</span></code></p>
+<div class="section" id="How-to-use-USGS-MAP-gwmodels">
+<h1>How to use USGS-MAP-gwmodels<a class="headerlink" href="#How-to-use-USGS-MAP-gwmodels" title="Permalink to this headline">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mfsetup.grid</span> <span class="kn">import</span> <span class="n">MFsetupGrid</span>
+<span class="kn">from</span> <span class="nn">mapgwm.framework</span> <span class="kn">import</span> <span class="n">setup_model_layers</span><span class="p">,</span> <span class="n">plot_slice</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+flopy is installed in /home/travis/miniconda/envs/test/lib/python3.7/site-packages/flopy
+</pre></div></div>
+</div>
+<div class="section" id="Define-some-input-for-all-preprocessing">
+<h2>Define some input for all preprocessing<a class="headerlink" href="#Define-some-input-for-all-preprocessing" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">test_data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../mapgwm/tests/data&#39;</span><span class="p">)</span>
+<span class="n">output_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">)</span>
+<span class="n">output_folder</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># make the output folder if it doesn&#39;t exist</span>
+
+<span class="c1"># model grid for the MS Delta inset model</span>
+<span class="n">ncol</span><span class="o">=</span><span class="mi">270</span>
+<span class="n">nrow</span><span class="o">=</span><span class="mi">605</span>
+<span class="n">dxy</span><span class="o">=</span><span class="mf">500.</span>
+<span class="n">delr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">ncol</span><span class="p">)</span> <span class="o">*</span> <span class="n">dxy</span>
+<span class="n">delc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nrow</span><span class="p">)</span> <span class="o">*</span> <span class="n">dxy</span>
+<span class="n">delta_inset_model_grid</span> <span class="o">=</span> <span class="n">MFsetupGrid</span><span class="p">(</span><span class="n">delc</span><span class="p">,</span> <span class="n">delr</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">botm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">lenuni</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">epsg</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                                     <span class="n">xoff</span><span class="o">=</span><span class="mi">434955</span><span class="p">,</span> <span class="n">yoff</span><span class="o">=</span><span class="mi">1040285</span><span class="p">,</span> <span class="n">angrot</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="Set-up-the-model-layering-and-property-zones">
+<h3>Set up the model layering and property zones<a class="headerlink" href="#Set-up-the-model-layering-and-property-zones" title="Permalink to this headline">¶</a></h3>
+<p>from AEM-based voxel data and raster surfaces of hydrogeologic contacts</p>
+</div>
+</div>
+<div class="section" id="Define-some-input">
+<h2>Define some input<a class="headerlink" href="#Define-some-input" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># mean dem values for each 1 km gridcell, elevation units of feet</span>
+<span class="n">dem_means_raster</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/dem_mean_elevs_1000.tif&#39;</span>
+
+<span class="c1"># AEM electrical resistivity-based facies classes from tempest and resolve surveys</span>
+<span class="c1"># (All facies classes version)</span>
+<span class="n">facies_classes_netcdf</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;netcdf/RSTM_res_fac_depth_15m.nc&#39;</span>
+
+<span class="c1"># Original MERAS framework (1 mi resolution), elevation units of feet</span>
+<span class="n">framework_rasters</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/vkbg_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Vicksburg-Jackson Group (top)</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/ucaq_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Upper Claiborne aquifer (top)</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/mccu_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Middle Claiborne confining unit (t</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/mcaq_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Middle Claiborne aquifer (top)</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/lccu_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Lower Claiborne confining unit (to</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/lcaq_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Lower Claiborne aquifer (top)</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/mwaq_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Middle Wilcox aquifer (top)</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/lwaq_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Lower Wilcox aquifer (top)</span>
+    <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;rasters/mdwy_surf.tif&#39;</span><span class="p">,</span>  <span class="c1"># Midway confining unit (top)</span>
+<span class="p">]</span>
+<span class="n">framework_unit_names</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;Undifferentiated sediments</span><span class="se">\n</span><span class="s1">above the Vicksburg&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Vicksburg-Jackson Group&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Upper Claiborne aquifer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Middle Claiborne confining unit&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Middle Claiborne aquifer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Lower Claiborne confining unit&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Lower Claiborne aquifer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Middle Wilcox aquifer&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Lower Wilcox aquifer&#39;</span>
+<span class="p">]</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">layers</span><span class="p">,</span> <span class="n">zone_array</span> <span class="o">=</span> <span class="n">setup_model_layers</span><span class="p">(</span><span class="n">dem_means_raster</span><span class="p">,</span>
+                                        <span class="n">facies_classes_netcdf</span><span class="p">,</span>
+                                        <span class="n">framework_rasters</span><span class="p">,</span>
+                                        <span class="n">delta_inset_model_grid</span><span class="p">,</span>
+                                        <span class="n">facies_class_variable</span><span class="o">=</span><span class="s1">&#39;fac_a&#39;</span><span class="p">,</span>  <span class="c1"># variable in facies_classes_netcdf with facies zones</span>
+                                        <span class="n">dem_elevation_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">,</span>
+                                        <span class="n">framework_raster_elevation_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">,</span>
+                                        <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span> <span class="n">output_folder</span><span class="o">=</span><span class="n">output_folder</span><span class="p">,</span>
+                                        <span class="n">framework_unit_names</span><span class="o">=</span><span class="n">framework_unit_names</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+reading data from ../mapgwm/tests/data/rasters/dem_mean_elevs_1000.tif...
+finished in 0.05s
+reading data from ../mapgwm/tests/data/rasters/vkbg_surf.tif...
+finished in 0.03s
+reading data from ../mapgwm/tests/data/rasters/ucaq_surf.tif...
+finished in 0.03s
+reading data from ../mapgwm/tests/data/rasters/mccu_surf.tif...
+finished in 0.03s
+reading data from ../mapgwm/tests/data/rasters/mcaq_surf.tif...
+finished in 0.03s
+reading data from ../mapgwm/tests/data/rasters/lccu_surf.tif...
+finished in 0.03s
+reading data from ../mapgwm/tests/data/rasters/lcaq_surf.tif...
+finished in 0.03s
+reading data from ../mapgwm/tests/data/rasters/mwaq_surf.tif...
+finished in 0.03s
+reading data from ../mapgwm/tests/data/rasters/lwaq_surf.tif...
+finished in 0.03s
+reading data from ../mapgwm/tests/data/rasters/mdwy_surf.tif...
+finished in 0.03s
+computing cell thicknesses...
+finished in 6.08s
+
+computing cell thicknesses...
+finished in 13.25s
+
+wrote output/botm_array/model_top.tif
+wrote output/botm_array/botm0.tif
+wrote output/botm_array/botm1.tif
+wrote output/botm_array/botm2.tif
+wrote output/botm_array/botm3.tif
+wrote output/botm_array/botm4.tif
+wrote output/botm_array/botm5.tif
+wrote output/botm_array/botm6.tif
+wrote output/botm_array/botm7.tif
+wrote output/botm_array/botm8.tif
+wrote output/botm_array/botm9.tif
+wrote output/botm_array/botm10.tif
+wrote output/botm_array/botm11.tif
+wrote output/botm_array/botm12.tif
+wrote output/botm_array/botm13.tif
+wrote output/botm_array/botm14.tif
+wrote output/botm_array/botm15.tif
+wrote output/botm_array/botm16.tif
+wrote output/botm_array/botm17.tif
+wrote output/botm_array/botm18.tif
+wrote output/botm_array/botm19.tif
+wrote output/botm_array/botm20.tif
+wrote output/botm_array/botm21.tif
+wrote output/botm_array/botm22.tif
+wrote output/botm_array/botm23.tif
+wrote output/botm_array/botm24.tif
+wrote output/botm_array/botm25.tif
+wrote output/botm_array/botm26.tif
+wrote output/botm_array/botm27.tif
+wrote output/botm_array/botm28.tif
+wrote output/botm_array/botm29.tif
+wrote output/botm_array/botm30.tif
+wrote output/zones/rasters/res_fac0.tif
+wrote output/zones/rasters/res_fac1.tif
+wrote output/zones/rasters/res_fac2.tif
+wrote output/zones/rasters/res_fac3.tif
+wrote output/zones/rasters/res_fac4.tif
+wrote output/zones/rasters/res_fac5.tif
+wrote output/zones/rasters/res_fac6.tif
+wrote output/zones/rasters/res_fac7.tif
+wrote output/zones/rasters/res_fac8.tif
+wrote output/zones/rasters/res_fac9.tif
+wrote output/zones/rasters/res_fac10.tif
+wrote output/zones/rasters/res_fac11.tif
+wrote output/zones/rasters/res_fac12.tif
+wrote output/zones/rasters/res_fac13.tif
+wrote output/zones/rasters/res_fac14.tif
+wrote output/zones/rasters/res_fac15.tif
+wrote output/zones/rasters/res_fac16.tif
+wrote output/zones/rasters/res_fac17.tif
+wrote output/zones/rasters/res_fac18.tif
+wrote output/zones/rasters/res_fac19.tif
+wrote output/zones/rasters/res_fac20.tif
+wrote output/zones/rasters/res_fac21.tif
+wrote output/zones/rasters/res_fac22.tif
+wrote output/zones/rasters/res_fac23.tif
+</pre></div></div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">framework_unit_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">framework_unit_names</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plot_slice</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">property_data</span><span class="o">=</span><span class="n">zone_array</span><span class="p">,</span>
+           <span class="n">row</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+           <span class="n">voxel_start_layer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">voxel_zones</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">21</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
+           <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">framework_unit_labels</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;AxesSubplot:title={&#39;center&#39;:&#39;Row 100&#39;}, xlabel=&#39;Column in model&#39;, ylabel=&#39;Elevation, in meters&#39;&gt;
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_9_1.png" src="../_images/notebooks_Example_9_1.png" />
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -445,6 +683,7 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>
