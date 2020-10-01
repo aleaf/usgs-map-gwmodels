@@ -1,13 +1,16 @@
+"""
+Code for preprocessing streamflow data.
+"""
 import collections
 import os
 from pathlib import Path
-from shapely.geometry import Point, MultiPolygon
+from shapely.geometry import Point
 import numpy as np
 import pandas as pd
 from gisutils import shp2df, df2shp, project, get_values_at_points
 from mfsetup.obs import make_obsname
 from mfsetup.units import convert_volume_units, convert_time_units
-from mapgwm.utils import makedirs
+from mapgwm.utils import makedirs, assign_geographic_obsgroups, cull_data_to_active_area
 
 
 def format_site_ids(iterable, add_leading_zeros=False):
@@ -56,7 +59,7 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
                      max_obsname_len=None,
                      add_leading_zeros_to_sw_site_nos=False,
                      column_renames=None,
-                     outfile='../source_data/observations/flux_obs/preprocessed_flux_obs.csv',
+                     outfile=None,
                      ):
     """Preprocess stream flow observation data, for example, from NWIS or another data source that
     outputs time series in CSV format with site locations and identifiers.
@@ -249,18 +252,19 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
 
     """
     # outputs
-    outpath, filename = os.path.split(outfile)
-    makedirs(outpath)
-    outname, ext = os.path.splitext(outfile)
-    out_info_csvfile = outname + '_info.csv'
-    out_data_csvfile = outfile
-    out_shapefile = outname + '_info.shp'
+    if outfile is not None:
+        outpath, filename = os.path.split(outfile)
+        makedirs(outpath)
+        outname, ext = os.path.splitext(outfile)
+        out_info_csvfile = outname + '_info.csv'
+        out_data_csvfile = outfile
+        out_shapefile = outname + '_info.shp'
 
     # read the source data
     if not isinstance(data, pd.DataFrame):
         df = pd.read_csv(data, dtype={site_no_col: object})
     else:
-        df = data
+        df = data.copy()
     # check the columns
     for col in [datetime_col] + flow_data_columns:
         assert col in df.columns, "Column {} not found in {}".format(col,
@@ -297,7 +301,7 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
         if not isinstance(metadata, pd.DataFrame):
             md = pd.read_csv(metadata, dtype={site_no_col: object})
         else:
-            md = metadata
+            md = metadata.copy()
         if site_no_col not in md.columns or 'site_no' not in df.columns:
             raise IndexError('If metadata are supplied, both data and metadata must '
                              'have a site_no column.')
@@ -336,20 +340,10 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
 
     # cull data to that within the model area
     if active_area is not None:
-        active_area_df = shp2df(active_area, dest_crs=dest_crs)
-        if active_area_id_column is not None and active_area_feature_id is not None:
-            loc = active_area_df[active_area_id_column] == active_area_feature_id
-            assert any(loc), "feature {} not found!".format(active_area_feature_id)
-            active_area_polygon = active_area_df.loc[loc, 'geometry']
-        else:
-            active_area_polygon = MultiPolygon(active_area_df.geometry.tolist())
-        within = np.array([g.within(active_area_polygon) for g in md.geometry])
-        if not np.all(within):
-            print('Culling {} wells outside of the model area defined by {}.'
-                  .format(np.sum(~within), active_area))
-        md = md.loc[within]
-        df_within = df.site_no.isin(md['site_no'])
-        df = df.loc[df_within]
+        df, md = cull_data_to_active_area(df, md, active_area,
+                                          active_area_id_column,
+                                          active_area_feature_id,
+                                          data_crs=dest_crs)
 
     # get the hydrography IDs corresponding to each site
     # using the included lookup table
@@ -360,9 +354,10 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
     #    df['line_id'] = [line_id_lookup[sn] for sn in df['site_no']]
         
     if include_sites is not None:
-        df = df.loc[df.site_no.isin(include_sites)]
+        md = md.loc[md.site_no.isin(include_sites)]
     if include_line_ids is not None:
-        df = df.loc[df.line_id.isin(include_line_ids)]
+        md = md.loc[md.line_id.isin(include_line_ids)]
+    df = df.loc[df.site_no.isin(md.site_no)]
     
     # convert units
     # ensure that flow values are numeric (may be objects if taken directly from NWIS)
@@ -405,36 +400,22 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
 
     # add area of interest information
     md['group'] = 'fluxes'
-    if geographic_groups is not None:
-        if isinstance(geographic_groups, dict):
-            pass
-        else:
-            geo_group_dict = {}
-            if isinstance(geographic_groups, str) or isinstance(geographic_groups, Path):
-                geographic_groups = [geographic_groups]
-            for item in reversed(geographic_groups):
-                try:
-                    group_info = shp2df(str(item), dest_crs=dest_crs)
-                    groups = dict(zip(group_info[geographic_groups_col],
-                                      group_info['geometry']))
-                    geo_group_dict.update(groups)
-                except:
-                    pass
-        for group_name, polygon in geo_group_dict.items():
-            within = [g.within(polygon) for g in md.geometry]
-            md.loc[within, 'group'] = group_name
+    md = assign_geographic_obsgroups(md, geographic_groups,
+                                     geographic_groups_col,
+                                     metadata_crs=dest_crs)
 
     # data columns
     data_cols = ['site_no', 'datetime'] + flow_data_columns + ['category']
     df = df[data_cols]
 
     # save out the results
-    df2shp(md.drop(['x', 'y'], axis=1),
-           out_shapefile, crs=dest_crs)
-    print('writing {}'.format(out_info_csvfile))
-    md.drop('geometry', axis=1).to_csv(out_info_csvfile, index=False, float_format='%g')
-    print('writing {}'.format(out_data_csvfile))
-    df.to_csv(out_data_csvfile, index=False, float_format='%g')
+    if outfile is not None:
+        df2shp(md.drop(['x', 'y'], axis=1),
+               out_shapefile, crs=dest_crs)
+        print('writing {}'.format(out_info_csvfile))
+        md.drop('geometry', axis=1).to_csv(out_info_csvfile, index=False, float_format='%g')
+        print('writing {}'.format(out_data_csvfile))
+        df.to_csv(out_data_csvfile, index=False, float_format='%g')
     return df, md
 
 
@@ -523,13 +504,13 @@ def combine_measured_estimated_values(measured_values, estimated_values,
         measured['datetime'] = pd.to_datetime(measured['datetime'])
         measured.index = measured['datetime']
     else:
-        measured = measured_values
+        measured = measured_values.copy()
     if not isinstance(estimated_values, pd.DataFrame):
         df = pd.read_csv(estimated_values, dtype={'site_no': object})
         df['datetime'] = pd.to_datetime(df['datetime'])
         df.index = df['datetime']
     else:
-        df = estimated_values
+        df = estimated_values.copy()
 
     # resample both timeseries to the resample_freq
     df_rs = resample_group_timeseries(df, resample_freq=resample_freq, how=how,

@@ -1,3 +1,6 @@
+"""
+Code for preprocessing head observation data.
+"""
 import collections
 import os
 from pathlib import Path
@@ -10,7 +13,7 @@ from gisutils import shp2df, df2shp, project, get_values_at_points
 from mfsetup.obs import make_obsname
 from mfsetup.units import convert_length_units
 from mapgwm.lookups import aq_codes_dict, gwlevels_col_renames
-from mapgwm.utils import makedirs
+from mapgwm.utils import makedirs, assign_geographic_obsgroups, cull_data_to_active_area
 
 
 def get_header_length(sitefile, col0='SITE_BADGE'):
@@ -257,7 +260,8 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
                        source_crs=4269, dest_crs=5070,
                        data_length_units='meters',
                        model_length_units='meters',
-                       aoi=None,
+                       geographic_groups=None,
+                       geographic_groups_col=None,
                        max_obsname_len=None,
                        outfile='../source_data/observations/head_obs/preprocessed_head_obs.csv'):
 
@@ -364,14 +368,26 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
         Length units of head observations.
     model_length_units : str; 'meters', 'feet', etc.
         Length units of model.
-    aoi : dict  (name: shapefile path)
-        Option to group observations by area(s) of interest. For example::
+    geographic_groups : file, dict or list-like
+        Option to group observations by area(s) of interest. Can
+        be a shapefile, list of shapefiles, or dictionary of shapely polygons.
+        A 'group' column will be created in the metadata, and observation
+        sites within each polygon will be assigned the group name
+        associated with that polygon.
 
-            aoi={'mscha': '../source_data/extents/CompositeHydrographArea.shp'
-                 }
+        For example::
 
-        'mscha' is an observation group name for observations located within the
-        the area defined by CompositeHydrographArea.shp.
+            geographic_groups='../source_data/extents/CompositeHydrographArea.shp'
+            geographic_groups=['../source_data/extents/CompositeHydrographArea.shp']
+            geographic_groups={'cha': <shapely Polygon>}
+
+        Where 'cha' is an observation group name for observations located within the
+        the area defined by CompositeHydrographArea.shp. For shapefiles,
+        group names are provided in a `geographic_groups_col`.
+
+    geographic_groups_col : str
+        Field name in the `geographic_groups` shapefile(s) containing the
+        observation group names associated with each polygon.
 
     max_obsname_len : int or None
         Maximum length for observation name prefix. Default of 13
@@ -431,6 +447,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     well_info['start_dt'] = groups.datetime.min()
     well_info['end_dt'] = groups.datetime.max()
     well_info.drop(labels=['year', 'month'], axis=1, inplace=True)
+    well_info['site_no'] = well_info.index
 
     # project x, y to model crs
     x_pr, y_pr = project((well_info.lon.values, well_info.lat.values), source_crs, dest_crs)
@@ -440,20 +457,10 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
 
     # cull data to that within the model area
     if active_area is not None:
-        active_area_df = shp2df(active_area, dest_crs=dest_crs)
-        if active_area_id_column is not None and active_area_feature_id is not None:
-            loc = active_area_df[active_area_id_column] == active_area_feature_id
-            assert any(loc), "feature {} not found!".format(active_area_feature_id)
-            active_area_polygon = active_area_df.loc[loc, 'geometry']
-        else:
-            active_area_polygon = MultiPolygon(active_area_df.geometry.tolist())
-        within = np.array([g.within(active_area_polygon) for g in well_info.geometry])
-        if not np.all(within):
-            print('Culling {} wells outside of the model area defined by {}.'
-                  .format(np.sum(~within), active_area))
-        well_info = well_info.loc[within]
-        df_within = df.site_no.isin(well_info.index)
-        df = df.loc[df_within]
+        df, md = cull_data_to_active_area(df, well_info, active_area,
+                                          active_area_id_column,
+                                          active_area_feature_id,
+                                          data_crs=dest_crs)
 
     # convert length units; convert screen tops and botms to depths
     missing_elevations = well_info.well_el.isna()
@@ -525,18 +532,15 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
 
     # add area of interest information
     well_info['group'] = 'heads'
-    if aoi is not None:
-        for name, shpname in aoi.items():
-            aoi_info = shp2df(shpname)
-            aoi_poly = aoi_info.geometry.values[0]
-            within = [g.within(aoi_poly) for g in well_info.geometry]
-            well_info.loc[within, 'group'] = name
+    well_info = assign_geographic_obsgroups(well_info, geographic_groups,
+                                            geographic_groups_col,
+                                            metadata_crs=dest_crs)
 
     # save out the results
     df2shp(well_info.drop(['x', 'y'], axis=1),
-           out_shapefile, index=True, crs=dest_crs)
+           out_shapefile, index=False, crs=dest_crs)
     print('writing {}'.format(out_info_csvfile))
-    well_info.drop('geometry', axis=1).to_csv(out_info_csvfile, index=True, float_format='%.2f')
+    well_info.drop('geometry', axis=1).to_csv(out_info_csvfile, index=False, float_format='%.2f')
     print('writing {}'.format(out_data_csvfile))
     df.to_csv(out_data_csvfile, index=False, float_format='%.2f')
     return df, well_info

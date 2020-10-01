@@ -68,7 +68,6 @@ def times():
     return times
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize('category_col', (None, 'comment'))
 @pytest.mark.parametrize('keep_columns', (None, ['site_no']))
 def test_aggregrate_values_to_stress_periods(obsdata, times, category_col, keep_columns):
@@ -134,7 +133,7 @@ def test_aggregrate_values_to_stress_periods(obsdata, times, category_col, keep_
                           'outfile'),
                          (('swflows/13Feb2020_rf_output_with_site_numbers.csv',
                            None, ['predicted_total_flow', 'predicted_bf'],
-                           'site_no', 'X', 'Y', 'category', None, None, 4269,
+                           'site_no', 'X', 'Y', 'category', 'comid', None, 4269,
                            'preprocessed_flows_rf.csv'),
                           ('swflows/nwis_dvs.csv', 'swflows/nwis_dv_sites.csv', ['q_cfs', 'qbase_cfs'], 'site_no',
                            'dec_long_va', 'dec_lat_va', None, None, None, 4269,
