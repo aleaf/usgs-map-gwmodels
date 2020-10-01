@@ -1,0 +1,1053 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mapgwm.swflows &mdash; usgs-map-gwmodels 0.post33.dev0+g85e2b80 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> usgs-map-gwmodels
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post33.dev0+g85e2b80
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html"> More details on how to use the package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html"> Code reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html"> Input Data Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html"> References cited</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">usgs-map-gwmodels</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>mapgwm.swflows</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for mapgwm.swflows</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">MultiPolygon</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">gisutils</span> <span class="kn">import</span> <span class="n">shp2df</span><span class="p">,</span> <span class="n">df2shp</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">get_values_at_points</span>
+<span class="kn">from</span> <span class="nn">mfsetup.obs</span> <span class="kn">import</span> <span class="n">make_obsname</span>
+<span class="kn">from</span> <span class="nn">mfsetup.units</span> <span class="kn">import</span> <span class="n">convert_volume_units</span><span class="p">,</span> <span class="n">convert_time_units</span>
+<span class="kn">from</span> <span class="nn">mapgwm.utils</span> <span class="kn">import</span> <span class="n">makedirs</span>
+
+
+<div class="viewcode-block" id="format_site_ids"><a class="viewcode-back" href="../../api/mapgwm.swflows.html#mapgwm.swflows.format_site_ids">[docs]</a><span class="k">def</span> <span class="nf">format_site_ids</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">add_leading_zeros</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Cast site ids to strings&quot;&quot;&quot;</span>
+    <span class="n">str_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">add_leading_zeros</span><span class="p">:</span>
+            <span class="n">str_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">format_usgs_sw_site_id</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">str_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">str_ids</span></div>
+
+
+<div class="viewcode-block" id="format_usgs_sw_site_id"><a class="viewcode-back" href="../../api/mapgwm.swflows.html#mapgwm.swflows.format_usgs_sw_site_id">[docs]</a><span class="k">def</span> <span class="nf">format_usgs_sw_site_id</span><span class="p">(</span><span class="n">stationID</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add leading zeros to NWIS surface water sites, if they are missing.</span>
+<span class="sd">    See https://help.waterdata.usgs.gov/faq/sites/do-station-numbers-have-any-particular-meaning.</span>
+<span class="sd">    Zeros are only added to numeric site numbers less than 15 characters in length.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">stationID</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">stationID</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span> \
+            <span class="mi">0</span> <span class="o">&lt;</span> <span class="nb">int</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stationID</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stationID</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">15</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;0</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stationID</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">stationID</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="preprocess_flows"><a class="viewcode-back" href="../../api/mapgwm.swflows.html#mapgwm.swflows.preprocess_flows">[docs]</a><span class="k">def</span> <span class="nf">preprocess_flows</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flow_data_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;flow&#39;</span><span class="p">],</span>
+                     <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">active_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">active_area_id_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">active_area_feature_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                     <span class="n">datetime_col</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                     <span class="n">site_no_col</span><span class="o">=</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+                     <span class="n">line_id_col</span><span class="o">=</span><span class="s1">&#39;line_id&#39;</span><span class="p">,</span>
+                     <span class="n">x_coord_col</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span>
+                     <span class="n">y_coord_col</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>
+                     <span class="n">name_col</span><span class="o">=</span><span class="s1">&#39;name&#39;</span><span class="p">,</span>
+                     <span class="n">flow_qualifier_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">default_qualifier</span><span class="o">=</span><span class="s1">&#39;measured&#39;</span><span class="p">,</span>
+                     <span class="n">include_sites</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">include_line_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">source_volume_units</span><span class="o">=</span><span class="s1">&#39;ft3&#39;</span><span class="p">,</span>
+                     <span class="n">source_time_units</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span>
+                     <span class="n">dest_volume_units</span><span class="o">=</span><span class="s1">&#39;m3&#39;</span><span class="p">,</span>
+                     <span class="n">dest_time_units</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span>
+                     <span class="n">geographic_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">geographic_groups_col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">max_obsname_len</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">add_leading_zeros_to_sw_site_nos</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">column_renames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;../source_data/observations/flux_obs/preprocessed_flux_obs.csv&#39;</span><span class="p">,</span>
+                     <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Preprocess stream flow observation data, for example, from NWIS or another data source that</span>
+<span class="sd">    outputs time series in CSV format with site locations and identifiers.</span>
+
+<span class="sd">    * Data are reprojected from a `source_crs` (Coordinate reference system; assumed to be in geographic coordinates)</span>
+<span class="sd">      to the CRS of the model (`dest_crs`)</span>
+<span class="sd">    * Data are culled to a `start_date` and optionally, a polygon or set of polygons defining the model area</span>
+<span class="sd">    * length and time units are converted to those of the groundwater model.</span>
+<span class="sd">    * Prefixes for observation names (with an optional length limit) that identify the location are generated</span>
+<span class="sd">    * Preliminary observation groups can also be assigned, based on geographic areas defined by polygons</span>
+<span class="sd">      (`geographic_groups` parameter)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : csv file or DataFrame</span>
+<span class="sd">        Time series of stream flow observations.</span>
+<span class="sd">        Columns:</span>
+
+<span class="sd">        ===================== ======================================</span>
+<span class="sd">        site_no               site identifier</span>
+<span class="sd">        datetime              measurement dates/times</span>
+<span class="sd">        x                     x-coordinate of site</span>
+<span class="sd">        y                     y-coordinate of site</span>
+<span class="sd">        flow_data_columns     Columns of observed streamflow values</span>
+<span class="sd">        flow_qualifier_column Optional column with qualifiers for flow values</span>
+<span class="sd">        ===================== ======================================</span>
+
+<span class="sd">        Notes:</span>
+
+<span class="sd">        * x and y columns can alternatively be in the metadata table</span>
+<span class="sd">        * flow_data_columns are denoted in `flow_data_columns`; multiple</span>
+<span class="sd">          columns can be included to process base flow and total flow, or</span>
+<span class="sd">          other statistics in tandem</span>
+<span class="sd">        * For example, `flow_qualifier_column` may have &quot;estimated&quot; or &quot;measured&quot;</span>
+<span class="sd">          flags denoting whether streamflows were derived from measured values</span>
+<span class="sd">          or statistical estimates.</span>
+
+<span class="sd">    metadata : csv file or DataFrame</span>
+<span class="sd">        Stream flow observation site information.</span>
+
+<span class="sd">        May include columns:</span>
+
+<span class="sd">        ================= ================================================================================</span>
+<span class="sd">        site_no           site identifier</span>
+<span class="sd">        x                 x-coordinate of site</span>
+<span class="sd">        y                 y-coordinate of site</span>
+<span class="sd">        name              name of site</span>
+<span class="sd">        line_id_col       Identifier for a line in a hydrography dataset that the site is associated with.</span>
+<span class="sd">        ================= ================================================================================</span>
+
+<span class="sd">        Notes:</span>
+
+<span class="sd">        * other columns in metadata will be passed through to the metadata output</span>
+
+<span class="sd">    flow_data_columns : list of strings</span>
+<span class="sd">        Columns in data with flow values or their statistics.</span>
+<span class="sd">        By default, [&#39;q_cfs&#39;]</span>
+<span class="sd">        start_date : str (YYYY-mm-dd)</span>
+<span class="sd">        Simulation start date (cull observations before this date)</span>
+<span class="sd">    active_area : str</span>
+<span class="sd">        Shapefile with polygon to cull observations to. Automatically reprojected</span>
+<span class="sd">        to dest_crs if the shapefile includes a .prj file.</span>
+<span class="sd">        by default, None.</span>
+<span class="sd">    active_area_id_column : str, optional</span>
+<span class="sd">        Column in active_area with feature ids.</span>
+<span class="sd">        By default, None, in which case all features are used.</span>
+<span class="sd">    active_area_feature_id : str, optional</span>
+<span class="sd">        ID of feature to use for active area</span>
+<span class="sd">        By default, None, in which case all features are used.</span>
+<span class="sd">    source_crs : obj</span>
+<span class="sd">        Coordinate reference system of the head observation locations.</span>
+<span class="sd">        A Python int, dict, str, or :class:`pyproj.crs.CRS` instance</span>
+<span class="sd">        passed to :meth:`pyproj.crs.CRS.from_user_input`</span>
+
+<span class="sd">        Can be any of:</span>
+<span class="sd">          - PROJ string</span>
+<span class="sd">          - Dictionary of PROJ parameters</span>
+<span class="sd">          - PROJ keyword arguments for parameters</span>
+<span class="sd">          - JSON string with PROJ parameters</span>
+<span class="sd">          - CRS WKT string</span>
+<span class="sd">          - An authority string [i.e. &#39;epsg:4326&#39;]</span>
+<span class="sd">          - An EPSG integer code [i.e. 4326]</span>
+<span class="sd">          - A tuple of (&quot;auth_name&quot;: &quot;auth_code&quot;) [i.e (&#39;epsg&#39;, &#39;4326&#39;)]</span>
+<span class="sd">          - An object with a `to_wkt` method.</span>
+<span class="sd">          - A :class:`pyproj.crs.CRS` class</span>
+
+<span class="sd">        By default, epsg:4269</span>
+<span class="sd">    dest_crs : obj</span>
+<span class="sd">        Coordinate reference system of the model. Same input types</span>
+<span class="sd">        as ``source_crs``.</span>
+<span class="sd">        By default, epsg:5070</span>
+<span class="sd">    datetime_col : str, optional</span>
+<span class="sd">        Column name in data with observation date/times,</span>
+<span class="sd">        by default &#39;datetime&#39;</span>
+<span class="sd">    site_no_col : str, optional</span>
+<span class="sd">        Column name in data and metadata with site identifiers,</span>
+<span class="sd">        by default &#39;site_no&#39;</span>
+<span class="sd">    line_id_col : str, optional</span>
+<span class="sd">        Column name in data or metadata with identifiers for</span>
+<span class="sd">        hydrography lines associated with observation sites.</span>
+<span class="sd">        by default &#39;line_id&#39;</span>
+<span class="sd">    x_coord_col : str, optional</span>
+<span class="sd">        Column name in data or metadata with x-coordinates,</span>
+<span class="sd">        by default &#39;x&#39;</span>
+<span class="sd">    y_coord_col : str, optional</span>
+<span class="sd">        Column name in data or metadata with y-coordinates,</span>
+<span class="sd">        by default &#39;y&#39;</span>
+<span class="sd">    name_col : str, optional</span>
+<span class="sd">        Column name in data or metadata with observation site names,</span>
+<span class="sd">        by default &#39;name&#39;</span>
+<span class="sd">    flow_qualifier_column : str, optional</span>
+<span class="sd">        Column name in data with flow observation qualifiers, such</span>
+<span class="sd">        as &quot;measured&quot; or &quot;estimated&quot;</span>
+<span class="sd">        by default &#39;category&#39;</span>
+<span class="sd">    default_qualifier : str, optional</span>
+<span class="sd">        Default qualifier to populate flow_qualifier_column if it</span>
+<span class="sd">        is None. By default, &quot;measured&quot;</span>
+<span class="sd">    include_sites : list-like, optional</span>
+<span class="sd">        Exclude output to these sites.</span>
+<span class="sd">        by default, None (include all sites)</span>
+<span class="sd">    include_line_ids : list-like, optional</span>
+<span class="sd">        Exclude output to these sites, represented by line identifiers.</span>
+<span class="sd">        by default, None (include all sites)</span>
+<span class="sd">    source_volume_units : str, &#39;m3&#39;, &#39;cubic meters&#39;, &#39;ft3&#39;, etc.</span>
+<span class="sd">        Volume units of the source data. By default, &#39;ft3&#39;</span>
+<span class="sd">    source_time_units : str, &#39;s&#39;, &#39;seconds&#39;, &#39;days&#39;, etc.</span>
+<span class="sd">        Time units of the source data. By default, &#39;s&#39;</span>
+<span class="sd">    dest_volume_units : str, &#39;m3&#39;, &#39;cubic meters&#39;, &#39;ft3&#39;, etc.</span>
+<span class="sd">        Volume units of the output (model). By default, &#39;m&#39;</span>
+<span class="sd">    dest_time_units : str, &#39;s&#39;, &#39;seconds&#39;, &#39;days&#39;, etc.</span>
+<span class="sd">        Time units of the output (model). By default, &#39;m&#39;</span>
+<span class="sd">    geographic_groups : file, dict or list-like</span>
+<span class="sd">        Option to group observations by area(s) of interest. Can</span>
+<span class="sd">        be a shapefile, list of shapefiles, or dictionary of shapely polygons.</span>
+<span class="sd">        A &#39;group&#39; column will be created in the metadata, and observation</span>
+<span class="sd">        sites within each polygon will be assigned the group name</span>
+<span class="sd">        associated with that polygon.</span>
+
+<span class="sd">        For example::</span>
+
+<span class="sd">            geographic_groups=&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
+<span class="sd">            geographic_groups=[&#39;../source_data/extents/CompositeHydrographArea.shp&#39;]</span>
+<span class="sd">            geographic_groups={&#39;cha&#39;: &lt;shapely Polygon&gt;}</span>
+
+<span class="sd">        Where &#39;cha&#39; is an observation group name for observations located within the</span>
+<span class="sd">        the area defined by CompositeHydrographArea.shp. For shapefiles,</span>
+<span class="sd">        group names are provided in a `geographic_groups_col`.</span>
+
+<span class="sd">    geographic_groups_col : str</span>
+<span class="sd">        Field name in the `geographic_groups` shapefile(s) containing the</span>
+<span class="sd">        observation group names associated with each polygon.</span>
+<span class="sd">    max_obsname_len : int or None</span>
+<span class="sd">        Maximum length for observation name prefix. Default of 13</span>
+<span class="sd">        allows for a PEST obsnme of 20 characters or less with</span>
+<span class="sd">        &lt;prefix&gt;_yyyydd or &lt;prefix&gt;_&lt;per&gt;d&lt;per&gt;</span>
+<span class="sd">        (e.g. &lt;prefix&gt;_2d1 for a difference between stress periods 2 and 1)</span>
+<span class="sd">        If None, observation names will not be truncated. PEST++ does not have</span>
+<span class="sd">        a limit on observation name length.</span>
+<span class="sd">    add_leading_zeros_to_sw_site_nos : bool</span>
+<span class="sd">        Whether or not to pad site numbers using the</span>
+<span class="sd">        :func:~`mapgwm.swflows.format_usgs_sw_site_id` function.</span>
+<span class="sd">        By default, False.</span>
+<span class="sd">    column_renames : dict, optional</span>
+<span class="sd">        Option to rename columns in the data or metadata that are different than those listed above.</span>
+<span class="sd">        For example, if the data file has a &#39;SITE_NO&#39; column instead of &#39;SITE_BADGE&#39;::</span>
+
+<span class="sd">            column_renames={&#39;SITE_NO&#39;: &#39;site_no&#39;}</span>
+
+<span class="sd">        by default None, in which case the renames listed above will be used.</span>
+<span class="sd">        Note that the renames must be the same as those listed above for</span>
+<span class="sd">        :func:`mapgwm.swflows.preprocess_flows` to work.</span>
+<span class="sd">    outfile : str</span>
+<span class="sd">        Where output file will be written. Metadata are written to a file</span>
+<span class="sd">        with the same name, with an additional &quot;_info&quot; suffix prior to</span>
+<span class="sd">        the file extension.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : DataFrame</span>
+<span class="sd">        Preprocessed time series</span>
+<span class="sd">    metadata : DataFrame</span>
+<span class="sd">        Preprocessed metadata</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    `The PEST++ Manual &lt;https://github.com/usgs/pestpp/tree/master/documentation&gt;`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># outputs</span>
+    <span class="n">outpath</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+    <span class="n">makedirs</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span>
+    <span class="n">outname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+    <span class="n">out_info_csvfile</span> <span class="o">=</span> <span class="n">outname</span> <span class="o">+</span> <span class="s1">&#39;_info.csv&#39;</span>
+    <span class="n">out_data_csvfile</span> <span class="o">=</span> <span class="n">outfile</span>
+    <span class="n">out_shapefile</span> <span class="o">=</span> <span class="n">outname</span> <span class="o">+</span> <span class="s1">&#39;_info.shp&#39;</span>
+
+    <span class="c1"># read the source data</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="n">site_no_col</span><span class="p">:</span> <span class="nb">object</span><span class="p">})</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="c1"># check the columns</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="n">datetime_col</span><span class="p">]</span> <span class="o">+</span> <span class="n">flow_data_columns</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s2">&quot;Column </span><span class="si">{}</span><span class="s2"> not found in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">,</span>
+                                                                     <span class="n">data</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">any</span><span class="p">({</span><span class="n">site_no_col</span><span class="p">,</span> <span class="n">line_id_col</span><span class="p">}</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)),</span> \
+        <span class="s2">&quot;Neither </span><span class="si">{}</span><span class="s2"> or </span><span class="si">{}</span><span class="s2"> found in </span><span class="si">{}</span><span class="s2">. Need to specify a site_no_col or line_id_col&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">site_no_col</span><span class="p">,</span>
+                                                                                            <span class="n">line_id_col</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="c1"># rename input columns to these names,</span>
+    <span class="c1"># for consistent output</span>
+    <span class="n">dest_columns</span> <span class="o">=</span> <span class="p">{</span><span class="n">datetime_col</span><span class="p">:</span> <span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                    <span class="n">site_no_col</span><span class="p">:</span> <span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+                    <span class="n">line_id_col</span><span class="p">:</span> <span class="s1">&#39;line_id&#39;</span><span class="p">,</span>
+                    <span class="n">x_coord_col</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
+                    <span class="n">y_coord_col</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
+                    <span class="n">name_col</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span>
+                    <span class="n">flow_qualifier_column</span><span class="p">:</span> <span class="s1">&#39;category&#39;</span>
+                    <span class="p">}</span>
+    <span class="c1"># update the default column renames</span>
+    <span class="c1"># with any supplied via column_renames parameter</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">column_renames</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+        <span class="n">dest_columns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">column_renames</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">dest_columns</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">flow_data_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dest_columns</span> <span class="k">else</span> <span class="n">dest_columns</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+                         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">flow_data_columns</span><span class="p">]</span>
+    <span class="c1"># convert site numbers to strings;</span>
+    <span class="c1"># add leading 0s to any USGS sites that should have them</span>
+    <span class="k">if</span> <span class="s1">&#39;site_no&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_site_ids</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">],</span> <span class="n">add_leading_zeros_to_sw_site_nos</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">line_id_col</span><span class="p">]</span>
+
+    <span class="c1"># read the source data</span>
+    <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="n">site_no_col</span><span class="p">:</span> <span class="nb">object</span><span class="p">})</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">md</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="k">if</span> <span class="n">site_no_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">md</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="s1">&#39;site_no&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s1">&#39;If metadata are supplied, both data and metadata must &#39;</span>
+                             <span class="s1">&#39;have a site_no column.&#39;</span><span class="p">)</span>
+        <span class="n">md</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">dest_columns</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">format_site_ids</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">],</span> <span class="n">add_leading_zeros_to_sw_site_nos</span><span class="p">)</span>
+        <span class="n">md</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span>
+        <span class="n">by_site</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span>
+        <span class="n">md</span><span class="p">[</span><span class="s1">&#39;start_dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">by_site</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">first</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">by_site</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">by_site</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">first</span><span class="p">())</span>
+        <span class="n">md</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;start_dt&#39;</span><span class="p">]</span>
+        <span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">index</span>
+
+    <span class="n">md</span><span class="p">[</span><span class="s1">&#39;end_dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">by_site</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">last</span><span class="p">())</span>
+    <span class="n">md</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">by_site</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">())</span>
+    <span class="n">md</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># assign metadata if supplied</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;line_id&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">md</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">by_site_no</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]))</span>
+            <span class="n">md</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">by_site_no</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]]</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># index the dataframe to times;</span>
+    <span class="c1"># truncate data before start date</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;datetime&#39;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start_date</span><span class="p">:]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># project x, y to model crs</span>
+    <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span> <span class="o">=</span> <span class="n">project</span><span class="p">((</span><span class="n">md</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">md</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">source_crs</span><span class="p">,</span> <span class="n">dest_crs</span><span class="p">)</span>
+    <span class="n">md</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span>
+    <span class="n">md</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span><span class="p">)]</span>
+
+    <span class="c1"># cull data to that within the model area</span>
+    <span class="k">if</span> <span class="n">active_area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">active_area_df</span> <span class="o">=</span> <span class="n">shp2df</span><span class="p">(</span><span class="n">active_area</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">active_area_id_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">active_area_feature_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="n">active_area_df</span><span class="p">[</span><span class="n">active_area_id_column</span><span class="p">]</span> <span class="o">==</span> <span class="n">active_area_feature_id</span>
+            <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span><span class="n">loc</span><span class="p">),</span> <span class="s2">&quot;feature </span><span class="si">{}</span><span class="s2"> not found!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">active_area_feature_id</span><span class="p">)</span>
+            <span class="n">active_area_polygon</span> <span class="o">=</span> <span class="n">active_area_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">loc</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">active_area_polygon</span> <span class="o">=</span> <span class="n">MultiPolygon</span><span class="p">(</span><span class="n">active_area_df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="n">within</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">active_area_polygon</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">md</span><span class="o">.</span><span class="n">geometry</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">within</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Culling </span><span class="si">{}</span><span class="s1"> wells outside of the model area defined by </span><span class="si">{}</span><span class="s1">.&#39;</span>
+                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">within</span><span class="p">),</span> <span class="n">active_area</span><span class="p">))</span>
+        <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">within</span><span class="p">]</span>
+        <span class="n">df_within</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">site_no</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">])</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_within</span><span class="p">]</span>
+
+    <span class="c1"># get the hydrography IDs corresponding to each site</span>
+    <span class="c1"># using the included lookup table</span>
+    <span class="c1">#if &#39;line_id&#39; not in df.columns:</span>
+    <span class="c1">#    assert line_id_lookup is not None, \</span>
+    <span class="c1">#    &quot;need to include line_ids in a column, or line_id_lookup dictionary mapping line_ids to site numbers&quot;</span>
+    <span class="c1">#    df = df.loc[df[&#39;site_no&#39;].isin(line_id_lookup)].copy()</span>
+    <span class="c1">#    df[&#39;line_id&#39;] = [line_id_lookup[sn] for sn in df[&#39;site_no&#39;]]</span>
+        
+    <span class="k">if</span> <span class="n">include_sites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">site_no</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">include_sites</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">include_line_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">line_id</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">include_line_ids</span><span class="p">)]</span>
+    
+    <span class="c1"># convert units</span>
+    <span class="c1"># ensure that flow values are numeric (may be objects if taken directly from NWIS)</span>
+    <span class="n">unit_conversion</span> <span class="o">=</span> <span class="p">(</span><span class="n">convert_volume_units</span><span class="p">(</span><span class="n">source_volume_units</span><span class="p">,</span> <span class="n">dest_volume_units</span><span class="p">)</span> <span class="o">/</span>
+                       <span class="n">convert_time_units</span><span class="p">(</span><span class="n">source_time_units</span><span class="p">,</span> <span class="n">dest_time_units</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">flow_col</span> <span class="ow">in</span> <span class="n">flow_data_columns</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">flow_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">flow_col</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span> <span class="o">*</span> <span class="n">unit_conversion</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="n">flow_data_columns</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># reformat qualifiers for consistent output</span>
+    <span class="c1"># (lump to dest category columns of either estimated or measured)</span>
+    <span class="c1"># with measured including values derived from baseflow separation or actual measurements)</span>
+    <span class="c1"># output column name for flow qualifier column:</span>
+    <span class="n">dest_flow_qualifier_column</span> <span class="o">=</span> <span class="s1">&#39;category&#39;</span>
+    <span class="k">if</span> <span class="n">flow_qualifier_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">flow_qualifiers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;calculated&#39;</span><span class="p">:</span> <span class="s1">&#39;measured&#39;</span><span class="p">,</span>  <span class="c1"># &#39;measured&#39;,</span>
+                           <span class="s1">&#39;base flow separated from measured values&#39;</span><span class="p">:</span> <span class="s1">&#39;measured&#39;</span><span class="p">,</span>  <span class="c1"># &#39;measured&#39;,</span>
+                           <span class="s1">&#39;measured total flow&#39;</span><span class="p">:</span> <span class="s1">&#39;measured&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;estimated gaged&#39;</span><span class="p">:</span> <span class="s1">&#39;estimated&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;estimated ungaged&#39;</span><span class="p">:</span> <span class="s1">&#39;estimated&#39;</span><span class="p">}</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">dest_flow_qualifier_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">flow_qualifier_column</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">flow_qualifiers</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">default_qualifier</span>
+
+    <span class="c1"># make unique n-character prefixes (site identifiers) for each observation location</span>
+    <span class="c1"># 13 character length allows for prefix_yyyymmm in 20 character observation names</span>
+    <span class="c1"># (BeoPEST limit)</span>
+    <span class="n">unique_obsnames</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">obsnames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">max_obsname_len</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">make_obsname</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">unique_names</span><span class="o">=</span><span class="n">unique_obsnames</span><span class="p">,</span>
+                                <span class="n">maxlen</span><span class="o">=</span><span class="n">max_obsname_len</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_obsnames</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">sn</span>
+        <span class="n">unique_obsnames</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">obsnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">md</span><span class="p">[</span><span class="s1">&#39;obsprefix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obsnames</span>
+
+    <span class="c1"># add area of interest information</span>
+    <span class="n">md</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;fluxes&#39;</span>
+    <span class="k">if</span> <span class="n">geographic_groups</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geographic_groups</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">geo_group_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geographic_groups</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geographic_groups</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+                <span class="n">geographic_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">geographic_groups</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">geographic_groups</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">group_info</span> <span class="o">=</span> <span class="n">shp2df</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">),</span> <span class="n">dest_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+                    <span class="n">groups</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">group_info</span><span class="p">[</span><span class="n">geographic_groups_col</span><span class="p">],</span>
+                                      <span class="n">group_info</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]))</span>
+                    <span class="n">geo_group_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+        <span class="k">for</span> <span class="n">group_name</span><span class="p">,</span> <span class="n">polygon</span> <span class="ow">in</span> <span class="n">geo_group_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">within</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">md</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
+            <span class="n">md</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">within</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group_name</span>
+
+    <span class="c1"># data columns</span>
+    <span class="n">data_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">flow_data_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">data_cols</span><span class="p">]</span>
+
+    <span class="c1"># save out the results</span>
+    <span class="n">df2shp</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+           <span class="n">out_shapefile</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">))</span>
+    <span class="n">md</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%g</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_data_csvfile</span><span class="p">))</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_data_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%g</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">md</span></div>
+
+
+<div class="viewcode-block" id="combine_measured_estimated_values"><a class="viewcode-back" href="../../api/mapgwm.swflows.html#mapgwm.swflows.combine_measured_estimated_values">[docs]</a><span class="k">def</span> <span class="nf">combine_measured_estimated_values</span><span class="p">(</span><span class="n">measured_values</span><span class="p">,</span> <span class="n">estimated_values</span><span class="p">,</span>
+                                      <span class="n">measured_values_data_col</span><span class="p">,</span> <span class="n">estimated_values_data_col</span><span class="p">,</span>
+                                      <span class="n">dest_values_col</span><span class="o">=</span><span class="s1">&#39;obsval&#39;</span><span class="p">,</span>
+                                      <span class="n">resample_freq</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Combine time series of measured and estimated values for multiple sites,</span>
+<span class="sd">    giving preference to measured values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    measured_values : csv file or DataFrame</span>
+<span class="sd">        Time series of measured values at multiple sites, similar to that</span>
+<span class="sd">        output by :func:`~mapgwm.swflows.preprocess_flows`.</span>
+
+<span class="sd">        Columns:</span>
+
+<span class="sd">        ===================== ===========================================</span>
+<span class="sd">        site_no               site identifiers; read-in as strings</span>
+<span class="sd">        datetime              measurement dates/times</span>
+<span class="sd">        data columns          columns with floating-point data to combine</span>
+<span class="sd">        ===================== ===========================================</span>
+
+<span class="sd">    estimated_values : csv file or DataFrame</span>
+<span class="sd">        Time series of measured values at multiple sites, similar to that</span>
+<span class="sd">        output by :func:`~mapgwm.swflows.preprocess_flows`.</span>
+
+<span class="sd">        Columns:</span>
+
+<span class="sd">        ===================== ===========================================</span>
+<span class="sd">        site_no               site identifiers; read-in as strings</span>
+<span class="sd">        datetime              measurement dates/times</span>
+<span class="sd">        data columns          columns with floating-point data to combine</span>
+<span class="sd">        ===================== ===========================================</span>
+
+<span class="sd">    measured_values_data_col : str</span>
+<span class="sd">        Column in `measured_values` with data to combine.</span>
+<span class="sd">    estimated_values_data_col : str</span>
+<span class="sd">        Column in `estimated_values` with data to combine.</span>
+<span class="sd">    dest_values_col : str</span>
+<span class="sd">        Output column with combined data from `measured_values_data_col`</span>
+<span class="sd">        and estimated_values_data_col, by default &#39;obsval&#39;</span>
+<span class="sd">    resample_freq : str or DateOffset</span>
+<span class="sd">        Any `pandas frequency alias &lt;https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases&gt;`_</span>
+<span class="sd">        The data columns in `measured_values` and `estimated_values` are resampled</span>
+<span class="sd">        to this fequency using the method specified by ``how``.</span>
+<span class="sd">        By default, &#39;MS&#39; (month-start)</span>
+<span class="sd">    how : str</span>
+<span class="sd">        Resample method. Can be any of the method calls on the pandas</span>
+<span class="sd">        `Resampler &lt;https://pandas.pydata.org/pandas-docs/stable/reference/resampling.html&gt;`_</span>
+<span class="sd">        object. By default, &#39;mean&#39;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    combined : DataFrame</span>
+<span class="sd">        DataFrame containing all columns from `estimated_values`, the data columns</span>
+<span class="sd">        from `measured_values`, and a `dest_values_col` consisting of measured values where</span>
+<span class="sd">        present, and estimated values otherwise. An ``&quot;est_&quot;`` prefix is added to the</span>
+<span class="sd">        estimated data columns, and a ``&quot;meas&quot;`` prefix is added to the measured data columns.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        ======== ========== ========= ============== ============== ============</span>
+<span class="sd">        site_no  datetime   category  est_qbase_m3d  meas_qbase_m3d obsval</span>
+<span class="sd">        ======== ========== ========= ============== ============== ============</span>
+<span class="sd">        07288000 2017-10-01 measured  47872.1        28438.7        28438.7</span>
+<span class="sd">        07288000 2017-11-01 measured  47675.9        24484.5        24484.5</span>
+<span class="sd">        ======== ========== ========= ============== ============== ============</span>
+
+<span class="sd">        Where ``category`` denotes whether the value in obsval is measured or estimated.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    All columns with a floating-point dtype are identified as &quot;Data columns,&quot; and</span>
+<span class="sd">    are resampled as specified by the `resample_freq` and `how` arguments. For all other</span>
+<span class="sd">    columns, the first value for each time at each site is used. The resampled measured</span>
+<span class="sd">    data are joined to the resampled estimated data on the basis of site numbers</span>
+<span class="sd">    and times (as a pandas `MultiIndex`).</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># read in the data</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">measured_values</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">measured</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">measured_values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;site_no&#39;</span><span class="p">:</span> <span class="nb">object</span><span class="p">})</span>
+        <span class="n">measured</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">measured</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
+        <span class="n">measured</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">measured</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">measured</span> <span class="o">=</span> <span class="n">measured_values</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">estimated_values</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">estimated_values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;site_no&#39;</span><span class="p">:</span> <span class="nb">object</span><span class="p">})</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">estimated_values</span>
+
+    <span class="c1"># resample both timeseries to the resample_freq</span>
+    <span class="n">df_rs</span> <span class="o">=</span> <span class="n">resample_group_timeseries</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">resample_freq</span><span class="o">=</span><span class="n">resample_freq</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">how</span><span class="p">,</span>
+                                      <span class="n">add_data_prefix</span><span class="o">=</span><span class="s1">&#39;est&#39;</span><span class="p">)</span>
+    <span class="n">df_rs</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;estimated&#39;</span>
+    <span class="n">measured_rs</span> <span class="o">=</span> <span class="n">resample_group_timeseries</span><span class="p">(</span><span class="n">measured</span><span class="p">,</span> <span class="n">resample_freq</span><span class="o">=</span><span class="n">resample_freq</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">how</span><span class="p">,</span>
+                                            <span class="n">add_data_prefix</span><span class="o">=</span><span class="s1">&#39;meas&#39;</span><span class="p">)</span>
+    <span class="c1"># fill any nan values created in resampling with &#39;measured&#39; classifier</span>
+    <span class="n">measured_rs</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;measured&#39;</span>
+
+    <span class="c1"># add the measured values to the estimated</span>
+    <span class="n">measured_data_columns</span> <span class="o">=</span> <span class="n">measured_rs</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span>
+    <span class="c1"># join the data columns</span>
+    <span class="n">combined</span> <span class="o">=</span> <span class="n">df_rs</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">measured_rs</span><span class="p">[</span><span class="n">measured_data_columns</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+    <span class="c1"># update the site_no, datetime and category columns from measured</span>
+    <span class="c1"># (that were not filled in outer join)</span>
+    <span class="n">combined</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">measured_rs</span><span class="p">)</span>
+
+    <span class="c1"># make the obsval column, starting with the estimated values</span>
+    <span class="n">combined</span><span class="p">[</span><span class="n">dest_values_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined</span><span class="p">[</span><span class="s1">&#39;est_&#39;</span> <span class="o">+</span> <span class="n">estimated_values_data_col</span><span class="p">]</span>
+    <span class="c1"># prefix was added to measured data column by resample_group_timeseries</span>
+    <span class="n">measured_values_data_col</span> <span class="o">=</span> <span class="s1">&#39;meas_&#39;</span> <span class="o">+</span> <span class="n">measured_values_data_col</span>
+    <span class="c1"># populate obsval column with all measured values</span>
+    <span class="c1"># (over-writing any pre-existing estimated values)</span>
+    <span class="n">has_measured</span> <span class="o">=</span> <span class="o">~</span><span class="n">combined</span><span class="p">[</span><span class="n">measured_values_data_col</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+    <span class="n">combined</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">has_measured</span><span class="p">,</span> <span class="n">dest_values_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">combined</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">has_measured</span><span class="p">,</span> <span class="n">measured_values_data_col</span><span class="p">]</span>
+
+    <span class="c1"># verify that only nan values in obsval column are for measured sites</span>
+    <span class="c1"># (that don&#39;t have estimated values)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">combined</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">combined</span><span class="o">.</span><span class="n">obsval</span><span class="o">.</span><span class="n">isna</span><span class="p">(),</span> <span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;measured&#39;</span><span class="p">)</span>
+    <span class="c1"># drop observations with no measured or estimated values</span>
+    <span class="n">combined</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;obsval&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">combined</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="resample_group_timeseries"><a class="viewcode-back" href="../../api/mapgwm.swflows.html#mapgwm.swflows.resample_group_timeseries">[docs]</a><span class="k">def</span> <span class="nf">resample_group_timeseries</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">resample_freq</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span>
+                              <span class="n">add_data_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Resample a DataFrame with both groups (e.g. measurement sites)</span>
+<span class="sd">    and time series (measurements at each site).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    df : DataFrame</span>
+<span class="sd">        Time series of values at multiple sites, similar to that</span>
+<span class="sd">        output by :func:`~mapgwm.swflows.preprocess_flows`.</span>
+
+<span class="sd">        Columns:</span>
+
+<span class="sd">        ===================== ===========================================</span>
+<span class="sd">        site_no               site identifiers; read-in as strings</span>
+<span class="sd">        datetime              measurement dates/times</span>
+<span class="sd">        data columns          columns with floating-point data to resample</span>
+<span class="sd">        ===================== ===========================================</span>
+
+<span class="sd">    resample_freq : str or DateOffset</span>
+<span class="sd">        Any `pandas frequency alias &lt;https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases&gt;`_</span>
+<span class="sd">        The data columns in `measured_values` and `estimated_values` are resampled</span>
+<span class="sd">        to this fequency using the method specified by ``how``.</span>
+<span class="sd">        By default, &#39;MS&#39; (month-start)</span>
+<span class="sd">    how : str</span>
+<span class="sd">        Resample method. Can be any of the method calls on the pandas</span>
+<span class="sd">        `Resampler &lt;https://pandas.pydata.org/pandas-docs/stable/reference/resampling.html&gt;`_</span>
+<span class="sd">        object. By default, &#39;mean&#39;</span>
+<span class="sd">    add_data_prefix : str</span>
+<span class="sd">        Option to add prefix to data columns. By default, None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    resampled : DataFrame</span>
+<span class="sd">        Resampled data at each site.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    All columns with a floating-point dtype are identified as &quot;Data columns,&quot; and</span>
+<span class="sd">    are resampled as specified by the `resample_freq` and `how` arguments. For all other</span>
+<span class="sd">    columns, the first value for each time at each site is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input must have a DatetimeIndex.&quot;</span><span class="p">)</span>
+
+    <span class="n">df_resampler</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">resample_freq</span><span class="p">)</span>
+    <span class="n">df_rs</span> <span class="o">=</span> <span class="n">df_resampler</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># resample the data columns</span>
+    <span class="n">data_columns</span> <span class="o">=</span> <span class="n">df_rs</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span>
+    <span class="n">non_data_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data_columns</span><span class="p">]</span>
+    <span class="n">resampled_values</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">df_resampler</span><span class="p">[</span><span class="n">data_columns</span><span class="p">],</span> <span class="n">how</span><span class="p">)()</span>
+    <span class="c1"># put the non-data and data columns back together</span>
+    <span class="n">df_rs</span> <span class="o">=</span> <span class="n">df_rs</span><span class="p">[</span><span class="n">non_data_columns</span><span class="p">]</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">resampled_values</span><span class="p">)</span>
+    <span class="c1"># add &#39;est&#39; suffix to column names</span>
+    <span class="k">if</span> <span class="n">add_data_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">data_columns</span><span class="p">:</span>
+            <span class="n">df_rs</span><span class="p">[</span><span class="n">add_data_prefix</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_rs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span>
+            <span class="n">df_rs</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># index dates may vary depending on freq (e.g. &#39;MS&#39; vs &#39;M&#39;)</span>
+    <span class="n">df_rs</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_rs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">df_rs</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df_rs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df_rs</span></div>
+
+
+<div class="viewcode-block" id="aggregrate_values_to_stress_periods"><a class="viewcode-back" href="../../api/mapgwm.swflows.html#mapgwm.swflows.aggregrate_values_to_stress_periods">[docs]</a><span class="k">def</span> <span class="nf">aggregrate_values_to_stress_periods</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">perioddata</span><span class="p">,</span>
+                                        <span class="n">datetime_col</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                                        <span class="n">values_col</span><span class="o">=</span><span class="s1">&#39;values&#39;</span><span class="p">,</span>
+                                        <span class="n">id_col</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span>
+                                        <span class="n">category_col</span><span class="o">=</span><span class="s1">&#39;qualifier&#39;</span><span class="p">,</span>
+                                        <span class="n">keep_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Pandas sausage-making to take flow values at arbitrary times,</span>
+<span class="sd">    and average them to model stress periods defined in a perioddata dataframe.</span>
+<span class="sd">    Optionally, a category column identifying flow values as &#39;measured&#39; or</span>
+<span class="sd">    &#39;estimated&#39; can also be read. Measured values are used for the averages</span>
+<span class="sd">    where available; the number of measured and estimated values contributing</span>
+<span class="sd">    to each average are tallied in the output.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : DataFrame</span>
+<span class="sd">        Input data</span>
+<span class="sd">    perioddata : DataFrame</span>
+<span class="sd">        Stress Period start/end times. Must have columns:</span>
+
+<span class="sd">        ============== ================= ========================</span>
+<span class="sd">        per            int               MODFLOW Stress Period</span>
+<span class="sd">        start_datetime str or datetime64 Period start time</span>
+<span class="sd">        end_datetime   str or datetime64 Period end time</span>
+<span class="sd">        ============== ================= ========================</span>
+
+<span class="sd">    datetime_col : str</span>
+<span class="sd">        Column in data for Measurement dates (str or datetime64)</span>
+<span class="sd">    id_col: int or str</span>
+<span class="sd">        Column in data identifying the hydrography line or measurement site</span>
+<span class="sd">        associated with flow value. Valid identifiers corresponding to the source</span>
+<span class="sd">        hydrography (e.g. NHDPlus COMIDs) may be needed for locating the flows</span>
+<span class="sd">        within the stream network, unless x and y coordinates are available.</span>
+<span class="sd">    values_col : float</span>
+<span class="sd">        Column in data with observed or estimated values.</span>
+<span class="sd">    category_col : str; categorical</span>
+<span class="sd">        Column in data with &#39;measured&#39; or &#39;estimated&#39; flags indicating how each flow</span>
+<span class="sd">        value was derived. If None, &#39;measured&#39; is used for all flows. By default, &#39;qualifier&#39;.</span>
+<span class="sd">    site_no_col : str</span>
+<span class="sd">        Optional column in data identifying the measurement site associated with each value,</span>
+<span class="sd">        for example, for keeping track of measurement site numbers or names that are different</span>
+<span class="sd">        than the hydrography identifiers in line_id_col.</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_per : DataFrame</span>
+<span class="sd">        Stress period averages, and metadata describing the source of the</span>
+<span class="sd">        averages (number of estimated vs. measured values). For each site,</span>
+<span class="sd">        also includes averages and standard deviations for measurements</span>
+<span class="sd">        from outside the stress periods defined in perioddata. For sites</span>
+<span class="sd">        with no measurements within a stress period, an average of all</span>
+<span class="sd">        other measurements is used.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This method is similar to mfsetup.tdis.aggregate_dataframe_to_stress_period in</span>
+<span class="sd">    what it does (resample time series to model stress periods), and for modflow-setup, </span>
+<span class="sd">    has is superceded by that method (called via TransientTabularData object). Keeping this</span>
+<span class="sd">    method here though, in case we need to use it in the future.</span>
+<span class="sd">    Key differences between two methods:</span>
+<span class="sd">    * this method operates on the whole timeseres of model stress periods instead of a single stress period</span>
+<span class="sd">    * this method allows for specification of both measured and estimated values; the number of estimated and measured values</span>
+<span class="sd">    contributing to each average are included in the output</span>
+<span class="sd">    * duplicate sites in mfsetup.tdis.aggregate_dataframe_to_stress_period (for example,</span>
+<span class="sd">    to handle wells located in the same model cell) can be aggregated with sum, mean, first, etc., or</span>
+<span class="sd">    by raising an error. In this method, the duplicate site with the most measurements (vs. estimates) is retained.</span>
+<span class="sd">    * this method fills stress periods without measurements using the mean values for all time.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># make dictionary of data keyed by site</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># optionally keep track of auxillary data</span>
+    <span class="c1"># (site number, name, etc.)</span>
+    <span class="k">if</span> <span class="n">keep_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">auxillary_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">keep_columns</span><span class="p">:</span>
+            <span class="n">auxillary_info</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">id_col</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="n">col</span><span class="p">]))</span>
+
+    <span class="c1"># create category column if there is none, to conform to logic below</span>
+    <span class="k">if</span> <span class="n">category_col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">values</span><span class="p">[</span><span class="n">category_col</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;measured&#39;</span>
+
+    <span class="n">values</span><span class="p">[</span><span class="n">datetime_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">datetime_col</span><span class="p">])</span>
+    <span class="n">values</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">id_col</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="n">datetime_col</span><span class="p">],</span> <span class="n">values</span><span class="p">[</span><span class="n">category_col</span><span class="p">])))</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="p">:</span> <span class="n">values</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">levels</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span>
+
+    <span class="c1"># Compute average base flow for each site, stress period</span>
+    <span class="c1"># fill missing values using means</span>
+    <span class="c1"># add columns describing source of base flow values</span>
+    <span class="c1"># vs = []  # list of processed monthly baseflow dataframes</span>
+    <span class="n">vpers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of processed period baseflow dataframes</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="c1"># create single set of values</span>
+        <span class="c1"># Use measured data where available; estimates where unvailable</span>
+        <span class="c1"># Note: unstack will fail if there are two measurement sites on the same line_id</span>
+        <span class="c1"># (with the same dates, which would be duplicates wrt the line_id)</span>
+        <span class="c1"># look at the fraction of values that are estimated;</span>
+        <span class="c1"># keep the site with the most measurements</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">duplicated</span><span class="p">())):</span>
+            <span class="n">duplicate_sites</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">site_no</span><span class="p">)))</span>
+            <span class="n">pct_estimated</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">site_no</span> <span class="ow">in</span> <span class="n">duplicate_sites</span><span class="p">:</span>
+                <span class="n">site_values</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">site_no</span> <span class="o">==</span> <span class="n">site_no</span><span class="p">]</span>
+                <span class="n">pct_estimated</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">site_values</span><span class="p">[</span><span class="n">category_col</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;estimated&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">site_values</span><span class="p">))</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">pct_estimated</span><span class="p">)</span>
+            <span class="n">duplicate_sites</span> <span class="o">=</span> <span class="n">duplicate_sites</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">site_no</span> <span class="o">==</span> <span class="n">duplicate_sites</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="n">datetime_col</span><span class="p">,</span> <span class="n">category_col</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;measured&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;picked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">][</span><span class="s1">&#39;measured&#39;</span><span class="p">]</span>
+                <span class="n">notmeasured</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">][</span><span class="s1">&#39;measured&#39;</span><span class="p">])</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">notmeasured</span><span class="p">,</span> <span class="s1">&#39;picked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">][</span><span class="s1">&#39;estimated&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">notmeasured</span><span class="p">]</span>
+                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;measured&#39;</span>
+                <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">notmeasured</span><span class="p">,</span> <span class="s1">&#39;method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;estimated&#39;</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">notmeasured</span><span class="p">):</span>
+                    <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">notmeasured</span><span class="p">]</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;estimated&#39;</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">notmeasured</span><span class="p">):</span>
+                    <span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">notmeasured</span><span class="p">]</span><span class="o">.</span><span class="n">method</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;measured&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;picked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">][</span><span class="s1">&#39;measured&#39;</span><span class="p">]</span>
+                <span class="n">v</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;measured&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;estimated&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">v</span><span class="p">[</span><span class="s1">&#39;picked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">][</span><span class="s1">&#39;estimated&#39;</span><span class="p">]</span>
+            <span class="n">v</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;estimated&#39;</span>
+        <span class="k">elif</span> <span class="s1">&#39;measured total flow&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">v</span><span class="p">[</span><span class="s1">&#39;picked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">values_col</span><span class="p">][</span><span class="s1">&#39;measured total flow&#39;</span><span class="p">]</span>  <span class="c1"># so that tallies go in &quot;n_measured&quot;</span>
+            <span class="n">v</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;measured total flow&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">[[</span><span class="s1">&#39;picked&#39;</span><span class="p">,</span> <span class="s1">&#39;method&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">v</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Figure out which stress period each discharge value is in</span>
+        <span class="c1"># 999 indicates values outside of the simulation timeframe</span>
+        <span class="n">v</span><span class="p">[</span><span class="s1">&#39;per&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">perioddata</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">start_datetime</span><span class="p">:</span><span class="n">r</span><span class="o">.</span><span class="n">end_datetime</span><span class="p">,</span> <span class="s1">&#39;per&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">per</span>
+            <span class="c1"># shave end date off dates in period</span>
+            <span class="c1"># (otherwise first month of next period will be included)</span>
+            <span class="n">per_end_datetime</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">end_datetime</span><span class="p">)</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">start_datetime</span><span class="p">:</span><span class="n">per_end_datetime</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">df</span><span class="p">[</span><span class="s1">&#39;per&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">per</span>
+            <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">per</span> <span class="o">==</span> <span class="o">-</span><span class="mi">9999</span><span class="p">])</span>  <span class="c1"># keep values outside of the simulation timeframe</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span>
+
+        <span class="c1"># Tally number of measured vs. estimated values for each SP</span>
+        <span class="n">vper</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;per&#39;</span><span class="p">,</span> <span class="s1">&#39;method&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">picked</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span>
+        <span class="n">vper</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;estimated&#39;</span><span class="p">:</span> <span class="s1">&#39;n_estimated&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;measured&#39;</span><span class="p">:</span> <span class="s1">&#39;n_measured&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;n_estimated&#39;</span><span class="p">,</span> <span class="s1">&#39;n_measured&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vper</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">vper</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># compute mean value and stdev for each stress period</span>
+        <span class="n">vper</span><span class="p">[</span><span class="s1">&#39;Q_avg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;per&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">vper</span><span class="p">[</span><span class="s1">&#39;Q_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;per&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">()</span>
+        <span class="n">vper</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># reindex to model times dataframe</span>
+        <span class="c1"># (pandas will fill empty periods with nans)</span>
+        <span class="c1"># use an outer join to retain values outside of the model time period</span>
+        <span class="n">vper</span> <span class="o">=</span> <span class="n">perioddata</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">vper</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+
+        <span class="c1"># fill in the start/end times for data outside of simulation period</span>
+        <span class="n">vper</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">-</span><span class="mi">9999</span><span class="p">,</span> <span class="s1">&#39;start_datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">per</span> <span class="o">==</span> <span class="o">-</span><span class="mi">9999</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">vper</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">-</span><span class="mi">9999</span><span class="p">,</span> <span class="s1">&#39;end_datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">per</span> <span class="o">==</span> <span class="o">-</span><span class="mi">9999</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">vper</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">-</span><span class="mi">9999</span><span class="p">,</span> <span class="s1">&#39;per&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+        <span class="n">vper</span><span class="o">.</span><span class="n">per</span> <span class="o">=</span> <span class="n">vper</span><span class="o">.</span><span class="n">per</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># nans in n_measured and n_estimated columns mean there were no values</span>
+        <span class="c1"># for that period. Fill with zero, convert columns to ints.</span>
+        <span class="n">vper</span><span class="o">.</span><span class="n">fillna</span><span class="p">({</span><span class="s1">&#39;n_measured&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;n_estimated&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">vper</span><span class="p">[</span><span class="s1">&#39;n_measured&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vper</span><span class="o">.</span><span class="n">n_measured</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">vper</span><span class="p">[</span><span class="s1">&#39;n_estimated&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vper</span><span class="o">.</span><span class="n">n_estimated</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="c1"># fill in the missing data with mean value</span>
+        <span class="n">vper</span><span class="p">[</span><span class="s1">&#39;filled&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">vper</span><span class="o">.</span><span class="n">Q_avg</span><span class="p">)</span>
+        <span class="n">vper</span><span class="p">[</span><span class="s1">&#39;Q_avg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">vper</span><span class="o">.</span><span class="n">Q_avg</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">vper</span><span class="o">.</span><span class="n">Q_avg</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+
+        <span class="n">v</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="n">vper</span><span class="p">[</span><span class="n">id_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+
+        <span class="c1"># map any auxillary info back to output using site numbers</span>
+        <span class="k">if</span> <span class="n">keep_columns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">keep_columns</span><span class="p">:</span>
+                <span class="n">vper</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">auxillary_info</span><span class="p">[</span><span class="n">col</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+
+        <span class="c1"># vs.append(v)</span>
+        <span class="n">vpers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vper</span><span class="p">)</span>
+
+    <span class="n">df_per</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">vpers</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df_per</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">
+        Last updated on Oct 01, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

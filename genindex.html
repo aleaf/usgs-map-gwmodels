@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; usgs-map-gwmodels 0.post30+g9e3f5cc documentation</title>
+  <title>Index &mdash; usgs-map-gwmodels 0.post33.dev0+g85e2b80 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post30+g9e3f5cc
+                0.post33.dev0+g85e2b80
               </div>
             
           
@@ -205,6 +205,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/mapgwm.framework.html#mapgwm.framework.add_discrete_colors_legend">add_discrete_colors_legend() (in module mapgwm.framework)</a>
 </li>
+      <li><a href="api/mapgwm.swflows.html#mapgwm.swflows.aggregrate_values_to_stress_periods">aggregrate_values_to_stress_periods() (in module mapgwm.swflows)</a>
+</li>
       <li><a href="api/mapgwm.swuds.html#mapgwm.swuds.Swuds.apply_footprint">apply_footprint() (mapgwm.swuds.Swuds method)</a>
 </li>
   </ul></td>
@@ -227,6 +229,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/mapgwm.swflows.html#mapgwm.swflows.combine_measured_estimated_values">combine_measured_estimated_values() (in module mapgwm.swflows)</a>
+</li>
       <li><a href="api/mapgwm.checkdatasets.html#mapgwm.check_input_datasets.compare_lists">compare_lists() (in module mapgwm.check_input_datasets)</a>
 </li>
   </ul></td>
@@ -239,8 +243,12 @@
 </li>
       <li><a href="api/mapgwm.swuds.html#mapgwm.swuds.Swuds.fix_path">fix_path() (mapgwm.swuds.Swuds static method)</a>
 </li>
+      <li><a href="api/mapgwm.swflows.html#mapgwm.swflows.format_site_ids">format_site_ids() (in module mapgwm.swflows)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/mapgwm.swflows.html#mapgwm.swflows.format_usgs_sw_site_id">format_usgs_sw_site_id() (in module mapgwm.swflows)</a>
+</li>
       <li><a href="api/mapgwm.swuds.html#mapgwm.swuds.Swuds.from_yaml">from_yaml() (mapgwm.swuds.Swuds class method)</a>
 
       <ul>
@@ -293,8 +301,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/mapgwm.swuds.html#mapgwm.swuds.Swuds.make_production_zones">make_production_zones() (mapgwm.swuds.Swuds method)</a>
 </li>
-      <li><a href="api/mapgwm.headobs.html#mapgwm.headobs.makedirs">makedirs() (in module mapgwm.headobs)</a>
-</li>
       <li>
     mapgwm.check_input_datasets
 
@@ -323,8 +329,6 @@
         <li><a href="api/mapgwm.lookups.html#module-mapgwm.lookups">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     mapgwm.nhdplus
 
@@ -332,11 +336,20 @@
         <li><a href="api/mapgwm.nhdplus.html#module-mapgwm.nhdplus">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     mapgwm.swb
 
       <ul>
         <li><a href="api/mapgwm.swb.html#module-mapgwm.swb">module</a>
+</li>
+      </ul></li>
+      <li>
+    mapgwm.swflows
+
+      <ul>
+        <li><a href="api/mapgwm.swflows.html#module-mapgwm.swflows">module</a>
 </li>
       </ul></li>
       <li>
@@ -355,6 +368,8 @@
 </li>
         <li><a href="api/mapgwm.swb.html#module-mapgwm.swb">mapgwm.swb</a>
 </li>
+        <li><a href="api/mapgwm.swflows.html#module-mapgwm.swflows">mapgwm.swflows</a>
+</li>
       </ul></li>
   </ul></td>
 </tr></table>
@@ -370,6 +385,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/mapgwm.framework.html#mapgwm.framework.plot_zone_maps">plot_zone_maps() (in module mapgwm.framework)</a>
 </li>
+      <li><a href="api/mapgwm.swflows.html#mapgwm.swflows.preprocess_flows">preprocess_flows() (in module mapgwm.swflows)</a>
+</li>
       <li><a href="api/mapgwm.headobs.html#mapgwm.headobs.preprocess_headobs">preprocess_headobs() (in module mapgwm.headobs)</a>
 </li>
   </ul></td>
@@ -380,11 +397,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/mapgwm.framework.html#mapgwm.framework.rasters_to_grid">rasters_to_grid() (in module mapgwm.framework)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/mapgwm.headobs.html#mapgwm.headobs.read_metadata">read_metadata() (in module mapgwm.headobs)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/mapgwm.swuds.html#mapgwm.swuds.Swuds.reproject">reproject() (mapgwm.swuds.Swuds method)</a>
+</li>
+      <li><a href="api/mapgwm.swflows.html#mapgwm.swflows.resample_group_timeseries">resample_group_timeseries() (in module mapgwm.swflows)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -424,7 +443,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Sep 23, 2020.
+        Last updated on Oct 01, 2020.
       </span>
 
     </p>

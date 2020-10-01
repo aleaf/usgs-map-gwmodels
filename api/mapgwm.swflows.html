@@ -1,0 +1,772 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mapgwm.swflows module &mdash; usgs-map-gwmodels 0.post33.dev0+g85e2b80 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mapgwm.Swuds Class" href="mapgwm.swuds.html" />
+    <link rel="prev" title="mapgwm.swb module" href="mapgwm.swb.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> usgs-map-gwmodels
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.post33.dev0+g85e2b80
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html"> More details on how to use the package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"> Code reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.checkdatasets.html">mapgwm.check_input_datasets module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.framework.html">mapgwm.framework module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.headobs.html">mapgwm.headobs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.lookups.html">mapgwm.lookups module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.swflows module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.swuds.html">mapgwm.Swuds Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.thermal.html">mapgwm.ThermalUse Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs.html"> Input Data Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references.html"> References cited</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">usgs-map-gwmodels</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Modules</a> &raquo;</li>
+        
+      <li>mapgwm.swflows module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/api/mapgwm.swflows.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="module-mapgwm.swflows">
+<span id="mapgwm-swflows-module"></span><h1>mapgwm.swflows module<a class="headerlink" href="#module-mapgwm.swflows" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="mapgwm.swflows.aggregrate_values_to_stress_periods">
+<code class="sig-prename descclassname">mapgwm.swflows.</code><code class="sig-name descname">aggregrate_values_to_stress_periods</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">perioddata</span></em>, <em class="sig-param"><span class="n">datetime_col</span><span class="o">=</span><span class="default_value">'datetime'</span></em>, <em class="sig-param"><span class="n">values_col</span><span class="o">=</span><span class="default_value">'values'</span></em>, <em class="sig-param"><span class="n">id_col</span><span class="o">=</span><span class="default_value">'id'</span></em>, <em class="sig-param"><span class="n">category_col</span><span class="o">=</span><span class="default_value">'qualifier'</span></em>, <em class="sig-param"><span class="n">keep_columns</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swflows.html#aggregrate_values_to_stress_periods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swflows.aggregrate_values_to_stress_periods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pandas sausage-making to take flow values at arbitrary times,
+and average them to model stress periods defined in a perioddata dataframe.
+Optionally, a category column identifying flow values as ‘measured’ or
+‘estimated’ can also be read. Measured values are used for the averages
+where available; the number of measured and estimated values contributing
+to each average are tallied in the output.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier">DataFrame</span></dt><dd><p>Input data</p>
+</dd>
+<dt><strong>perioddata</strong><span class="classifier">DataFrame</span></dt><dd><p>Stress Period start/end times. Must have columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 31%" />
+<col style="width: 44%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>per</p></td>
+<td><p>int</p></td>
+<td><p>MODFLOW Stress Period</p></td>
+</tr>
+<tr class="row-even"><td><p>start_datetime</p></td>
+<td><p>str or datetime64</p></td>
+<td><p>Period start time</p></td>
+</tr>
+<tr class="row-odd"><td><p>end_datetime</p></td>
+<td><p>str or datetime64</p></td>
+<td><p>Period end time</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>datetime_col</strong><span class="classifier">str</span></dt><dd><p>Column in data for Measurement dates (str or datetime64)</p>
+</dd>
+<dt><strong>id_col: int or str</strong></dt><dd><p>Column in data identifying the hydrography line or measurement site
+associated with flow value. Valid identifiers corresponding to the source
+hydrography (e.g. NHDPlus COMIDs) may be needed for locating the flows
+within the stream network, unless x and y coordinates are available.</p>
+</dd>
+<dt><strong>values_col</strong><span class="classifier">float</span></dt><dd><p>Column in data with observed or estimated values.</p>
+</dd>
+<dt><strong>category_col</strong><span class="classifier">str; categorical</span></dt><dd><p>Column in data with ‘measured’ or ‘estimated’ flags indicating how each flow
+value was derived. If None, ‘measured’ is used for all flows. By default, ‘qualifier’.</p>
+</dd>
+<dt><strong>site_no_col</strong><span class="classifier">str</span></dt><dd><p>Optional column in data identifying the measurement site associated with each value,
+for example, for keeping track of measurement site numbers or names that are different
+than the hydrography identifiers in line_id_col.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>df_per</strong><span class="classifier">DataFrame</span></dt><dd><p>Stress period averages, and metadata describing the source of the
+averages (number of estimated vs. measured values). For each site,
+also includes averages and standard deviations for measurements
+from outside the stress periods defined in perioddata. For sites
+with no measurements within a stress period, an average of all
+other measurements is used.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method is similar to mfsetup.tdis.aggregate_dataframe_to_stress_period in
+what it does (resample time series to model stress periods), and for modflow-setup, 
+has is superceded by that method (called via TransientTabularData object). Keeping this
+method here though, in case we need to use it in the future.
+Key differences between two methods:
+* this method operates on the whole timeseres of model stress periods instead of a single stress period
+* this method allows for specification of both measured and estimated values; the number of estimated and measured values
+contributing to each average are included in the output
+* duplicate sites in mfsetup.tdis.aggregate_dataframe_to_stress_period (for example,
+to handle wells located in the same model cell) can be aggregated with sum, mean, first, etc., or
+by raising an error. In this method, the duplicate site with the most measurements (vs. estimates) is retained.
+* this method fills stress periods without measurements using the mean values for all time.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.swflows.combine_measured_estimated_values">
+<code class="sig-prename descclassname">mapgwm.swflows.</code><code class="sig-name descname">combine_measured_estimated_values</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">measured_values</span></em>, <em class="sig-param"><span class="n">estimated_values</span></em>, <em class="sig-param"><span class="n">measured_values_data_col</span></em>, <em class="sig-param"><span class="n">estimated_values_data_col</span></em>, <em class="sig-param"><span class="n">dest_values_col</span><span class="o">=</span><span class="default_value">'obsval'</span></em>, <em class="sig-param"><span class="n">resample_freq</span><span class="o">=</span><span class="default_value">'MS'</span></em>, <em class="sig-param"><span class="n">how</span><span class="o">=</span><span class="default_value">'mean'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swflows.html#combine_measured_estimated_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swflows.combine_measured_estimated_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Combine time series of measured and estimated values for multiple sites,
+giving preference to measured values.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>measured_values</strong><span class="classifier">csv file or DataFrame</span></dt><dd><p>Time series of measured values at multiple sites, similar to that
+output by <a class="reference internal" href="#mapgwm.swflows.preprocess_flows" title="mapgwm.swflows.preprocess_flows"><code class="xref py py-func docutils literal notranslate"><span class="pre">preprocess_flows()</span></code></a>.</p>
+<p>Columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifiers; read-in as strings</p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>measurement dates/times</p></td>
+</tr>
+<tr class="row-odd"><td><p>data columns</p></td>
+<td><p>columns with floating-point data to combine</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>estimated_values</strong><span class="classifier">csv file or DataFrame</span></dt><dd><p>Time series of measured values at multiple sites, similar to that
+output by <a class="reference internal" href="#mapgwm.swflows.preprocess_flows" title="mapgwm.swflows.preprocess_flows"><code class="xref py py-func docutils literal notranslate"><span class="pre">preprocess_flows()</span></code></a>.</p>
+<p>Columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifiers; read-in as strings</p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>measurement dates/times</p></td>
+</tr>
+<tr class="row-odd"><td><p>data columns</p></td>
+<td><p>columns with floating-point data to combine</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>measured_values_data_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>measured_values</cite> with data to combine.</p>
+</dd>
+<dt><strong>estimated_values_data_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>estimated_values</cite> with data to combine.</p>
+</dd>
+<dt><strong>dest_values_col</strong><span class="classifier">str</span></dt><dd><p>Output column with combined data from <cite>measured_values_data_col</cite>
+and estimated_values_data_col, by default ‘obsval’</p>
+</dd>
+<dt><strong>resample_freq</strong><span class="classifier">str or DateOffset</span></dt><dd><p>Any <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases">pandas frequency alias</a>
+The data columns in <cite>measured_values</cite> and <cite>estimated_values</cite> are resampled
+to this fequency using the method specified by <code class="docutils literal notranslate"><span class="pre">how</span></code>.
+By default, ‘MS’ (month-start)</p>
+</dd>
+<dt><strong>how</strong><span class="classifier">str</span></dt><dd><p>Resample method. Can be any of the method calls on the pandas
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/resampling.html">Resampler</a>
+object. By default, ‘mean’</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>combined</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame containing all columns from <cite>estimated_values</cite>, the data columns
+from <cite>measured_values</cite>, and a <cite>dest_values_col</cite> consisting of measured values where
+present, and estimated values otherwise. An <code class="docutils literal notranslate"><span class="pre">&quot;est_&quot;</span></code> prefix is added to the
+estimated data columns, and a <code class="docutils literal notranslate"><span class="pre">&quot;meas&quot;</span></code> prefix is added to the measured data columns.</p>
+<p>Example:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 15%" />
+<col style="width: 13%" />
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>site_no</p></th>
+<th class="head"><p>datetime</p></th>
+<th class="head"><p>category</p></th>
+<th class="head"><p>est_qbase_m3d</p></th>
+<th class="head"><p>meas_qbase_m3d</p></th>
+<th class="head"><p>obsval</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>07288000</p></td>
+<td><p>2017-10-01</p></td>
+<td><p>measured</p></td>
+<td><p>47872.1</p></td>
+<td><p>28438.7</p></td>
+<td><p>28438.7</p></td>
+</tr>
+<tr class="row-odd"><td><p>07288000</p></td>
+<td><p>2017-11-01</p></td>
+<td><p>measured</p></td>
+<td><p>47675.9</p></td>
+<td><p>24484.5</p></td>
+<td><p>24484.5</p></td>
+</tr>
+</tbody>
+</table>
+<p>Where <code class="docutils literal notranslate"><span class="pre">category</span></code> denotes whether the value in obsval is measured or estimated.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>All columns with a floating-point dtype are identified as “Data columns,” and
+are resampled as specified by the <cite>resample_freq</cite> and <cite>how</cite> arguments. For all other
+columns, the first value for each time at each site is used. The resampled measured
+data are joined to the resampled estimated data on the basis of site numbers
+and times (as a pandas <cite>MultiIndex</cite>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.swflows.format_site_ids">
+<code class="sig-prename descclassname">mapgwm.swflows.</code><code class="sig-name descname">format_site_ids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">iterable</span></em>, <em class="sig-param"><span class="n">add_leading_zeros</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swflows.html#format_site_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swflows.format_site_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cast site ids to strings</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.swflows.format_usgs_sw_site_id">
+<code class="sig-prename descclassname">mapgwm.swflows.</code><code class="sig-name descname">format_usgs_sw_site_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">stationID</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swflows.html#format_usgs_sw_site_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swflows.format_usgs_sw_site_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add leading zeros to NWIS surface water sites, if they are missing.
+See <a class="reference external" href="https://help.waterdata.usgs.gov/faq/sites/do-station-numbers-have-any-particular-meaning">https://help.waterdata.usgs.gov/faq/sites/do-station-numbers-have-any-particular-meaning</a>.
+Zeros are only added to numeric site numbers less than 15 characters in length.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.swflows.preprocess_flows">
+<code class="sig-prename descclassname">mapgwm.swflows.</code><code class="sig-name descname">preprocess_flows</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flow_data_columns</span><span class="o">=</span><span class="default_value">['flow']</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_id_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_feature_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_crs</span><span class="o">=</span><span class="default_value">4269</span></em>, <em class="sig-param"><span class="n">dest_crs</span><span class="o">=</span><span class="default_value">5070</span></em>, <em class="sig-param"><span class="n">datetime_col</span><span class="o">=</span><span class="default_value">'datetime'</span></em>, <em class="sig-param"><span class="n">site_no_col</span><span class="o">=</span><span class="default_value">'site_no'</span></em>, <em class="sig-param"><span class="n">line_id_col</span><span class="o">=</span><span class="default_value">'line_id'</span></em>, <em class="sig-param"><span class="n">x_coord_col</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">y_coord_col</span><span class="o">=</span><span class="default_value">'y'</span></em>, <em class="sig-param"><span class="n">name_col</span><span class="o">=</span><span class="default_value">'name'</span></em>, <em class="sig-param"><span class="n">flow_qualifier_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">default_qualifier</span><span class="o">=</span><span class="default_value">'measured'</span></em>, <em class="sig-param"><span class="n">include_sites</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">include_line_ids</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_volume_units</span><span class="o">=</span><span class="default_value">'ft3'</span></em>, <em class="sig-param"><span class="n">source_time_units</span><span class="o">=</span><span class="default_value">'s'</span></em>, <em class="sig-param"><span class="n">dest_volume_units</span><span class="o">=</span><span class="default_value">'m3'</span></em>, <em class="sig-param"><span class="n">dest_time_units</span><span class="o">=</span><span class="default_value">'d'</span></em>, <em class="sig-param"><span class="n">geographic_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">geographic_groups_col</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_obsname_len</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">add_leading_zeros_to_sw_site_nos</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">column_renames</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">'../source_data/observations/flux_obs/preprocessed_flux_obs.csv'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swflows.html#preprocess_flows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swflows.preprocess_flows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preprocess stream flow observation data, for example, from NWIS or another data source that
+outputs time series in CSV format with site locations and identifiers.</p>
+<ul class="simple">
+<li><p>Data are reprojected from a <cite>source_crs</cite> (Coordinate reference system; assumed to be in geographic coordinates)
+to the CRS of the model (<cite>dest_crs</cite>)</p></li>
+<li><p>Data are culled to a <cite>start_date</cite> and optionally, a polygon or set of polygons defining the model area</p></li>
+<li><p>length and time units are converted to those of the groundwater model.</p></li>
+<li><p>Prefixes for observation names (with an optional length limit) that identify the location are generated</p></li>
+<li><p>Preliminary observation groups can also be assigned, based on geographic areas defined by polygons
+(<cite>geographic_groups</cite> parameter)</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier">csv file or DataFrame</span></dt><dd><p>Time series of stream flow observations.
+Columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>measurement dates/times</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>x-coordinate of site</p></td>
+</tr>
+<tr class="row-even"><td><p>y</p></td>
+<td><p>y-coordinate of site</p></td>
+</tr>
+<tr class="row-odd"><td><p>flow_data_columns</p></td>
+<td><p>Columns of observed streamflow values</p></td>
+</tr>
+<tr class="row-even"><td><p>flow_qualifier_column</p></td>
+<td><p>Optional column with qualifiers for flow values</p></td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>x and y columns can alternatively be in the metadata table</p></li>
+<li><p>flow_data_columns are denoted in <cite>flow_data_columns</cite>; multiple
+columns can be included to process base flow and total flow, or
+other statistics in tandem</p></li>
+<li><p>For example, <cite>flow_qualifier_column</cite> may have “estimated” or “measured”
+flags denoting whether streamflows were derived from measured values
+or statistical estimates.</p></li>
+</ul>
+</dd>
+<dt><strong>metadata</strong><span class="classifier">csv file or DataFrame</span></dt><dd><p>Stream flow observation site information.</p>
+<p>May include columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 82%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>x</p></td>
+<td><p>x-coordinate of site</p></td>
+</tr>
+<tr class="row-odd"><td><p>y</p></td>
+<td><p>y-coordinate of site</p></td>
+</tr>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>name of site</p></td>
+</tr>
+<tr class="row-odd"><td><p>line_id_col</p></td>
+<td><p>Identifier for a line in a hydrography dataset that the site is associated with.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>other columns in metadata will be passed through to the metadata output</p></li>
+</ul>
+</dd>
+<dt><strong>flow_data_columns</strong><span class="classifier">list of strings</span></dt><dd><p>Columns in data with flow values or their statistics.
+By default, [‘q_cfs’]
+start_date : str (YYYY-mm-dd)
+Simulation start date (cull observations before this date)</p>
+</dd>
+<dt><strong>active_area</strong><span class="classifier">str</span></dt><dd><p>Shapefile with polygon to cull observations to. Automatically reprojected
+to dest_crs if the shapefile includes a .prj file.
+by default, None.</p>
+</dd>
+<dt><strong>active_area_id_column</strong><span class="classifier">str, optional</span></dt><dd><p>Column in active_area with feature ids.
+By default, None, in which case all features are used.</p>
+</dd>
+<dt><strong>active_area_feature_id</strong><span class="classifier">str, optional</span></dt><dd><p>ID of feature to use for active area
+By default, None, in which case all features are used.</p>
+</dd>
+<dt><strong>source_crs</strong><span class="classifier">obj</span></dt><dd><p>Coordinate reference system of the head observation locations.
+A Python int, dict, str, or <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS" title="(in pyproj v2.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyproj.crs.CRS</span></code></a> instance
+passed to <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS.from_user_input" title="(in pyproj v2.6.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyproj.crs.CRS.from_user_input()</span></code></a></p>
+<dl class="simple">
+<dt>Can be any of:</dt><dd><ul class="simple">
+<li><p>PROJ string</p></li>
+<li><p>Dictionary of PROJ parameters</p></li>
+<li><p>PROJ keyword arguments for parameters</p></li>
+<li><p>JSON string with PROJ parameters</p></li>
+<li><p>CRS WKT string</p></li>
+<li><p>An authority string [i.e. ‘epsg:4326’]</p></li>
+<li><p>An EPSG integer code [i.e. 4326]</p></li>
+<li><p>A tuple of (“auth_name”: “auth_code”) [i.e (‘epsg’, ‘4326’)]</p></li>
+<li><p>An object with a <cite>to_wkt</cite> method.</p></li>
+<li><p>A <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS" title="(in pyproj v2.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyproj.crs.CRS</span></code></a> class</p></li>
+</ul>
+</dd>
+</dl>
+<p>By default, epsg:4269</p>
+</dd>
+<dt><strong>dest_crs</strong><span class="classifier">obj</span></dt><dd><p>Coordinate reference system of the model. Same input types
+as <code class="docutils literal notranslate"><span class="pre">source_crs</span></code>.
+By default, epsg:5070</p>
+</dd>
+<dt><strong>datetime_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data with observation date/times,
+by default ‘datetime’</p>
+</dd>
+<dt><strong>site_no_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data and metadata with site identifiers,
+by default ‘site_no’</p>
+</dd>
+<dt><strong>line_id_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data or metadata with identifiers for
+hydrography lines associated with observation sites.
+by default ‘line_id’</p>
+</dd>
+<dt><strong>x_coord_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data or metadata with x-coordinates,
+by default ‘x’</p>
+</dd>
+<dt><strong>y_coord_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data or metadata with y-coordinates,
+by default ‘y’</p>
+</dd>
+<dt><strong>name_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data or metadata with observation site names,
+by default ‘name’</p>
+</dd>
+<dt><strong>flow_qualifier_column</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data with flow observation qualifiers, such
+as “measured” or “estimated”
+by default ‘category’</p>
+</dd>
+<dt><strong>default_qualifier</strong><span class="classifier">str, optional</span></dt><dd><p>Default qualifier to populate flow_qualifier_column if it
+is None. By default, “measured”</p>
+</dd>
+<dt><strong>include_sites</strong><span class="classifier">list-like, optional</span></dt><dd><p>Exclude output to these sites.
+by default, None (include all sites)</p>
+</dd>
+<dt><strong>include_line_ids</strong><span class="classifier">list-like, optional</span></dt><dd><p>Exclude output to these sites, represented by line identifiers.
+by default, None (include all sites)</p>
+</dd>
+<dt><strong>source_volume_units</strong><span class="classifier">str, ‘m3’, ‘cubic meters’, ‘ft3’, etc.</span></dt><dd><p>Volume units of the source data. By default, ‘ft3’</p>
+</dd>
+<dt><strong>source_time_units</strong><span class="classifier">str, ‘s’, ‘seconds’, ‘days’, etc.</span></dt><dd><p>Time units of the source data. By default, ‘s’</p>
+</dd>
+<dt><strong>dest_volume_units</strong><span class="classifier">str, ‘m3’, ‘cubic meters’, ‘ft3’, etc.</span></dt><dd><p>Volume units of the output (model). By default, ‘m’</p>
+</dd>
+<dt><strong>dest_time_units</strong><span class="classifier">str, ‘s’, ‘seconds’, ‘days’, etc.</span></dt><dd><p>Time units of the output (model). By default, ‘m’</p>
+</dd>
+<dt><strong>geographic_groups</strong><span class="classifier">file, dict or list-like</span></dt><dd><p>Option to group observations by area(s) of interest. Can
+be a shapefile, list of shapefiles, or dictionary of shapely polygons.
+A ‘group’ column will be created in the metadata, and observation
+sites within each polygon will be assigned the group name
+associated with that polygon.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">geographic_groups</span><span class="o">=</span><span class="s1">&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
+<span class="n">geographic_groups</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span><span class="p">]</span>
+<span class="n">geographic_groups</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cha&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">shapely</span> <span class="n">Polygon</span><span class="o">&gt;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Where ‘cha’ is an observation group name for observations located within the
+the area defined by CompositeHydrographArea.shp. For shapefiles,
+group names are provided in a <cite>geographic_groups_col</cite>.</p>
+</dd>
+<dt><strong>geographic_groups_col</strong><span class="classifier">str</span></dt><dd><p>Field name in the <cite>geographic_groups</cite> shapefile(s) containing the
+observation group names associated with each polygon.</p>
+</dd>
+<dt><strong>max_obsname_len</strong><span class="classifier">int or None</span></dt><dd><p>Maximum length for observation name prefix. Default of 13
+allows for a PEST obsnme of 20 characters or less with
+&lt;prefix&gt;_yyyydd or &lt;prefix&gt;_&lt;per&gt;d&lt;per&gt;
+(e.g. &lt;prefix&gt;_2d1 for a difference between stress periods 2 and 1)
+If None, observation names will not be truncated. PEST++ does not have
+a limit on observation name length.</p>
+</dd>
+<dt><strong>add_leading_zeros_to_sw_site_nos</strong><span class="classifier">bool</span></dt><dd><p>Whether or not to pad site numbers using the
+:func:~`mapgwm.swflows.format_usgs_sw_site_id` function.
+By default, False.</p>
+</dd>
+<dt><strong>column_renames</strong><span class="classifier">dict, optional</span></dt><dd><p>Option to rename columns in the data or metadata that are different than those listed above.
+For example, if the data file has a ‘SITE_NO’ column instead of ‘SITE_BADGE’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">column_renames</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">:</span> <span class="s1">&#39;site_no&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>by default None, in which case the renames listed above will be used.
+Note that the renames must be the same as those listed above for
+<a class="reference internal" href="#mapgwm.swflows.preprocess_flows" title="mapgwm.swflows.preprocess_flows"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapgwm.swflows.preprocess_flows()</span></code></a> to work.</p>
+</dd>
+<dt><strong>outfile</strong><span class="classifier">str</span></dt><dd><p>Where output file will be written. Metadata are written to a file
+with the same name, with an additional “_info” suffix prior to
+the file extension.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>data</strong><span class="classifier">DataFrame</span></dt><dd><p>Preprocessed time series</p>
+</dd>
+<dt><strong>metadata</strong><span class="classifier">DataFrame</span></dt><dd><p>Preprocessed metadata</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p><cite>The PEST++ Manual &lt;https://github.com/usgs/pestpp/tree/master/documentation&gt;</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="mapgwm.swflows.resample_group_timeseries">
+<code class="sig-prename descclassname">mapgwm.swflows.</code><code class="sig-name descname">resample_group_timeseries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">resample_freq</span><span class="o">=</span><span class="default_value">'MS'</span></em>, <em class="sig-param"><span class="n">how</span><span class="o">=</span><span class="default_value">'mean'</span></em>, <em class="sig-param"><span class="n">add_data_prefix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swflows.html#resample_group_timeseries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swflows.resample_group_timeseries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resample a DataFrame with both groups (e.g. measurement sites)
+and time series (measurements at each site).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>df</strong><span class="classifier">DataFrame</span></dt><dd><p>Time series of values at multiple sites, similar to that
+output by <a class="reference internal" href="#mapgwm.swflows.preprocess_flows" title="mapgwm.swflows.preprocess_flows"><code class="xref py py-func docutils literal notranslate"><span class="pre">preprocess_flows()</span></code></a>.</p>
+<p>Columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 68%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifiers; read-in as strings</p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>measurement dates/times</p></td>
+</tr>
+<tr class="row-odd"><td><p>data columns</p></td>
+<td><p>columns with floating-point data to resample</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>resample_freq</strong><span class="classifier">str or DateOffset</span></dt><dd><p>Any <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases">pandas frequency alias</a>
+The data columns in <cite>measured_values</cite> and <cite>estimated_values</cite> are resampled
+to this fequency using the method specified by <code class="docutils literal notranslate"><span class="pre">how</span></code>.
+By default, ‘MS’ (month-start)</p>
+</dd>
+<dt><strong>how</strong><span class="classifier">str</span></dt><dd><p>Resample method. Can be any of the method calls on the pandas
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/resampling.html">Resampler</a>
+object. By default, ‘mean’</p>
+</dd>
+<dt><strong>add_data_prefix</strong><span class="classifier">str</span></dt><dd><p>Option to add prefix to data columns. By default, None</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>resampled</strong><span class="classifier">DataFrame</span></dt><dd><p>Resampled data at each site.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>All columns with a floating-point dtype are identified as “Data columns,” and
+are resampled as specified by the <cite>resample_freq</cite> and <cite>how</cite> arguments. For all other
+columns, the first value for each time at each site is used.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="mapgwm.swuds.html" class="btn btn-neutral float-right" title="mapgwm.Swuds Class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mapgwm.swb.html" class="btn btn-neutral float-left" title="mapgwm.swb module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">
+        Last updated on Oct 01, 2020.
+      </span>
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

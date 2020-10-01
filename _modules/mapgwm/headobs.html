@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.headobs &mdash; usgs-map-gwmodels 0.post30+g9e3f5cc documentation</title>
+  <title>mapgwm.headobs &mdash; usgs-map-gwmodels 0.post33.dev0+g85e2b80 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post30+g9e3f5cc
+                0.post33.dev0+g85e2b80
               </div>
             
           
@@ -174,6 +174,7 @@
   <h1>Source code for mapgwm.headobs</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -183,14 +184,7 @@
 <span class="kn">from</span> <span class="nn">mfsetup.obs</span> <span class="kn">import</span> <span class="n">make_obsname</span>
 <span class="kn">from</span> <span class="nn">mfsetup.units</span> <span class="kn">import</span> <span class="n">convert_length_units</span>
 <span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">aq_codes_dict</span><span class="p">,</span> <span class="n">gwlevels_col_renames</span>
-
-
-<div class="viewcode-block" id="makedirs"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.makedirs">[docs]</a><span class="k">def</span> <span class="nf">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
-    <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;shps/&#39;</span><span class="p">),</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;figures/&#39;</span><span class="p">)]</span>
-    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span></div>
+<span class="kn">from</span> <span class="nn">mapgwm.utils</span> <span class="kn">import</span> <span class="n">makedirs</span>
 
 
 <div class="viewcode-block" id="get_header_length"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.get_header_length">[docs]</a><span class="k">def</span> <span class="nf">get_header_length</span><span class="p">(</span><span class="n">sitefile</span><span class="p">,</span> <span class="n">col0</span><span class="o">=</span><span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">):</span>
@@ -272,7 +266,7 @@
 
     <span class="c1"># read in the metadata</span>
     <span class="n">dflist</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata_files</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>  <span class="c1"># allows list of paths or single path</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata_files</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata_files</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>  <span class="c1"># allows list of paths or single path</span>
         <span class="n">metadata_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">metadata_files</span><span class="p">]</span>
     <span class="c1"># default columns to read, unless &#39;usecols&#39; is specified in the metadata kwargs</span>
     <span class="n">metadata_usecols</span> <span class="o">=</span> <span class="p">[</span>
@@ -434,7 +428,7 @@
                        <span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;1998-04-01&#39;</span><span class="p">,</span> <span class="n">active_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">active_area_id_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">active_area_feature_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">src_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                       <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
                        <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
                        <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
                        <span class="n">aoi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -444,7 +438,7 @@
     <span class="sd">&quot;&quot;&quot;Preprocess head observation data, for example, groundwater level data output from the</span>
 <span class="sd">    `visGWDB program &lt;https://doi.org/10.5066/P9W004O6&gt;`_.</span>
 
-<span class="sd">    * Data are reprojected from a `src_crs` (Coordinate reference system; assumed to be in geographic coordinates)</span>
+<span class="sd">    * Data are reprojected from a `source_crs` (Coordinate reference system; assumed to be in geographic coordinates)</span>
 <span class="sd">      to the CRS of the model (`dest_crs`)</span>
 <span class="sd">    * Data are culled to a `start_date` and optionally, a polygon or set of polygons defining the model area</span>
 <span class="sd">    * length units are converted to those of the groundwater model. Open intervals for the wells are</span>
@@ -545,7 +539,7 @@
 <span class="sd">    model_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
 <span class="sd">        Length units of model.</span>
 <span class="sd">    aoi : dict  (name: shapefile path)</span>
-<span class="sd">        Option to group observations by area of interest. For example::</span>
+<span class="sd">        Option to group observations by area(s) of interest. For example::</span>
 
 <span class="sd">            aoi={&#39;mscha&#39;: &#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
 <span class="sd">                 }</span>
@@ -561,7 +555,9 @@
 <span class="sd">        If None, observation names will not be truncated. PEST++ does not have</span>
 <span class="sd">        a limit on observation name length.</span>
 <span class="sd">    outfile : str</span>
-<span class="sd">        Where output file will be written</span>
+<span class="sd">        Where output file will be written. Metadata are written to a file</span>
+<span class="sd">        with the same name, with an additional &quot;_info&quot; suffix prior to</span>
+<span class="sd">        the file extension.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -611,7 +607,7 @@
     <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># project x, y to model crs</span>
-    <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span> <span class="o">=</span> <span class="n">project</span><span class="p">((</span><span class="n">well_info</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">well_info</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">src_crs</span><span class="p">,</span> <span class="n">dest_crs</span><span class="p">)</span>
+    <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span> <span class="o">=</span> <span class="n">project</span><span class="p">((</span><span class="n">well_info</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">well_info</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">source_crs</span><span class="p">,</span> <span class="n">dest_crs</span><span class="p">)</span>
     <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span>
     <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span><span class="p">)]</span>
@@ -662,8 +658,8 @@
     <span class="c1"># monthly measured levels may not have standard deviation</span>
     <span class="c1"># (as opposed to monthly statistical estimates)</span>
     <span class="n">criteria</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="s1">&#39;head_std&#39;</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="n">criteria</span> <span class="o">=</span> <span class="n">criteria</span> <span class="o">&amp;</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;head_std&#39;</span><span class="p">])</span>
+    <span class="c1">#if &#39;head_std&#39; in df.columns:</span>
+    <span class="c1">#    criteria = criteria &amp; pd.notnull(well_info[&#39;head_std&#39;])</span>
     <span class="n">well_info</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="n">criteria</span><span class="p">]</span>
 
     <span class="c1"># verify that all well_info have a wellhead elevation</span>
@@ -845,7 +841,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Sep 23, 2020.
+        Last updated on Oct 01, 2020.
       </span>
 
     </p>
