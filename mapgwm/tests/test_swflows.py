@@ -180,8 +180,8 @@ def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_col
                                       column_renames=column_renames,
                                       outfile=outfile
                                      )
-    assert os.path.exists(os.path.join(test_output_folder, 'preprocessed_flows.csv'))
-    assert os.path.exists(os.path.join(test_output_folder, 'preprocessed_flows_info.csv'))
+    assert outfile.exists()
+    assert Path(outfile.parent, outfile.stem + '_info.csv').exists()
     expected_data_columns = ['site_no', 'datetime'] + flow_data_cols + ['category']
     expected_data_columns = [column_renames.get(c, c) for c in expected_data_columns]
     assert np.all(data.columns == expected_data_columns)
