@@ -1,9 +1,9 @@
 import collections
 import os
+from pathlib import Path
 import warnings
 import numpy as np
 import pandas as pd
-from mapgwm.utils import makedirs
 from shapely.geometry import Point, MultiPolygon
 import matplotlib.pyplot as plt
 from gisutils import shp2df, df2shp, project, get_values_at_points
@@ -92,7 +92,7 @@ def read_metadata(metadata_files, column_renames=None,
 
     # read in the metadata
     dflist = []
-    if isinstance(metadata_files, str):  # allows list of paths or single path
+    if isinstance(metadata_files, str) or isinstance(metadata_files, Path):  # allows list of paths or single path
         metadata_files = [metadata_files]
     # default columns to read, unless 'usecols' is specified in the metadata kwargs
     metadata_usecols = [
@@ -484,8 +484,8 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     # monthly measured levels may not have standard deviation
     # (as opposed to monthly statistical estimates)
     criteria = pd.notnull(well_info['head'])
-    if 'head_std' in df.columns:
-        criteria = criteria & pd.notnull(well_info['head_std'])
+    #if 'head_std' in df.columns:
+    #    criteria = criteria & pd.notnull(well_info['head_std'])
     well_info = well_info[criteria]
 
     # verify that all well_info have a wellhead elevation

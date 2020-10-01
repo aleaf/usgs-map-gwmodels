@@ -1,0 +1,79 @@
+#  
+# Created on Tue Apr 14 13:01:42 2020
+#  
+#                            METADATA OF GROUNDWATER WELLS
+# 
+#  Based on scripting of the National Water Information System (NWIS) database of the
+#  U.S. Geological Survey (USGS) by W.H. Asquith and R.C. Seanor (2016--2020)
+#  
+#  All length units (except the projected coordinates) are in units of feet (native NWIS)
+#  and never converted to meters in this table.
+#  
+#  The columns are defined in supporting documentation but are briefly described:
+# ---------------------------------------------------------------------------------------
+#   SITE_BADGE         -- Agency code and site identification number
+#   AGENCY_CD          -- Agency code
+#   SITE_NO            -- Site identification number
+#   OPEN_COUNT         -- Number of openings
+#   OPEN_TOP_VA        -- Minimum top opening (screen) of the well and is a depth below land surface, in feet
+#   OPEN_BOTTOM_VA     -- Maximum bottom opening (screen) of the well and is a depth below land surface, in feet
+#   OPEN_TOTAL_VA      -- Difference between OPEN_TOP_VA and OPEN_BOTTOM_VA, in feet
+#   CSNG_COUNT         -- Number of casings
+#   CSNG_TOP_VA        -- Minimum top casing of the well and is a depth below land surface, in feet
+#   CSNG_BOTTOM_VA     -- Maximum bottom casing of the well and is a depth below land surface, in feet
+#   GEOH_COUNT         -- The number of lithologic records for a well
+#   LITH_TOP_VA        -- Minimum top of lithology and is a depth below land surface, in feet
+#   LITH_BOTTOM_VA     -- Maximum bottom of lithology and is a depth below land surface, in feet
+#   HOLE_COUNT         -- Number of holes
+#   HOLE_TOP_VA        -- Minimum top hole opening and is a depth below land surface, in feet
+#   HOLE_BOTTOM_VA     -- Maximum bottom hole opening and is a depth below land surface, in feet
+#   STATION_NM         -- Site name
+#   DEC_LAT_VA         -- Decimal latitude in North American Datum of 1983 (NAD83)
+#   DEC_LONG_VA        -- Decimal longitude in North American Datum of 1983 (NAD83)
+#   HORZ_DATUM         -- The horizontal datum and exclusively North American Datum of 1983 (NAD83)
+#   COORD_METH_CD      -- Latitude-longitude method
+#   COORD_ACY_CD       -- Latitude-longitude accuracy
+#   LAND_NET_DS        -- Land net location description
+#   COUNTRY_CD         -- Country code
+#   STATE_CD           -- State code
+#   COUNTY_CD          -- County code
+#   ALT_VA             -- Altitude of land surface
+#   ALT_METH_CD        -- Method altitude determined
+#   ALT_ACY_VA         -- Altitude accuracy
+#   ALT_DATUM_CD       -- Altitude datum code
+#   HUC_CD             -- Hydrologic unit code
+#   SITE_TP_CD         -- Site type code
+#   CONSTRUCTION_DT    -- Construction date and time
+#   RELIABILITY_CD     -- Reliability of the data available for the well
+#   AQFR_CD            -- Local aquifer code
+#   NAT_AQFR_CD        -- National aquifer code
+#   SITE_USE_1_CD      -- Site use no. 1 code
+#   SITE_USE_2_CD      -- Site use no. 2 code
+#   SITE_USE_3_CD      -- Site use no. 3 code
+#   WATER_USE_1_CD     -- Water use no. 1 code
+#   WATER_USE_2_CD     -- Water use no. 2 code
+#   WATER_USE_3_CD     -- Water use no. 3 code
+#   NAT_WATER_USE_CD   -- National water use code
+#   AQFR_TYPE_CD       -- Local aquifer type code
+#   WELL_DEPTH_VA      -- Well depth, in feet
+#   HOLE_DEPTH_VA      -- Total hole depth, in feet
+#   OTID_ID            -- Other identifiers for a well
+#   PROJ_EASTING       -- Projected easting coordinate of DEC_LONG_VA
+#   PROJ_NORTHING      -- Projected northing coordinate of DEC_LAT_VA
+#   IS_NWIS            -- Are any measurements in the USGS National Water Information System
+#   AQFR_BOTTOM_ALT_VA -- Altitude of aquifer bottom (not depth below land surface), in feet
+#   AQFR_TOP_ALT_VA    -- Altitude of aquifer top (not depth below land surface), in feet
+#   AQFR_ALT_DATUM_CD  -- Vertical datum code of the aquifer bottom and top
+# ---------------------------------------------------------------------------------------
+#  
+SITE_BADGE	AGENCY_CD	SITE_NO	OPEN_COUNT	OPEN_TOP_VA	OPEN_BOTTOM_VA	OPEN_TOTAL_VA	CSNG_COUNT	CSNG_TOP_VA	CSNG_BOTTOM_VA	GEOH_COUNT	LITH_TOP_VA	LITH_BOTTOM_VA	HOLE_COUNT	HOLE_TOP_VA	HOLE_BOTTOM_VA	STATION_NM	DEC_LAT_VA	DEC_LONG_VA	HORZ_DATUM	COORD_METH_CD	COORD_ACY_CD	LAND_NET_DS	COUNTRY_CD	STATE_CD	COUNTY_CD	ALT_VA	ALT_METH_CD	ALT_ACY_VA	ALT_DATUM_CD	HUC_CD	SITE_TP_CD	CONSTRUCTION_DT	RELIABILITY_CD	AQFR_CD	NAT_AQFR_CD	SITE_USE_1_CD	SITE_USE_2_CD	SITE_USE_3_CD	WATER_USE_1_CD	WATER_USE_2_CD	WATER_USE_3_CD	NAT_WATER_USE_CD	AQFR_TYPE_CD	WELL_DEPTH_VA	HOLE_DEPTH_VA	OTID_ID	PROJ_EASTING	PROJ_NORTHING	IS_NWIS	AQFR_BOTTOM_ALT_VA	AQFR_TOP_ALT_VA	AQFR_ALT_DATUM_CD
+USGS:323340091085201	USGS	323340091085201														EC-859	32.5611	-91.1478	NAD83	R	S		US	22	35	88	N	1.6	NAVD88	8.05e+10	GW		C	112MRVA	N100MSRVVL	W								115	118		452924	1.0659e+06	True	-33.9		NAVD88(assumed)
+USGS:323836091182901	USGS	323836091182901														EC-385	32.6433	-91.3081	NAD83	R	S	S11 T19N  R11E  L	US	22	35	81	N	1.6	NAVD88	8.05e+10	GW		C	112MRVA	N100MSRVVL	W								108	108		437523	1.0743e+06	True	-25.4		NAVD88(assumed)
+USGS:325121091093801	USGS	325121091093801														EC-5134Z	32.8558	-91.1606	NAD83	R	S		US	22	35	103	N	1.6	NAVD88	8.0301e+10	GW		C	112MRVA	N100MSRVVL	W								90	93		450059	1.09867e+06	True	-42.62		NAVD88(assumed)
+USGS:325547090263901	USGS	325547090263901	1	76	116	40	1	0	76	1	21					A0060  YAZOO	32.9299	-90.4443	NAD83	M	F	NESWS 31T13N  R02W	US	28	163	110	M	5	NAVD88	8.03021e+10	GW	1992-02-11 12:00:00	U	112MRVA	N100MSRVVL	W			I			IR		116	116		516120	1.11056e+06	True	-33.61		NAVD88(assumed)
+USGS:332915091025901	USGS	332915091025901	1	80	108	28	1	0	80	1						A0168  WASHINGTON	33.4875	-91.0497	NAD83	G	S	NWNES 20T19N  R08W  O	US	28	151	130	M	2.5	NAVD88	8.03021e+10	GW	2003-07-31 12:00:00	U	112MRVA	N100MSRVVL	W			I					108	108		456686	1.16962e+06	True	34.79		NAVD88(assumed)
+USGS:333411090482201	USGS	333411090482201														011T0502  BOLIVAR	33.5697	-90.8061	NAD83	R	F		US	28	11	127.09	R	5	NAVD88	8.03021e+10	GW		U	112MRVA	N100MSRVVL	W								120	120		478637	1.17999e+06	True	-20.76		NAVD88(assumed)
+USGS:333633090230701	USGS	333633090230701	1	75	115	40	1	0	75	1						F0145  LEFLORE	33.6093	-90.3854	NAD83	M	F	SESES 10T20N  R02W  O	US	28	83	125	M	5	NAVD88	8.03021e+10	GW	2002-04-17 12:00:00	U	112MRVA	N100MSRVVL	W			I					115	115		517106	1.1866e+06	True	-18.27		NAVD88(assumed)
+USGS:334551090311701	USGS	334551090311701	1	90	130	40	1	0	90	1						133F0132  SUNFLOWER	33.7642	-90.5214	NAD83	G	S	NESENES 20T22N  R03W  O	US	28	133	130	M	2.5	NAVD88	8.03021e+10	GW	2006-04-04 12:00:00	U	112MRVA	N100MSRVVL	W			I					130	130		503595	1.20314e+06	True	-4.28		NAVD88(assumed)
+USGS:334902090380201	USGS	334902090380201														133E0600R  SUNFLOWER	33.8172	-90.6339	NAD83	R	F	S32 T23N  R04W  O	US	28	133	139.04	R	5	NAVD88	8.03021e+10	GW		U	112MRVA	N100MSRVVL	W											492931	1.20847e+06	True	-25.66		NAVD88(assumed)
+USGS:335407090262301	USGS	335407090262301	1	70	110	40	1	0	70	1						H0050  TALLAHATCHIE	33.9021	-90.4398	NAD83	M	F	S 31T24N  R02W  O	US	28	135	140	M	5	NAVD88	8.03021e+10	GW	2001-06-17 12:00:00	U	112MRVA	N100MSRVVL	W			I					110	110		510184	1.21896e+06	True	0.11		NAVD88(assumed)
