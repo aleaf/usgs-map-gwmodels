@@ -12,7 +12,8 @@ def project_root_path():
     two levels up from the location of this file.
     """
     filepath = os.path.split(os.path.abspath(__file__))[0]
-    return os.path.normpath(os.path.join(filepath, '..', '..'))
+    normpath = os.path.normpath(os.path.join(filepath, '..', '..'))
+    return Path(normpath)
 
 
 @pytest.fixture(scope="session")
@@ -33,7 +34,7 @@ def test_output_folder(project_root_path):
         if os.path.isdir(folder):
             shutil.rmtree(folder)
         os.makedirs(folder)
-    return folder
+    return Path(folder)
 
 
 @pytest.fixture(scope='module')

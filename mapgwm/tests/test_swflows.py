@@ -3,7 +3,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-from mapgwm.swflows import aggregrate_values_to_stress_periods, preprocess_flows
+from mapgwm.swflows import aggregrate_values_to_stress_periods, preprocess_flows, combine_measured_estimated_values
 
 
 @pytest.fixture()
@@ -68,6 +68,7 @@ def times():
     return times
 
 
+@pytest.mark.skip()
 @pytest.mark.parametrize('category_col', (None, 'comment'))
 @pytest.mark.parametrize('keep_columns', (None, ['site_no']))
 def test_aggregrate_values_to_stress_periods(obsdata, times, category_col, keep_columns):
@@ -120,18 +121,29 @@ def test_aggregrate_values_to_stress_periods(obsdata, times, category_col, keep_
                np.std([4, 3, 2], ddof=1)
 
 
-@pytest.mark.parametrize(('datafile,metadata_file,flow_data_cols,site_no_col,x_coord_col,y_coord_col,'
-                          'flow_qualifier_column,line_id_col,line_id_lookup,include_sites,source_crs'),
-                         (('swflows/MAP_baseflow_and_total_flow__at_325_supplemental_points__13Feb2020.csv',
+@pytest.mark.parametrize(('datafile,'
+                          'metadata_file,'
+                          'flow_data_cols,'
+                          'site_no_col,'
+                          'x_coord_col,'
+                          'y_coord_col,'
+                          'flow_qualifier_column,'
+                          'line_id_col,'
+                          'include_sites,'
+                          'source_crs,'
+                          'outfile'),
+                         (('swflows/13Feb2020_rf_output_with_site_numbers.csv',
                            None, ['predicted_total_flow', 'predicted_bf'],
-                           'comid', 'X', 'Y', 'category', None, None, None, 4269),
-                          ('swflows/nwis_dvs.csv', 'swflows/nwis_dv_sites.csv', ['q_cfs'], 'site_no',
-                           'dec_long_va', 'dec_lat_va', None, None, None, None, 4269))
+                           'site_no', 'X', 'Y', 'category', None, None, 4269,
+                           'preprocessed_flows_rf.csv'),
+                          ('swflows/nwis_dvs.csv', 'swflows/nwis_dv_sites.csv', ['q_cfs', 'qbase_cfs'], 'site_no',
+                           'dec_long_va', 'dec_lat_va', None, None, None, 4269,
+                           'preprocessed_flows_nwis.csv'))
                          )
 def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_cols, site_no_col,
                           x_coord_col, y_coord_col, flow_qualifier_column,
-                          line_id_col, line_id_lookup, include_sites, source_crs,
-                          test_output_folder):
+                          line_id_col, include_sites, source_crs,
+                          test_output_folder, outfile):
     datafile = Path(test_data_path, datafile)
     if metadata_file is not None:
         metadata_file = Path(test_data_path, metadata_file)
@@ -139,10 +151,11 @@ def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_col
     geographic_groups = [test_data_path / 'extents/CompositeHydrographArea.shp',
                          test_data_path / 'extents/MAP_generalized_regions.shp'
                          ]
-    outfile = os.path.join(test_output_folder, 'preprocessed_flows.csv')
+    outfile = test_output_folder / outfile
     column_renames = {'predicted_total_flow': 'qtotal_m3d',
                       'predicted_bf': 'qbase_m3d',
-                      'q_cfs': 'q_m3d',
+                      'qbase_cfs': 'qbase_m3d',
+                      'q_cfs': 'qtotal_m3d',
                       'station_nm': 'name'}
     data, metadata = preprocess_flows(datafile,
                                       metadata_file,
@@ -155,7 +168,6 @@ def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_col
                                       x_coord_col=x_coord_col,
                                       y_coord_col=y_coord_col,
                                       flow_qualifier_column=flow_qualifier_column,
-                                      line_id_lookup=None,
                                       include_sites=None,
                                       include_line_ids=None,
                                       source_crs=source_crs,
@@ -178,8 +190,25 @@ def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_col
                     'obsprefix', 'group'}.difference(metadata.columns))
 
     # check that units were converted to m3/d
-    flow_col = 'q_m3d'
+    flow_col = 'qbase_m3d'
     if 'predicted_total_flow' in flow_data_cols:
         assert np.all(data.qtotal_m3d >= data.qbase_m3d * .8)
-        flow_col = 'qbase_m3d'
     assert data[flow_col].max() > 1e6
+
+
+def test_combine_measured_estimated_values(test_output_folder):
+
+    # data from NWIS based on measurements
+    nwis_timeseries_file = test_output_folder / 'preprocessed_flows_nwis.csv'
+
+    # estimates from RF model
+    rf_timeseries_file = test_output_folder / 'preprocessed_flows_rf.csv'
+
+    results = combine_measured_estimated_values(nwis_timeseries_file, rf_timeseries_file,
+                                                measured_values_data_col='qbase_m3d', estimated_values_data_col='qbase_m3d',
+                                                resample_freq='MS')
+    expected_cols = ['site_no', 'datetime', 'category', 'est_qtotal_m3d', 'est_qbase_m3d',
+                     'meas_qtotal_m3d', 'meas_qbase_m3d', 'obsval']
+    assert np.all(results.columns == expected_cols)
+    for col in ['site_no', 'datetime', 'category', 'obsval']:
+        assert not results[col].isna().any()

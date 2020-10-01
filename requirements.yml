@@ -23,7 +23,6 @@ dependencies:
   - rtree
   - pyproj>=2.2
   - pyshp
-  - pytest
   - xlrd
   - pip
   - pip:

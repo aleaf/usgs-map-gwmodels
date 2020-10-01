@@ -257,13 +257,10 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
     out_shapefile = outname + '_info.shp'
 
     # read the source data
-    if isinstance(data, str) or isinstance(data, Path):
-        df = pd.read_csv(data)
-    elif isinstance(data, pd.DataFrame):
-        pass
+    if not isinstance(data, pd.DataFrame):
+        df = pd.read_csv(data, dtype={site_no_col: object})
     else:
-        raise TypeError('Data type not understood. '
-                         '"data" must be a csv file or DataFrame.')
+        df = data
     # check the columns
     for col in [datetime_col] + flow_data_columns:
         assert col in df.columns, "Column {} not found in {}".format(col,
@@ -297,13 +294,10 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
 
     # read the source data
     if metadata is not None:
-        if isinstance(metadata, str) or isinstance(metadata, Path):
-            md = pd.read_csv(metadata)
-        elif isinstance(metadata, pd.DataFrame):
-            pass
+        if not isinstance(metadata, pd.DataFrame):
+            md = pd.read_csv(metadata, dtype={site_no_col: object})
         else:
-            raise TypeError('Metadata type not understood. '
-                             '"metadata" must be a csv file or DataFrame.')
+            md = metadata
         if site_no_col not in md.columns or 'site_no' not in df.columns:
             raise IndexError('If metadata are supplied, both data and metadata must '
                              'have a site_no column.')
@@ -444,6 +438,197 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
     return df, md
 
 
+def combine_measured_estimated_values(measured_values, estimated_values,
+                                      measured_values_data_col, estimated_values_data_col,
+                                      dest_values_col='obsval',
+                                      resample_freq='MS', how='mean'):
+    """Combine time series of measured and estimated values for multiple sites,
+    giving preference to measured values.
+
+    Parameters
+    ----------
+    measured_values : csv file or DataFrame
+        Time series of measured values at multiple sites, similar to that
+        output by :func:`~mapgwm.swflows.preprocess_flows`.
+
+        Columns:
+
+        ===================== ===========================================
+        site_no               site identifiers; read-in as strings
+        datetime              measurement dates/times
+        data columns          columns with floating-point data to combine
+        ===================== ===========================================
+
+    estimated_values : csv file or DataFrame
+        Time series of measured values at multiple sites, similar to that
+        output by :func:`~mapgwm.swflows.preprocess_flows`.
+
+        Columns:
+
+        ===================== ===========================================
+        site_no               site identifiers; read-in as strings
+        datetime              measurement dates/times
+        data columns          columns with floating-point data to combine
+        ===================== ===========================================
+
+    measured_values_data_col : str
+        Column in `measured_values` with data to combine.
+    estimated_values_data_col : str
+        Column in `estimated_values` with data to combine.
+    dest_values_col : str
+        Output column with combined data from `measured_values_data_col`
+        and estimated_values_data_col, by default 'obsval'
+    resample_freq : str or DateOffset
+        Any `pandas frequency alias <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases>`_
+        The data columns in `measured_values` and `estimated_values` are resampled
+        to this fequency using the method specified by ``how``.
+        By default, 'MS' (month-start)
+    how : str
+        Resample method. Can be any of the method calls on the pandas
+        `Resampler <https://pandas.pydata.org/pandas-docs/stable/reference/resampling.html>`_
+        object. By default, 'mean'
+
+    Returns
+    -------
+    combined : DataFrame
+        DataFrame containing all columns from `estimated_values`, the data columns
+        from `measured_values`, and a `dest_values_col` consisting of measured values where
+        present, and estimated values otherwise. An ``"est_"`` prefix is added to the
+        estimated data columns, and a ``"meas"`` prefix is added to the measured data columns.
+
+        Example:
+
+        ======== ========== ========= ============== ============== ============
+        site_no  datetime   category  est_qbase_m3d  meas_qbase_m3d obsval
+        ======== ========== ========= ============== ============== ============
+        07288000 2017-10-01 measured  47872.1        28438.7        28438.7
+        07288000 2017-11-01 measured  47675.9        24484.5        24484.5
+        ======== ========== ========= ============== ============== ============
+
+        Where ``category`` denotes whether the value in obsval is measured or estimated.
+
+    Notes
+    -----
+    All columns with a floating-point dtype are identified as "Data columns," and
+    are resampled as specified by the `resample_freq` and `how` arguments. For all other
+    columns, the first value for each time at each site is used. The resampled measured
+    data are joined to the resampled estimated data on the basis of site numbers
+    and times (as a pandas `MultiIndex`).
+
+
+    """
+    # read in the data
+    if not isinstance(measured_values, pd.DataFrame):
+        measured = pd.read_csv(measured_values, dtype={'site_no': object})
+        measured['datetime'] = pd.to_datetime(measured['datetime'])
+        measured.index = measured['datetime']
+    else:
+        measured = measured_values
+    if not isinstance(estimated_values, pd.DataFrame):
+        df = pd.read_csv(estimated_values, dtype={'site_no': object})
+        df['datetime'] = pd.to_datetime(df['datetime'])
+        df.index = df['datetime']
+    else:
+        df = estimated_values
+
+    # resample both timeseries to the resample_freq
+    df_rs = resample_group_timeseries(df, resample_freq=resample_freq, how=how,
+                                      add_data_prefix='est')
+    df_rs['category'] = 'estimated'
+    measured_rs = resample_group_timeseries(measured, resample_freq=resample_freq, how=how,
+                                            add_data_prefix='meas')
+    # fill any nan values created in resampling with 'measured' classifier
+    measured_rs['category'] = 'measured'
+
+    # add the measured values to the estimated
+    measured_data_columns = measured_rs.select_dtypes(include=[np.float]).columns
+    # join the data columns
+    combined = df_rs.join(measured_rs[measured_data_columns], how='outer')
+    # update the site_no, datetime and category columns from measured
+    # (that were not filled in outer join)
+    combined.update(measured_rs)
+
+    # make the obsval column, starting with the estimated values
+    combined[dest_values_col] = combined['est_' + estimated_values_data_col]
+    # prefix was added to measured data column by resample_group_timeseries
+    measured_values_data_col = 'meas_' + measured_values_data_col
+    # populate obsval column with all measured values
+    # (over-writing any pre-existing estimated values)
+    has_measured = ~combined[measured_values_data_col].isna()
+    combined.loc[has_measured, dest_values_col] = combined.loc[has_measured, measured_values_data_col]
+
+    # verify that only nan values in obsval column are for measured sites
+    # (that don't have estimated values)
+    assert np.all(combined.loc[combined.obsval.isna(), 'category'] == 'measured')
+    # drop observations with no measured or estimated values
+    combined.dropna(subset=['obsval'], axis=0, inplace=True)
+    return combined.reset_index(drop=True)
+
+
+def resample_group_timeseries(df, resample_freq='MS', how='mean',
+                              add_data_prefix=None):
+    """Resample a DataFrame with both groups (e.g. measurement sites)
+    and time series (measurements at each site).
+
+    Parameters
+    ----------
+    df : DataFrame
+        Time series of values at multiple sites, similar to that
+        output by :func:`~mapgwm.swflows.preprocess_flows`.
+
+        Columns:
+
+        ===================== ===========================================
+        site_no               site identifiers; read-in as strings
+        datetime              measurement dates/times
+        data columns          columns with floating-point data to resample
+        ===================== ===========================================
+
+    resample_freq : str or DateOffset
+        Any `pandas frequency alias <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#timeseries-offset-aliases>`_
+        The data columns in `measured_values` and `estimated_values` are resampled
+        to this fequency using the method specified by ``how``.
+        By default, 'MS' (month-start)
+    how : str
+        Resample method. Can be any of the method calls on the pandas
+        `Resampler <https://pandas.pydata.org/pandas-docs/stable/reference/resampling.html>`_
+        object. By default, 'mean'
+    add_data_prefix : str
+        Option to add prefix to data columns. By default, None
+
+    Returns
+    -------
+    resampled : DataFrame
+        Resampled data at each site.
+
+    Notes
+    -----
+    All columns with a floating-point dtype are identified as "Data columns," and
+    are resampled as specified by the `resample_freq` and `how` arguments. For all other
+    columns, the first value for each time at each site is used.
+    """
+    if not isinstance(df.index, pd.DatetimeIndex):
+        raise ValueError("Input must have a DatetimeIndex.")
+
+    df_resampler = df.groupby('site_no').resample(resample_freq)
+    df_rs = df_resampler.first().copy()
+    # resample the data columns
+    data_columns = df_rs.select_dtypes(include=[np.float]).columns
+    non_data_columns = [c for c in df.columns if c not in data_columns]
+    resampled_values = getattr(df_resampler[data_columns], how)()
+    # put the non-data and data columns back together
+    df_rs = df_rs[non_data_columns].join(resampled_values)
+    # add 'est' suffix to column names
+    if add_data_prefix is not None:
+        for col in data_columns:
+            df_rs[add_data_prefix + '_' + col] = df_rs[col]
+            df_rs.drop(col, axis=1, inplace=True)
+    # index dates may vary depending on freq (e.g. 'MS' vs 'M')
+    df_rs['site_no'] = df_rs.index.get_level_values(0)
+    df_rs['datetime'] = df_rs.index.get_level_values(1)
+    return df_rs
+
+
 def aggregrate_values_to_stress_periods(data, perioddata,
                                         datetime_col='datetime',
                                         values_col='values',
@@ -469,7 +654,7 @@ def aggregrate_values_to_stress_periods(data, perioddata,
         start_datetime str or datetime64 Period start time
         end_datetime   str or datetime64 Period end time
         ============== ================= ========================
-        
+
     datetime_col : str
         Column in data for Measurement dates (str or datetime64)
     id_col: int or str
