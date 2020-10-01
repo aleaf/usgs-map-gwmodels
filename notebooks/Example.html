@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How to use USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post34.dev0+ge7bc80b documentation</title>
+  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post35+gae5bc85 documentation</title>
   
 
   
@@ -40,8 +40,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Usage" href="../usage.html" />
-    <link rel="prev" title="Examples" href="../examples.html" /> 
+    <link rel="next" title="Modules" href="../api/index.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="../examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post34.dev0+ge7bc80b
+                0.post35+gae5bc85
               </div>
             
           
@@ -94,21 +94,43 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../philosophy.html">Philosophy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../examples.html">Examples</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Example Notebook</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Define-some-input-for-all-preprocessing">Define some input for all preprocessing</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Set-up-the-model-layering-and-property-zones">Set up the model layering and property zones</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Define-some-global-inputs">Define some global inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Set-up-the-model-layering-and-property-zones">Set up the model layering and property zones</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-a-cross-section-slice">Plot a cross section slice</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#Define-some-input">Define some input</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-recharge">Preprocess recharge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-streamflow-data-for-specified-inflows-to-the-SFR-package">Preprocess streamflow data for specified inflows to the SFR package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-streamflow-data-for-SFR-package-observations">Preprocess streamflow data for SFR package observations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preprocess-the-statistical-estimates">preprocess the statistical estimates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preprocess-the-measured-values">preprocess the measured values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Combine-the-measured-and-estimated-observations-into-one-dataset">Combine the measured and estimated observations into one dataset</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-head-observations">Preprocess head observations</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption"><span class="caption-text">User Guide</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html"> More details on how to use the package</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> Demo of USGS-MAP-gwmodels</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Define-some-global-inputs">Define some global inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Set-up-the-model-layering-and-property-zones">Set up the model layering and property zones</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-a-cross-section-slice">Plot a cross section slice</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-recharge">Preprocess recharge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-streamflow-data-for-specified-inflows-to-the-SFR-package">Preprocess streamflow data for specified inflows to the SFR package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-streamflow-data-for-SFR-package-observations">Preprocess streamflow data for SFR package observations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preprocess-the-statistical-estimates">preprocess the statistical estimates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preprocess-the-measured-values">preprocess the measured values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Combine-the-measured-and-estimated-observations-into-one-dataset">Combine the measured and estimated observations into one dataset</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-head-observations">Preprocess head observations</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption"><span class="caption-text">Reference</span></p>
 <ul>
@@ -166,9 +188,9 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="../examples.html">Examples</a> &raquo;</li>
+          <li><a href="../examples.html">&lt;no title&gt;</a> &raquo;</li>
         
-      <li>How to use USGS-MAP-gwmodels</li>
+      <li>Demo of USGS-MAP-gwmodels</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -442,8 +464,10 @@ div.rendered_html tbody tr:hover {
     text-align: unset;
 }
 </style>
-<div class="section" id="How-to-use-USGS-MAP-gwmodels">
-<h1>How to use USGS-MAP-gwmodels<a class="headerlink" href="#How-to-use-USGS-MAP-gwmodels" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Demo-of-USGS-MAP-gwmodels">
+<h1>Demo of USGS-MAP-gwmodels<a class="headerlink" href="#Demo-of-USGS-MAP-gwmodels" title="Permalink to this headline">¶</a></h1>
+<p>This page demonstrates some of the core features of USGS-MAP-gwmodel obs, applied to the Mississippi Delta inset model area. Specifically: * setup of model layering and property zones by combining voxel-based hydrogeologic facies derived from an airborne electromagnetic (AEM) survey with traditional raster surfaces denoting hydrogeologic contacts * culling of NetCDF-based infiltration data to the model area, and aggregation to monthly values * preprocessing of streamflow timeseries for use as
+specified inflows to the SFR package, or streamflow observations * preprocessing of head observations</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -451,13 +475,15 @@ div.rendered_html tbody tr:hover {
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">mfsetup.grid</span> <span class="kn">import</span> <span class="n">MFsetupGrid</span>
-<span class="kn">from</span> <span class="nn">mapgwm.framework</span> <span class="kn">import</span> <span class="n">setup_model_layers</span><span class="p">,</span> <span class="n">plot_slice</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="Define-some-input-for-all-preprocessing">
-<h2>Define some input for all preprocessing<a class="headerlink" href="#Define-some-input-for-all-preprocessing" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="Define-some-global-inputs">
+<h2>Define some global inputs<a class="headerlink" href="#Define-some-global-inputs" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -466,6 +492,12 @@ div.rendered_html tbody tr:hover {
 <span></span><span class="n">test_data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../mapgwm/tests/data&#39;</span><span class="p">)</span>
 <span class="n">output_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">)</span>
 <span class="n">output_folder</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># make the output folder if it doesn&#39;t exist</span>
+
+<span class="c1"># ms delta geographic extent</span>
+<span class="n">delta_extent</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;extents/ms_delta.shp&#39;</span>
+
+<span class="c1"># simulation start date</span>
+<span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;1998-04-01&#39;</span>
 
 <span class="c1"># model grid for the MS Delta inset model</span>
 <span class="n">ncol</span><span class="o">=</span><span class="mi">270</span>
@@ -476,16 +508,18 @@ div.rendered_html tbody tr:hover {
 <span class="n">delta_inset_model_grid</span> <span class="o">=</span> <span class="n">MFsetupGrid</span><span class="p">(</span><span class="n">delc</span><span class="p">,</span> <span class="n">delr</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">botm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                                      <span class="n">lenuni</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">epsg</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
                                      <span class="n">xoff</span><span class="o">=</span><span class="mi">434955</span><span class="p">,</span> <span class="n">yoff</span><span class="o">=</span><span class="mi">1040285</span><span class="p">,</span> <span class="n">angrot</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="c1"># shapefile with polygons to group observations by geographic area</span>
+<span class="n">geographic_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;extents/CompositeHydrographArea.shp&#39;</span><span class="p">,</span>
+                     <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;extents/MAP_generalized_regions.shp&#39;</span>
+                     <span class="p">]</span>
 </pre></div>
 </div>
 </div>
+</div>
 <div class="section" id="Set-up-the-model-layering-and-property-zones">
-<h3>Set up the model layering and property zones<a class="headerlink" href="#Set-up-the-model-layering-and-property-zones" title="Permalink to this headline">¶</a></h3>
+<h2>Set up the model layering and property zones<a class="headerlink" href="#Set-up-the-model-layering-and-property-zones" title="Permalink to this headline">¶</a></h2>
 <p>from AEM-based voxel data and raster surfaces of hydrogeologic contacts</p>
-</div>
-</div>
-<div class="section" id="Define-some-input">
-<h2>Define some input<a class="headerlink" href="#Define-some-input" title="Permalink to this headline">¶</a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -530,7 +564,9 @@ div.rendered_html tbody tr:hover {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">layers</span><span class="p">,</span> <span class="n">zone_array</span> <span class="o">=</span> <span class="n">setup_model_layers</span><span class="p">(</span><span class="n">dem_means_raster</span><span class="p">,</span>
+<span></span><span class="kn">from</span> <span class="nn">mapgwm.framework</span> <span class="kn">import</span> <span class="n">setup_model_layers</span><span class="p">,</span> <span class="n">plot_slice</span>
+
+<span class="n">layers</span><span class="p">,</span> <span class="n">zone_array</span> <span class="o">=</span> <span class="n">setup_model_layers</span><span class="p">(</span><span class="n">dem_means_raster</span><span class="p">,</span>
                                         <span class="n">facies_classes_netcdf</span><span class="p">,</span>
                                         <span class="n">framework_rasters</span><span class="p">,</span>
                                         <span class="n">delta_inset_model_grid</span><span class="p">,</span>
@@ -548,11 +584,11 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 reading data from ../mapgwm/tests/data/rasters/dem_mean_elevs_1000.tif...
-finished in 0.05s
+finished in 0.07s
 reading data from ../mapgwm/tests/data/rasters/vkbg_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/ucaq_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mccu_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mcaq_surf.tif...
@@ -568,10 +604,10 @@ finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mdwy_surf.tif...
 finished in 0.03s
 computing cell thicknesses...
-finished in 5.79s
+finished in 6.49s
 
 computing cell thicknesses...
-finished in 13.14s
+finished in 14.52s
 
 wrote output/botm_array/model_top.tif
 wrote output/botm_array/botm0.tif
@@ -631,6 +667,8 @@ wrote output/zones/rasters/res_fac22.tif
 wrote output/zones/rasters/res_fac23.tif
 </pre></div></div>
 </div>
+<div class="section" id="Plot-a-cross-section-slice">
+<h3>Plot a cross section slice<a class="headerlink" href="#Plot-a-cross-section-slice" title="Permalink to this headline">¶</a></h3>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -668,6 +706,1332 @@ wrote output/zones/rasters/res_fac23.tif
 <img alt="../_images/notebooks_Example_9_1.png" src="../_images/notebooks_Example_9_1.png" />
 </div>
 </div>
+</div>
+</div>
+<div class="section" id="Preprocess-recharge">
+<h2>Preprocess recharge<a class="headerlink" href="#Preprocess-recharge" title="Permalink to this headline">¶</a></h2>
+<p>Chop the SWB source data down to the model area and aggregate daily values to monthly means</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">mapgwm.swb</span> <span class="kn">import</span> <span class="n">get_monthly_means</span>
+
+<span class="n">data_file</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swb/delta_swb_summer2018.nc&#39;</span>
+
+<span class="c1"># output</span>
+<span class="n">outputfile</span> <span class="o">=</span> <span class="n">output_folder</span> <span class="o">/</span> <span class="s1">&#39;swb_monthly_means.nc&#39;</span>
+
+<span class="c1"># get the monthly means</span>
+<span class="n">get_monthly_means</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="n">outputfile</span><span class="p">,</span>
+                  <span class="nb">filter</span><span class="o">=</span><span class="n">delta_inset_model_grid</span><span class="o">.</span><span class="n">bounds</span><span class="p">,</span> <span class="n">check_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+using dask...
+opening ../mapgwm/tests/data/swb/delta_swb_summer2018.nc...
+culling to bounding box: (434955.0, 1040285.0, 569955.0, 1342785.0)
+Aggregating to monthly values...
+wrote output/swb_monthly_means.nc
+took 0.18s
+
+checking compressed file
+finished in 0.25s
+
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="k">with</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">outputfile</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">))</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;net_infiltration&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s1">&#39;2018-08&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;net_infiltration&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.95</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_12_0.png" src="../_images/notebooks_Example_12_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Preprocess-streamflow-data-for-specified-inflows-to-the-SFR-package">
+<h2>Preprocess streamflow data for specified inflows to the SFR package<a class="headerlink" href="#Preprocess-streamflow-data-for-specified-inflows-to-the-SFR-package" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">mapgwm.swflows</span> <span class="kn">import</span> <span class="n">preprocess_flows</span>
+
+<span class="n">streamflow_data_file</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swflows/13Feb2020_rf_output_with_site_numbers.csv&#39;</span>
+<span class="n">streamflow_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">streamflow_data_file</span><span class="p">)</span>
+
+<span class="c1"># only include flows that are inflows (exclude observations)</span>
+<span class="n">include_line_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">streamflow_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">streamflow_data</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s1">&#39;meras-inflows&#39;</span><span class="p">,</span> <span class="s1">&#39;comid&#39;</span><span class="p">])</span>
+
+<span class="n">outfile</span> <span class="o">=</span> <span class="n">output_folder</span> <span class="o">/</span> <span class="s1">&#39;processed_inflows.csv&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">streamflow_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_no</th>
+      <th>comid</th>
+      <th>datetime</th>
+      <th>name</th>
+      <th>group</th>
+      <th>X</th>
+      <th>Y</th>
+      <th>predicted_bf</th>
+      <th>predicted_total_flow</th>
+      <th>category</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>07277700</td>
+      <td>15251676</td>
+      <td>2007-02-01</td>
+      <td>HICKAHALA CREEK NR SENATOBIA, MS</td>
+      <td>meras-observations</td>
+      <td>-89.7839</td>
+      <td>34.6394</td>
+      <td>82.1099</td>
+      <td>107.1910</td>
+      <td>estimated</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>07277700</td>
+      <td>15251676</td>
+      <td>2007-03-01</td>
+      <td>HICKAHALA CREEK NR SENATOBIA, MS</td>
+      <td>meras-observations</td>
+      <td>-89.7839</td>
+      <td>34.6394</td>
+      <td>75.3402</td>
+      <td>85.2905</td>
+      <td>estimated</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>07277700</td>
+      <td>15251676</td>
+      <td>2007-04-01</td>
+      <td>HICKAHALA CREEK NR SENATOBIA, MS</td>
+      <td>meras-observations</td>
+      <td>-89.7839</td>
+      <td>34.6394</td>
+      <td>46.6768</td>
+      <td>80.6870</td>
+      <td>estimated</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>07277700</td>
+      <td>15251676</td>
+      <td>2007-05-01</td>
+      <td>HICKAHALA CREEK NR SENATOBIA, MS</td>
+      <td>meras-observations</td>
+      <td>-89.7839</td>
+      <td>34.6394</td>
+      <td>41.8452</td>
+      <td>49.2666</td>
+      <td>estimated</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>07277700</td>
+      <td>15251676</td>
+      <td>2007-06-01</td>
+      <td>HICKAHALA CREEK NR SENATOBIA, MS</td>
+      <td>meras-observations</td>
+      <td>-89.7839</td>
+      <td>34.6394</td>
+      <td>37.1356</td>
+      <td>47.5411</td>
+      <td>estimated</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">preprocess_flows</span><span class="p">(</span><span class="n">streamflow_data</span><span class="p">,</span> <span class="n">flow_data_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;predicted_total_flow&#39;</span><span class="p">,</span> <span class="s1">&#39;predicted_bf&#39;</span><span class="p">],</span>
+                      <span class="n">include_line_ids</span><span class="o">=</span><span class="n">include_line_ids</span><span class="p">,</span>
+                      <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+                      <span class="n">datetime_col</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                      <span class="n">site_no_col</span><span class="o">=</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+                      <span class="n">line_id_col</span><span class="o">=</span><span class="s1">&#39;comid&#39;</span><span class="p">,</span>
+                      <span class="n">x_coord_col</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">,</span>
+                      <span class="n">y_coord_col</span><span class="o">=</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span>
+                      <span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span>
+                      <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+writing output/processed_inflows_info.shp...
+writing output/processed_inflows_info.csv
+writing output/processed_inflows.csv
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Preprocess-streamflow-data-for-SFR-package-observations">
+<h2>Preprocess streamflow data for SFR package observations<a class="headerlink" href="#Preprocess-streamflow-data-for-SFR-package-observations" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Unlike the inflows, which are referenced by NHDPlus COMID, these all have site numbers</p></li>
+<li><p>Additionally, we want to fill gaps in measured flow data with statistical estimates</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">data</span></code> DataFrame outputs have the time series;</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">metadata</span></code> DataFrame outputs have site information that can be input to <strong>``modflow-setup``</strong> to set up the observation input for MODFLOW-6.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># only include flows that are inflows (exclude observations)</span>
+<span class="n">include_sites</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">streamflow_data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">streamflow_data</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s1">&#39;meras-observations&#39;</span><span class="p">,</span> <span class="s1">&#39;site_no&#39;</span><span class="p">])</span>
+
+<span class="n">outfile</span> <span class="o">=</span> <span class="n">output_folder</span> <span class="o">/</span> <span class="s1">&#39;processed_flow_obs.csv&#39;</span>
+
+<span class="c1"># rename these columns, if present</span>
+<span class="n">column_renames</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;predicted_total_flow&#39;</span><span class="p">:</span> <span class="s1">&#39;qtotal_m3d&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;predicted_bf&#39;</span><span class="p">:</span> <span class="s1">&#39;qbase_m3d&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;qbase_cfs&#39;</span><span class="p">:</span> <span class="s1">&#39;qbase_m3d&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;q_cfs&#39;</span><span class="p">:</span> <span class="s1">&#39;qtotal_m3d&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;station_nm&#39;</span><span class="p">:</span> <span class="s1">&#39;name&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="preprocess-the-statistical-estimates">
+<h3>preprocess the statistical estimates<a class="headerlink" href="#preprocess-the-statistical-estimates" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">est_data</span><span class="p">,</span> <span class="n">est_metadata</span> <span class="o">=</span> <span class="n">preprocess_flows</span><span class="p">(</span><span class="n">streamflow_data</span><span class="p">,</span> <span class="n">flow_data_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;predicted_total_flow&#39;</span><span class="p">,</span> <span class="s1">&#39;predicted_bf&#39;</span><span class="p">],</span>
+                                          <span class="n">include_sites</span><span class="o">=</span><span class="n">include_sites</span><span class="p">,</span>
+                                          <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+                                          <span class="n">active_area</span><span class="o">=</span><span class="n">delta_extent</span><span class="p">,</span>
+                                          <span class="n">datetime_col</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                                          <span class="n">site_no_col</span><span class="o">=</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+                                          <span class="n">line_id_col</span><span class="o">=</span><span class="s1">&#39;comid&#39;</span><span class="p">,</span>
+                                          <span class="n">x_coord_col</span><span class="o">=</span><span class="s1">&#39;X&#39;</span><span class="p">,</span>
+                                          <span class="n">y_coord_col</span><span class="o">=</span><span class="s1">&#39;Y&#39;</span><span class="p">,</span>
+                                          <span class="n">geographic_groups</span><span class="o">=</span><span class="n">geographic_groups</span><span class="p">,</span>
+                                          <span class="n">geographic_groups_col</span><span class="o">=</span><span class="s1">&#39;obsgroup&#39;</span><span class="p">,</span>
+                                          <span class="n">flow_qualifier_column</span><span class="o">=</span><span class="s1">&#39;category&#39;</span><span class="p">,</span>
+                                          <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span>
+                                          <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                                          <span class="n">source_volume_units</span><span class="o">=</span><span class="s1">&#39;ft3&#39;</span><span class="p">,</span>
+                                          <span class="n">source_time_units</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span>
+                                          <span class="n">dest_volume_units</span><span class="o">=</span><span class="s1">&#39;m3&#39;</span><span class="p">,</span>
+                                          <span class="n">dest_time_units</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span>
+                                          <span class="n">column_renames</span><span class="o">=</span><span class="n">column_renames</span><span class="p">,</span>
+                                          <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span>
+                                          <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+reading ../mapgwm/tests/data/extents/ms_delta.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+Culling 7 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+
+reading ../mapgwm/tests/data/extents/MAP_generalized_regions.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+
+reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">est_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_no</th>
+      <th>datetime</th>
+      <th>qtotal_m3d</th>
+      <th>qbase_m3d</th>
+      <th>category</th>
+    </tr>
+    <tr>
+      <th>datetime</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2007-02-01</th>
+      <td>07288847</td>
+      <td>2007-02-01</td>
+      <td>659171.062935</td>
+      <td>564867.808532</td>
+      <td>estimated</td>
+    </tr>
+    <tr>
+      <th>2007-03-01</th>
+      <td>07288847</td>
+      <td>2007-03-01</td>
+      <td>316339.771464</td>
+      <td>278767.710811</td>
+      <td>estimated</td>
+    </tr>
+    <tr>
+      <th>2007-04-01</th>
+      <td>07288847</td>
+      <td>2007-04-01</td>
+      <td>328301.079306</td>
+      <td>179244.687481</td>
+      <td>estimated</td>
+    </tr>
+    <tr>
+      <th>2007-05-01</th>
+      <td>07288847</td>
+      <td>2007-05-01</td>
+      <td>632789.638827</td>
+      <td>216849.532247</td>
+      <td>estimated</td>
+    </tr>
+    <tr>
+      <th>2007-06-01</th>
+      <td>07288847</td>
+      <td>2007-06-01</td>
+      <td>250184.368712</td>
+      <td>130957.604569</td>
+      <td>estimated</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">est_metadata</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>start_dt</th>
+      <th>site_no</th>
+      <th>end_dt</th>
+      <th>n</th>
+      <th>x</th>
+      <th>y</th>
+      <th>line_id</th>
+      <th>name</th>
+      <th>geometry</th>
+      <th>obsprefix</th>
+      <th>group</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>5</th>
+      <td>2007-02-01</td>
+      <td>07288000</td>
+      <td>2018-12-01</td>
+      <td>143</td>
+      <td>496047.363537</td>
+      <td>1.262247e+06</td>
+      <td>17951955</td>
+      <td>Big Sunflower River</td>
+      <td>POINT (496047.3635373298 1262247.29440906)</td>
+      <td>07288000</td>
+      <td>fluxes</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2007-02-01</td>
+      <td>07288280</td>
+      <td>2018-12-01</td>
+      <td>143</td>
+      <td>489208.729363</td>
+      <td>1.239410e+06</td>
+      <td>17958105</td>
+      <td>BIG SUNFLOWER RIVER NR MERIGOLD, MS</td>
+      <td>POINT (489208.7293628419 1239410.03140523)</td>
+      <td>07288280</td>
+      <td>fluxes</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2007-02-01</td>
+      <td>07288555</td>
+      <td>2018-12-01</td>
+      <td>143</td>
+      <td>509254.529536</td>
+      <td>1.233598e+06</td>
+      <td>17958153</td>
+      <td>QUIVER RIVER SOUTHEAST RULEVILLE, MS</td>
+      <td>POINT (509254.5295362755 1233597.934250077)</td>
+      <td>07288555</td>
+      <td>fluxes</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2007-02-01</td>
+      <td>07288650</td>
+      <td>2018-12-01</td>
+      <td>143</td>
+      <td>472484.774612</td>
+      <td>1.196944e+06</td>
+      <td>17963095</td>
+      <td>BOGUE PHALIA NR LELAND, MS</td>
+      <td>POINT (472484.7746117859 1196943.873882911)</td>
+      <td>07288650</td>
+      <td>fluxes</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2007-02-01</td>
+      <td>07288700</td>
+      <td>2018-12-01</td>
+      <td>143</td>
+      <td>492594.661169</td>
+      <td>1.195806e+06</td>
+      <td>17970237</td>
+      <td>Big Sunflower River</td>
+      <td>POINT (492594.6611692713 1195806.16802324)</td>
+      <td>07288700</td>
+      <td>fluxes</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="preprocess-the-measured-values">
+<h3>preprocess the measured values<a class="headerlink" href="#preprocess-the-measured-values" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">nwis_streamflow_data</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swflows/nwis_dvs.csv&#39;</span>
+<span class="n">nwis_streamflow_metadata</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swflows/nwis_dv_sites.csv&#39;</span>
+
+<span class="n">meas_data</span><span class="p">,</span> <span class="n">meas_metadata</span> <span class="o">=</span> <span class="n">preprocess_flows</span><span class="p">(</span><span class="n">nwis_streamflow_data</span><span class="p">,</span> <span class="n">nwis_streamflow_metadata</span><span class="p">,</span>
+                                            <span class="n">flow_data_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;q_cfs&#39;</span><span class="p">,</span> <span class="s1">&#39;qbase_cfs&#39;</span><span class="p">],</span>
+                                            <span class="n">include_sites</span><span class="o">=</span><span class="n">include_sites</span><span class="p">,</span>
+                                            <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+                                            <span class="n">active_area</span><span class="o">=</span><span class="n">delta_extent</span><span class="p">,</span>
+                                            <span class="n">datetime_col</span><span class="o">=</span><span class="s1">&#39;datetime&#39;</span><span class="p">,</span>
+                                            <span class="n">site_no_col</span><span class="o">=</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+                                            <span class="n">line_id_col</span><span class="o">=</span><span class="s1">&#39;comid&#39;</span><span class="p">,</span>
+                                            <span class="n">x_coord_col</span><span class="o">=</span><span class="s1">&#39;dec_long_va&#39;</span><span class="p">,</span>
+                                            <span class="n">y_coord_col</span><span class="o">=</span><span class="s1">&#39;dec_lat_va&#39;</span><span class="p">,</span>
+                                            <span class="n">geographic_groups</span><span class="o">=</span><span class="n">geographic_groups</span><span class="p">,</span>
+                                            <span class="n">geographic_groups_col</span><span class="o">=</span><span class="s1">&#39;obsgroup&#39;</span><span class="p">,</span>
+                                            <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span>
+                                            <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                                            <span class="n">source_volume_units</span><span class="o">=</span><span class="s1">&#39;ft3&#39;</span><span class="p">,</span>
+                                            <span class="n">source_time_units</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">,</span>
+                                            <span class="n">dest_volume_units</span><span class="o">=</span><span class="s1">&#39;m3&#39;</span><span class="p">,</span>
+                                            <span class="n">dest_time_units</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span>
+                                            <span class="n">column_renames</span><span class="o">=</span><span class="n">column_renames</span><span class="p">,</span>
+                                            <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span>
+                                            <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+
+reading ../mapgwm/tests/data/extents/ms_delta.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+Culling 40 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+
+reading ../mapgwm/tests/data/extents/MAP_generalized_regions.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+
+reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">meas_data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_no</th>
+      <th>datetime</th>
+      <th>qtotal_m3d</th>
+      <th>qbase_m3d</th>
+      <th>category</th>
+    </tr>
+    <tr>
+      <th>datetime</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2008-01-20</th>
+      <td>07280400</td>
+      <td>2008-01-20</td>
+      <td>93459.185840</td>
+      <td>93459.185840</td>
+      <td>measured</td>
+    </tr>
+    <tr>
+      <th>2008-01-21</th>
+      <td>07280400</td>
+      <td>2008-01-21</td>
+      <td>90278.637631</td>
+      <td>90278.637631</td>
+      <td>measured</td>
+    </tr>
+    <tr>
+      <th>2008-01-22</th>
+      <td>07280400</td>
+      <td>2008-01-22</td>
+      <td>153155.629151</td>
+      <td>92176.690939</td>
+      <td>measured</td>
+    </tr>
+    <tr>
+      <th>2008-01-23</th>
+      <td>07280400</td>
+      <td>2008-01-23</td>
+      <td>214809.332899</td>
+      <td>94114.868086</td>
+      <td>measured</td>
+    </tr>
+    <tr>
+      <th>2008-01-24</th>
+      <td>07280400</td>
+      <td>2008-01-24</td>
+      <td>144347.957187</td>
+      <td>96093.658387</td>
+      <td>measured</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">meas_metadata</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_no</th>
+      <th>name</th>
+      <th>site_tp_cd</th>
+      <th>y</th>
+      <th>x</th>
+      <th>coord_meth_cd</th>
+      <th>coord_acy_cd</th>
+      <th>coord_datum_cd</th>
+      <th>dec_coord_datum_cd</th>
+      <th>district_cd</th>
+      <th>...</th>
+      <th>qw_count_nu</th>
+      <th>sv_begin_date</th>
+      <th>sv_end_date</th>
+      <th>sv_count_nu</th>
+      <th>geometry</th>
+      <th>start_dt</th>
+      <th>end_dt</th>
+      <th>n</th>
+      <th>obsprefix</th>
+      <th>group</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>33</th>
+      <td>07280400</td>
+      <td>TILLATOBA CREEK AT CHARLESTON, MS</td>
+      <td>ST</td>
+      <td>1.231964e+06</td>
+      <td>543849.348583</td>
+      <td>G</td>
+      <td>5</td>
+      <td>NAD83</td>
+      <td>NAD83</td>
+      <td>28</td>
+      <td>...</td>
+      <td>5.0</td>
+      <td>1976-08-18</td>
+      <td>2015-09-08</td>
+      <td>132.0</td>
+      <td>POINT (543849.3485826917 1231964.199194193)</td>
+      <td>2008-01-20</td>
+      <td>2009-09-22</td>
+      <td>612.0</td>
+      <td>07280400</td>
+      <td>fluxes</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>07288000</td>
+      <td>BIG SUNFLOWER RIVER AT CLARKSDALE, MS</td>
+      <td>ST</td>
+      <td>1.251190e+06</td>
+      <td>495901.606421</td>
+      <td>M</td>
+      <td>F</td>
+      <td>NAD27</td>
+      <td>NAD83</td>
+      <td>28</td>
+      <td>...</td>
+      <td>347.0</td>
+      <td>1995-05-18</td>
+      <td>2020-08-11</td>
+      <td>29.0</td>
+      <td>POINT (495901.606420672 1251190.481277433)</td>
+      <td>2017-10-02</td>
+      <td>2020-09-20</td>
+      <td>884.0</td>
+      <td>07288000</td>
+      <td>fluxes</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>07288280</td>
+      <td>BIG SUNFLOWER RIVER NR MERIGOLD, MS</td>
+      <td>ST</td>
+      <td>1.209990e+06</td>
+      <td>489521.298812</td>
+      <td>G</td>
+      <td>5</td>
+      <td>NAD83</td>
+      <td>NAD83</td>
+      <td>28</td>
+      <td>...</td>
+      <td>45.0</td>
+      <td>1992-10-06</td>
+      <td>2020-06-30</td>
+      <td>266.0</td>
+      <td>POINT (489521.2988124544 1209990.152655879)</td>
+      <td>2008-01-08</td>
+      <td>2020-09-18</td>
+      <td>4633.0</td>
+      <td>07288280</td>
+      <td>fluxes</td>
+    </tr>
+    <tr>
+      <th>58</th>
+      <td>07288650</td>
+      <td>BOGUE PHALIA NR LELAND, MS</td>
+      <td>ST</td>
+      <td>1.160478e+06</td>
+      <td>475848.051335</td>
+      <td>G</td>
+      <td>5</td>
+      <td>NAD83</td>
+      <td>NAD83</td>
+      <td>28</td>
+      <td>...</td>
+      <td>748.0</td>
+      <td>1953-11-10</td>
+      <td>2020-06-30</td>
+      <td>233.0</td>
+      <td>POINT (475848.0513348849 1160478.108369947)</td>
+      <td>2008-01-08</td>
+      <td>2020-09-22</td>
+      <td>4592.0</td>
+      <td>07288650</td>
+      <td>fluxes</td>
+    </tr>
+    <tr>
+      <th>59</th>
+      <td>07288700</td>
+      <td>BIG SUNFLOWER RIVER NR ANGUILLA, MS</td>
+      <td>ST</td>
+      <td>1.113472e+06</td>
+      <td>484902.570251</td>
+      <td>M</td>
+      <td>M</td>
+      <td>NAD27</td>
+      <td>NAD83</td>
+      <td>28</td>
+      <td>...</td>
+      <td>296.0</td>
+      <td>1980-07-23</td>
+      <td>2011-02-15</td>
+      <td>35.0</td>
+      <td>POINT (484902.5702511699 1113472.33857191)</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>07288700</td>
+      <td>fluxes</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 46 columns</p>
+</div></div>
+</div>
+</div>
+<div class="section" id="Combine-the-measured-and-estimated-observations-into-one-dataset">
+<h3>Combine the measured and estimated observations into one dataset<a class="headerlink" href="#Combine-the-measured-and-estimated-observations-into-one-dataset" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Resample both datasets to a continuous monthly frequency (labeled with the start date of each month)</p></li>
+<li><p>Prioritize measured data when available; fill gaps with statistical estimates</p></li>
+<li><p>Once the model has been run, the observation output from the model can be fed to <strong>``modflow-obs``</strong> along with the <code class="docutils literal notranslate"><span class="pre">combined_obs</span></code> timeseries (below), to set up <strong>``PEST``</strong> observations, or create observation output to be read by <strong>``PEST``</strong>.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">mapgwm.swflows</span> <span class="kn">import</span> <span class="n">combine_measured_estimated_values</span>
+
+<span class="n">combined_obs</span> <span class="o">=</span> <span class="n">combine_measured_estimated_values</span><span class="p">(</span><span class="n">meas_data</span><span class="p">,</span> <span class="n">est_data</span><span class="p">,</span>
+                                                 <span class="n">measured_values_data_col</span><span class="o">=</span><span class="s1">&#39;qbase_m3d&#39;</span><span class="p">,</span>
+                                                 <span class="n">estimated_values_data_col</span><span class="o">=</span><span class="s1">&#39;qbase_m3d&#39;</span><span class="p">,</span>
+                                                 <span class="n">resample_freq</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">combined_obs</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_no</th>
+      <th>datetime</th>
+      <th>category</th>
+      <th>est_qtotal_m3d</th>
+      <th>est_qbase_m3d</th>
+      <th>meas_qtotal_m3d</th>
+      <th>meas_qbase_m3d</th>
+      <th>obsval</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>07280400</td>
+      <td>2008-01-01</td>
+      <td>measured</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2.219044e+05</td>
+      <td>99816.041527</td>
+      <td>99816.041527</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>07280400</td>
+      <td>2008-02-01</td>
+      <td>measured</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3.343203e+05</td>
+      <td>130662.640359</td>
+      <td>130662.640359</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>07280400</td>
+      <td>2008-03-01</td>
+      <td>measured</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.228016e+05</td>
+      <td>112159.341365</td>
+      <td>112159.341365</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>07280400</td>
+      <td>2008-04-01</td>
+      <td>measured</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.080310e+06</td>
+      <td>197271.496485</td>
+      <td>197271.496485</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>07280400</td>
+      <td>2008-05-01</td>
+      <td>measured</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>6.351547e+05</td>
+      <td>165388.483203</td>
+      <td>165388.483203</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+</div>
+<div class="section" id="Preprocess-head-observations">
+<h2>Preprocess head observations<a class="headerlink" href="#Preprocess-head-observations" title="Permalink to this headline">¶</a></h2>
+<p>Preprocess head observation data, from the <a class="reference external" href="https://doi.org/10.5066/P9W004O6">visGWDB program</a> * reproject to the model CRS * cull data to a <code class="docutils literal notranslate"><span class="pre">start_date</span></code> and optionally, a polygon or set of polygons defining the model area * length units are converted to those of the groundwater model. Open intervals for the wells are converted from depths to elevations * missing open intervals are filled based on well bottom depths (if availabile) and the median open interval length for the dataset. *
+Wells are categorized based on the quality of the open interval information (see the documentation for :func:<code class="docutils literal notranslate"><span class="pre">mapgwm.headobs.fill_well_open_intervals</span></code>). * Prefixes for observation names (with an optional length limit) that identify the location are generated * Similar to with flux observations, assign preliminary observation groups based on geographic areas defined by the * The <code class="docutils literal notranslate"><span class="pre">data</span></code> DataFrame outputs have the time series; * The <code class="docutils literal notranslate"><span class="pre">metadata</span></code> DataFrame outputs have site information that
+can be input to <strong>``modflow-setup``</strong> to set up the observation input for MODFLOW-6. * Once the model has been run, the observation output from the model can be fed to <strong>``modflow-obs``</strong> along with the <code class="docutils literal notranslate"><span class="pre">data</span></code> timeseries (below), to set up <strong>``PEST``</strong> observations, or create observation output to be read by <strong>``PEST``</strong>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">mapgwm.headobs</span> <span class="kn">import</span> <span class="n">preprocess_headobs</span><span class="p">,</span> <span class="n">get_data</span>
+
+<span class="n">data_file</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;headobs/GW_monthly_stats1990-01-01_2019-12-31.txt&#39;</span>
+<span class="n">metadata_file</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;headobs/GW_monthly_meta1990-01-01_2019-12-31.txt&#39;</span>
+
+<span class="c1"># output</span>
+<span class="n">outputfile</span> <span class="o">=</span> <span class="n">output_folder</span> <span class="o">/</span> <span class="s1">&#39;preprocessed_monthly_headobs.csv&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># read the data</span>
+<span class="n">data_orig</span><span class="p">,</span> <span class="n">metadata_orig</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">metadata_file</span><span class="p">)</span>
+
+<span class="c1"># do the preprocessing</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">preprocess_headobs</span><span class="p">(</span><span class="n">data_orig</span><span class="p">,</span> <span class="n">metadata_orig</span><span class="p">,</span>
+                                    <span class="n">head_data_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="s1">&#39;last_head&#39;</span><span class="p">],</span>
+                                    <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">,</span>
+                                    <span class="n">active_area</span><span class="o">=</span><span class="n">delta_extent</span><span class="p">,</span>
+                                    <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                                    <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+                                    <span class="n">geographic_groups</span><span class="o">=</span><span class="n">geographic_groups</span><span class="p">,</span>
+                                    <span class="n">geographic_groups_col</span><span class="o">=</span><span class="s1">&#39;obsgroup&#39;</span><span class="p">,</span>
+                                    <span class="n">outfile</span><span class="o">=</span><span class="n">outputfile</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+starting with 10 unique wells
+culling 13 wells with only data prior to start date of 1998-04-01 00:00:00
+
+reading ../mapgwm/tests/data/extents/ms_delta.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+Culling 2 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+50% of wells (n=4) have incomplete open interval information. Filling screen bottoms with well bottoms where available, and estimating screen tops from median open interval length.
+12% of wells (n=1) still missing open interval information; assigned to category 4.
+
+reading ../mapgwm/tests/data/extents/MAP_generalized_regions.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+
+reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+writing output/preprocessed_monthly_headobs_info.shp...
+writing output/preprocessed_monthly_headobs_info.csv
+writing output/preprocessed_monthly_headobs.csv
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[23]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>site_no</th>
+      <th>datetime</th>
+      <th>head</th>
+      <th>last_head</th>
+      <th>head_std</th>
+      <th>n</th>
+      <th>obsprefix</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>4</th>
+      <td>USGS:332915091025901</td>
+      <td>2003-07-01</td>
+      <td>37.185600</td>
+      <td>37.185600</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>USGS:332915091025901</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>USGS:333411090482201</td>
+      <td>2008-03-01</td>
+      <td>28.096464</td>
+      <td>28.096464</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>USGS:333411090482201</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>USGS:333411090482201</td>
+      <td>2010-03-01</td>
+      <td>27.736800</td>
+      <td>27.736800</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>USGS:333411090482201</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>USGS:333411090482201</td>
+      <td>2015-03-01</td>
+      <td>26.560272</td>
+      <td>26.560272</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>USGS:333411090482201</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>USGS:333411090482201</td>
+      <td>2019-03-01</td>
+      <td>26.484072</td>
+      <td>26.484072</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>USGS:333411090482201</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">metadata</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>head</th>
+      <th>head_std</th>
+      <th>last_head</th>
+      <th>n</th>
+      <th>aqfr_cd</th>
+      <th>nat_aqfr_cd</th>
+      <th>screen_botm</th>
+      <th>screen_top</th>
+      <th>well_depth</th>
+      <th>well_el</th>
+      <th>...</th>
+      <th>site_no</th>
+      <th>x</th>
+      <th>y</th>
+      <th>geometry</th>
+      <th>well_botm</th>
+      <th>category</th>
+      <th>orig_scbot</th>
+      <th>orig_sctop</th>
+      <th>obsprefix</th>
+      <th>group</th>
+    </tr>
+    <tr>
+      <th>site_no</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>USGS:323340091085201</th>
+      <td>19.50720</td>
+      <td>NaN</td>
+      <td>19.50720</td>
+      <td>1.0</td>
+      <td>112MRVA</td>
+      <td>N100MSRVVL</td>
+      <td>-88.177600</td>
+      <td>-75.985600</td>
+      <td>115.0</td>
+      <td>26.822400</td>
+      <td>...</td>
+      <td>USGS:323340091085201</td>
+      <td>452922.427646</td>
+      <td>1.065894e+06</td>
+      <td>POINT (452922.4276462687 1065893.772968342)</td>
+      <td>-88.177600</td>
+      <td>2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>USGS:323340091085201</td>
+      <td>heads</td>
+    </tr>
+    <tr>
+      <th>USGS:325121091093801</th>
+      <td>29.87040</td>
+      <td>NaN</td>
+      <td>29.87040</td>
+      <td>1.0</td>
+      <td>112MRVA</td>
+      <td>N100MSRVVL</td>
+      <td>-58.605600</td>
+      <td>-46.413600</td>
+      <td>90.0</td>
+      <td>31.394400</td>
+      <td>...</td>
+      <td>USGS:325121091093801</td>
+      <td>450055.327781</td>
+      <td>1.098664e+06</td>
+      <td>POINT (450055.3277808698 1098664.367787851)</td>
+      <td>-58.605600</td>
+      <td>2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>USGS:325121091093801</td>
+      <td>heads</td>
+    </tr>
+    <tr>
+      <th>USGS:332915091025901</th>
+      <td>37.18560</td>
+      <td>NaN</td>
+      <td>37.18560</td>
+      <td>1.0</td>
+      <td>112MRVA</td>
+      <td>N100MSRVVL</td>
+      <td>6.705600</td>
+      <td>15.240000</td>
+      <td>108.0</td>
+      <td>39.624000</td>
+      <td>...</td>
+      <td>USGS:332915091025901</td>
+      <td>456688.018145</td>
+      <td>1.169617e+06</td>
+      <td>POINT (456688.0181453624 1169616.855672613)</td>
+      <td>-68.376000</td>
+      <td>3</td>
+      <td>6.7056</td>
+      <td>15.24</td>
+      <td>USGS:332915091025901</td>
+      <td>heads</td>
+    </tr>
+    <tr>
+      <th>USGS:333411090482201</th>
+      <td>27.60726</td>
+      <td>NaN</td>
+      <td>27.60726</td>
+      <td>1.0</td>
+      <td>112MRVA</td>
+      <td>N100MSRVVL</td>
+      <td>-81.262968</td>
+      <td>-69.070968</td>
+      <td>120.0</td>
+      <td>38.737032</td>
+      <td>...</td>
+      <td>USGS:333411090482201</td>
+      <td>478637.876037</td>
+      <td>1.179983e+06</td>
+      <td>POINT (478637.8760365412 1179983.321431023)</td>
+      <td>-81.262968</td>
+      <td>2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>USGS:333411090482201</td>
+      <td>heads</td>
+    </tr>
+    <tr>
+      <th>USGS:333633090230701</th>
+      <td>23.77440</td>
+      <td>NaN</td>
+      <td>23.77440</td>
+      <td>1.0</td>
+      <td>112MRVA</td>
+      <td>N100MSRVVL</td>
+      <td>3.048000</td>
+      <td>15.240000</td>
+      <td>115.0</td>
+      <td>38.100000</td>
+      <td>...</td>
+      <td>USGS:333633090230701</td>
+      <td>517102.401121</td>
+      <td>1.186603e+06</td>
+      <td>POINT (517102.4011205511 1186603.416371753)</td>
+      <td>-76.900000</td>
+      <td>3</td>
+      <td>3.0480</td>
+      <td>15.24</td>
+      <td>USGS:333633090230701</td>
+      <td>heads</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 24 columns</p>
+</div></div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -688,10 +2052,10 @@ wrote output/zones/rasters/res_fac23.tif
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../api/index.html" class="btn btn-neutral float-right" title="Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../examples.html" class="btn btn-neutral float-left" title="&lt;no title&gt;" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.headobs &mdash; usgs-map-gwmodels 0.post34.dev0+ge7bc80b documentation</title>
+  <title>mapgwm.headobs &mdash; usgs-map-gwmodels 0.post35+gae5bc85 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post34.dev0+ge7bc80b
+                0.post35+gae5bc85
               </div>
             
           
@@ -92,11 +92,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html">Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">User Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../usage.html"> More details on how to use the package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html"> Demo of USGS-MAP-gwmodels</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference</span></p>
 <ul>
@@ -172,7 +172,10 @@
            <div itemprop="articleBody">
             
   <h1>Source code for mapgwm.headobs</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Code for preprocessing head observation data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -184,7 +187,7 @@
 <span class="kn">from</span> <span class="nn">mfsetup.obs</span> <span class="kn">import</span> <span class="n">make_obsname</span>
 <span class="kn">from</span> <span class="nn">mfsetup.units</span> <span class="kn">import</span> <span class="n">convert_length_units</span>
 <span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">aq_codes_dict</span><span class="p">,</span> <span class="n">gwlevels_col_renames</span>
-<span class="kn">from</span> <span class="nn">mapgwm.utils</span> <span class="kn">import</span> <span class="n">makedirs</span>
+<span class="kn">from</span> <span class="nn">mapgwm.utils</span> <span class="kn">import</span> <span class="n">makedirs</span><span class="p">,</span> <span class="n">assign_geographic_obsgroups</span><span class="p">,</span> <span class="n">cull_data_to_active_area</span>
 
 
 <div class="viewcode-block" id="get_header_length"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.get_header_length">[docs]</a><span class="k">def</span> <span class="nf">get_header_length</span><span class="p">(</span><span class="n">sitefile</span><span class="p">,</span> <span class="n">col0</span><span class="o">=</span><span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">):</span>
@@ -431,7 +434,8 @@
                        <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
                        <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
                        <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
-                       <span class="n">aoi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">geographic_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">geographic_groups_col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">max_obsname_len</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;../source_data/observations/head_obs/preprocessed_head_obs.csv&#39;</span><span class="p">):</span>
 
@@ -538,14 +542,26 @@
 <span class="sd">        Length units of head observations.</span>
 <span class="sd">    model_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
 <span class="sd">        Length units of model.</span>
-<span class="sd">    aoi : dict  (name: shapefile path)</span>
-<span class="sd">        Option to group observations by area(s) of interest. For example::</span>
+<span class="sd">    geographic_groups : file, dict or list-like</span>
+<span class="sd">        Option to group observations by area(s) of interest. Can</span>
+<span class="sd">        be a shapefile, list of shapefiles, or dictionary of shapely polygons.</span>
+<span class="sd">        A &#39;group&#39; column will be created in the metadata, and observation</span>
+<span class="sd">        sites within each polygon will be assigned the group name</span>
+<span class="sd">        associated with that polygon.</span>
 
-<span class="sd">            aoi={&#39;mscha&#39;: &#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
-<span class="sd">                 }</span>
+<span class="sd">        For example::</span>
 
-<span class="sd">        &#39;mscha&#39; is an observation group name for observations located within the</span>
-<span class="sd">        the area defined by CompositeHydrographArea.shp.</span>
+<span class="sd">            geographic_groups=&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
+<span class="sd">            geographic_groups=[&#39;../source_data/extents/CompositeHydrographArea.shp&#39;]</span>
+<span class="sd">            geographic_groups={&#39;cha&#39;: &lt;shapely Polygon&gt;}</span>
+
+<span class="sd">        Where &#39;cha&#39; is an observation group name for observations located within the</span>
+<span class="sd">        the area defined by CompositeHydrographArea.shp. For shapefiles,</span>
+<span class="sd">        group names are provided in a `geographic_groups_col`.</span>
+
+<span class="sd">    geographic_groups_col : str</span>
+<span class="sd">        Field name in the `geographic_groups` shapefile(s) containing the</span>
+<span class="sd">        observation group names associated with each polygon.</span>
 
 <span class="sd">    max_obsname_len : int or None</span>
 <span class="sd">        Maximum length for observation name prefix. Default of 13</span>
@@ -605,6 +621,7 @@
     <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;start_dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
     <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;end_dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
     <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">index</span>
 
     <span class="c1"># project x, y to model crs</span>
     <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span> <span class="o">=</span> <span class="n">project</span><span class="p">((</span><span class="n">well_info</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">well_info</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">source_crs</span><span class="p">,</span> <span class="n">dest_crs</span><span class="p">)</span>
@@ -614,20 +631,10 @@
 
     <span class="c1"># cull data to that within the model area</span>
     <span class="k">if</span> <span class="n">active_area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">active_area_df</span> <span class="o">=</span> <span class="n">shp2df</span><span class="p">(</span><span class="n">active_area</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">active_area_id_column</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">active_area_feature_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">loc</span> <span class="o">=</span> <span class="n">active_area_df</span><span class="p">[</span><span class="n">active_area_id_column</span><span class="p">]</span> <span class="o">==</span> <span class="n">active_area_feature_id</span>
-            <span class="k">assert</span> <span class="nb">any</span><span class="p">(</span><span class="n">loc</span><span class="p">),</span> <span class="s2">&quot;feature </span><span class="si">{}</span><span class="s2"> not found!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">active_area_feature_id</span><span class="p">)</span>
-            <span class="n">active_area_polygon</span> <span class="o">=</span> <span class="n">active_area_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">loc</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">active_area_polygon</span> <span class="o">=</span> <span class="n">MultiPolygon</span><span class="p">(</span><span class="n">active_area_df</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
-        <span class="n">within</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">active_area_polygon</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">well_info</span><span class="o">.</span><span class="n">geometry</span><span class="p">])</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">within</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Culling </span><span class="si">{}</span><span class="s1"> wells outside of the model area defined by </span><span class="si">{}</span><span class="s1">.&#39;</span>
-                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">within</span><span class="p">),</span> <span class="n">active_area</span><span class="p">))</span>
-        <span class="n">well_info</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">within</span><span class="p">]</span>
-        <span class="n">df_within</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">site_no</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_within</span><span class="p">]</span>
+        <span class="n">df</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">cull_data_to_active_area</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">well_info</span><span class="p">,</span> <span class="n">active_area</span><span class="p">,</span>
+                                          <span class="n">active_area_id_column</span><span class="p">,</span>
+                                          <span class="n">active_area_feature_id</span><span class="p">,</span>
+                                          <span class="n">data_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
 
     <span class="c1"># convert length units; convert screen tops and botms to depths</span>
     <span class="n">missing_elevations</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">well_el</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
@@ -699,18 +706,15 @@
 
     <span class="c1"># add area of interest information</span>
     <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;heads&#39;</span>
-    <span class="k">if</span> <span class="n">aoi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">shpname</span> <span class="ow">in</span> <span class="n">aoi</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">aoi_info</span> <span class="o">=</span> <span class="n">shp2df</span><span class="p">(</span><span class="n">shpname</span><span class="p">)</span>
-            <span class="n">aoi_poly</span> <span class="o">=</span> <span class="n">aoi_info</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">within</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">aoi_poly</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">well_info</span><span class="o">.</span><span class="n">geometry</span><span class="p">]</span>
-            <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">within</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">assign_geographic_obsgroups</span><span class="p">(</span><span class="n">well_info</span><span class="p">,</span> <span class="n">geographic_groups</span><span class="p">,</span>
+                                            <span class="n">geographic_groups_col</span><span class="p">,</span>
+                                            <span class="n">metadata_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
 
     <span class="c1"># save out the results</span>
     <span class="n">df2shp</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
-           <span class="n">out_shapefile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+           <span class="n">out_shapefile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">))</span>
-    <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_data_csvfile</span><span class="p">))</span>
     <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_data_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">well_info</span></div>

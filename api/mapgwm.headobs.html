@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.headobs module &mdash; usgs-map-gwmodels 0.post34.dev0+ge7bc80b documentation</title>
+  <title>mapgwm.headobs module &mdash; usgs-map-gwmodels 0.post35+gae5bc85 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post34.dev0+ge7bc80b
+                0.post35+gae5bc85
               </div>
             
           
@@ -94,11 +94,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../philosophy.html">Philosophy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Example.html">Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">User Guide</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../usage.html"> More details on how to use the package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Example.html"> Demo of USGS-MAP-gwmodels</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Reference</span></p>
 <ul class="current">
@@ -214,6 +214,7 @@
 </style>
 <div class="section" id="module-mapgwm.headobs">
 <span id="mapgwm-headobs-module"></span><h1>mapgwm.headobs module<a class="headerlink" href="#module-mapgwm.headobs" title="Permalink to this headline">¶</a></h1>
+<p>Code for preprocessing head observation data.</p>
 <dl class="py function">
 <dt id="mapgwm.headobs.fill_well_open_intervals">
 <code class="sig-prename descclassname">mapgwm.headobs.</code><code class="sig-name descname">fill_well_open_intervals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">well_info</span></em>, <em class="sig-param"><span class="n">out_plot</span><span class="o">=</span><span class="default_value">'open_interval_lengths.pdf'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#fill_well_open_intervals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.headobs.fill_well_open_intervals" title="Permalink to this definition">¶</a></dt>
@@ -418,7 +419,7 @@ a tabular file with ‘#’ head comments.</p>
 
 <dl class="py function">
 <dt id="mapgwm.headobs.preprocess_headobs">
-<code class="sig-prename descclassname">mapgwm.headobs.</code><code class="sig-name descname">preprocess_headobs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">metadata</span></em>, <em class="sig-param"><span class="n">head_data_columns</span><span class="o">=</span><span class="default_value">['head', 'last_head', 'head_std']</span></em>, <em class="sig-param"><span class="n">dem</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dem_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="o">=</span><span class="default_value">'1998-04-01'</span></em>, <em class="sig-param"><span class="n">active_area</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_id_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_feature_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_crs</span><span class="o">=</span><span class="default_value">4269</span></em>, <em class="sig-param"><span class="n">dest_crs</span><span class="o">=</span><span class="default_value">5070</span></em>, <em class="sig-param"><span class="n">data_length_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">model_length_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">aoi</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_obsname_len</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">'../source_data/observations/head_obs/preprocessed_head_obs.csv'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#preprocess_headobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.headobs.preprocess_headobs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mapgwm.headobs.</code><code class="sig-name descname">preprocess_headobs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">metadata</span></em>, <em class="sig-param"><span class="n">head_data_columns</span><span class="o">=</span><span class="default_value">['head', 'last_head', 'head_std']</span></em>, <em class="sig-param"><span class="n">dem</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dem_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="o">=</span><span class="default_value">'1998-04-01'</span></em>, <em class="sig-param"><span class="n">active_area</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_id_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_feature_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_crs</span><span class="o">=</span><span class="default_value">4269</span></em>, <em class="sig-param"><span class="n">dest_crs</span><span class="o">=</span><span class="default_value">5070</span></em>, <em class="sig-param"><span class="n">data_length_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">model_length_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">geographic_groups</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">geographic_groups_col</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_obsname_len</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">'../source_data/observations/head_obs/preprocessed_head_obs.csv'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#preprocess_headobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.headobs.preprocess_headobs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Preprocess head observation data, for example, groundwater level data output from the
 <a class="reference external" href="https://doi.org/10.5066/P9W004O6">visGWDB program</a>.</p>
 <ul class="simple">
@@ -557,13 +558,23 @@ By default, epsg:5070</p>
 </dd>
 <dt><strong>model_length_units</strong><span class="classifier">str; ‘meters’, ‘feet’, etc.</span></dt><dd><p>Length units of model.</p>
 </dd>
-<dt><strong>aoi</strong><span class="classifier">dict  (name: shapefile path)</span></dt><dd><p>Option to group observations by area(s) of interest. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">aoi</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mscha&#39;</span><span class="p">:</span> <span class="s1">&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
-     <span class="p">}</span>
+<dt><strong>geographic_groups</strong><span class="classifier">file, dict or list-like</span></dt><dd><p>Option to group observations by area(s) of interest. Can
+be a shapefile, list of shapefiles, or dictionary of shapely polygons.
+A ‘group’ column will be created in the metadata, and observation
+sites within each polygon will be assigned the group name
+associated with that polygon.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">geographic_groups</span><span class="o">=</span><span class="s1">&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
+<span class="n">geographic_groups</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span><span class="p">]</span>
+<span class="n">geographic_groups</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cha&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">shapely</span> <span class="n">Polygon</span><span class="o">&gt;</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>‘mscha’ is an observation group name for observations located within the
-the area defined by CompositeHydrographArea.shp.</p>
+<p>Where ‘cha’ is an observation group name for observations located within the
+the area defined by CompositeHydrographArea.shp. For shapefiles,
+group names are provided in a <cite>geographic_groups_col</cite>.</p>
+</dd>
+<dt><strong>geographic_groups_col</strong><span class="classifier">str</span></dt><dd><p>Field name in the <cite>geographic_groups</cite> shapefile(s) containing the
+observation group names associated with each polygon.</p>
 </dd>
 <dt><strong>max_obsname_len</strong><span class="classifier">int or None</span></dt><dd><p>Maximum length for observation name prefix. Default of 13
 allows for a PEST obsnme of 20 characters or less with

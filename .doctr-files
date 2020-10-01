@@ -1,3 +1,4 @@
+./_images/notebooks_Example_12_0.png
 ./_images/notebooks_Example_9_1.png
 ./_modules/index.html
 ./_modules/mapgwm/check_input_datasets.html
@@ -28,7 +29,6 @@
 ./_sources/philosophy.rst.txt
 ./_sources/references.rst.txt
 ./_sources/release-history.rst.txt
-./_sources/usage.rst.txt
 ./_static/basic.css
 ./_static/clipboard.min.js
 ./_static/copy-button.svg
@@ -95,4 +95,3 @@
 ./release-history.html
 ./search.html
 ./searchindex.js
-./usage.html
