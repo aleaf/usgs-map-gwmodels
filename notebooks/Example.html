@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post35.dev0+gc6a63b8 documentation</title>
+  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post36.dev0+g3a06853 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post35.dev0+gc6a63b8
+                0.post36.dev0+g3a06853
               </div>
             
           
@@ -109,6 +109,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Preprocess-head-observations">Preprocess head observations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-ag.-water-use-from-the-IWUM">Preprocess ag. water use from the IWUM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-average-pumping-at-each-location">Plot average pumping at each location</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -129,6 +133,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#Preprocess-head-observations">Preprocess head observations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Preprocess-ag.-water-use-from-the-IWUM">Preprocess ag. water use from the IWUM</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Plot-average-pumping-at-each-location">Plot average pumping at each location</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -466,9 +474,14 @@ div.rendered_html tbody tr:hover {
 </style>
 <div class="section" id="Demo-of-USGS-MAP-gwmodels">
 <h1>Demo of USGS-MAP-gwmodels<a class="headerlink" href="#Demo-of-USGS-MAP-gwmodels" title="Permalink to this headline">¶</a></h1>
-<p>This page demonstrates some of the core features of USGS-MAP-gwmodel obs, applied to the Mississippi Delta inset model area. Specifically: * setup of model layering and property zones by combining voxel-based hydrogeologic facies derived from an airborne electromagnetic (AEM) survey with traditional raster surfaces denoting hydrogeologic contacts * culling of NetCDF-based infiltration data to the model area, and aggregation to monthly values * preprocessing of streamflow timeseries for use as
-specified inflows to the SFR package, or streamflow observations * preprocessing of head observations</p>
-<div class="nbinput nblast docutils container">
+<p>This page demonstrates some of the core features of USGS-MAP-gwmodel obs, applied to the Mississippi Delta inset model area. Specifically:</p>
+<ul class="simple">
+<li><p>setup of model layering and property zones by combining voxel-based hydrogeologic facies derived from an airborne electromagnetic (AEM) survey with traditional raster surfaces denoting hydrogeologic contacts</p></li>
+<li><p>culling of NetCDF-based infiltration data to the model area, and aggregation to monthly values</p></li>
+<li><p>preprocessing of streamflow timeseries for use as specified inflows to the SFR package, or streamflow observations</p></li>
+<li><p>preprocessing of head observations</p></li>
+</ul>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -481,6 +494,14 @@ specified inflows to the SFR package, or streamflow observations * preprocessing
 <span class="kn">from</span> <span class="nn">mfsetup.grid</span> <span class="kn">import</span> <span class="n">MFsetupGrid</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+flopy is installed in /home/travis/miniconda/envs/test/lib/python3.7/site-packages/flopy
+</pre></div></div>
 </div>
 <div class="section" id="Define-some-global-inputs">
 <h2>Define some global inputs<a class="headerlink" href="#Define-some-global-inputs" title="Permalink to this headline">¶</a></h2>
@@ -592,9 +613,9 @@ finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mccu_surf.tif...
 finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mcaq_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/lccu_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/lcaq_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mwaq_surf.tif...
@@ -604,10 +625,10 @@ finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mdwy_surf.tif...
 finished in 0.02s
 computing cell thicknesses...
-finished in 6.03s
+finished in 6.32s
 
 computing cell thicknesses...
-finished in 13.92s
+finished in 12.99s
 
 wrote output/botm_array/model_top.tif
 wrote output/botm_array/botm0.tif
@@ -2031,6 +2052,195 @@ writing output/preprocessed_monthly_headobs.csv
 <p>5 rows × 24 columns</p>
 </div></div>
 </div>
+</div>
+<div class="section" id="Preprocess-ag.-water-use-from-the-IWUM">
+<h2>Preprocess ag. water use from the IWUM<a class="headerlink" href="#Preprocess-ag.-water-use-from-the-IWUM" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>read agricultural water use estimates from the Irrigation Water Use Model (IWUM; Wilson, 2020)</p></li>
+<li><p>convert rates from cumulative volumes per time period to cubic meters per day</p></li>
+<li><p>assign open intervals based on raster surfaces of the estimated production zone for agricultural groundwater use</p></li>
+<li><p>cull data to the model area</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">mapgwm.iwum</span> <span class="kn">import</span> <span class="n">preprocess_iwum_pumping</span>
+
+<span class="n">iwum_output</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;iwum/irr_wu_1km_1999_to_2017.nc&#39;</span>
+<span class="n">production_zone_top_raster</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;iwum/est_prod_zone_top.tif&#39;</span>
+<span class="n">production_zone_botm_raster</span> <span class="o">=</span> <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;iwum/est_prod_zone_botm.tif&#39;</span>
+
+<span class="n">outfile</span> <span class="o">=</span> <span class="n">output_folder</span> <span class="o">/</span> <span class="s1">&#39;iwum_m3.csv&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ag_wu</span> <span class="o">=</span> <span class="n">preprocess_iwum_pumping</span><span class="p">(</span><span class="n">iwum_output</span><span class="p">,</span>
+                                <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                <span class="n">active_area</span><span class="o">=</span><span class="n">delta_extent</span><span class="p">,</span>
+                                <span class="n">estimated_production_zone_top</span><span class="o">=</span><span class="n">production_zone_top_raster</span><span class="p">,</span>
+                                <span class="n">estimated_production_zone_botm</span><span class="o">=</span><span class="n">production_zone_botm_raster</span><span class="p">,</span>
+                                <span class="n">flux_variable</span><span class="o">=</span><span class="s1">&#39;value&#39;</span><span class="p">,</span>
+                                <span class="n">nc_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                                <span class="n">nc_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                                <span class="n">estimated_production_surface_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                                <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                                <span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+reading data from ../mapgwm/tests/data/iwum/est_prod_zone_top.tif...
+finished in 0.14s
+reading data from ../mapgwm/tests/data/iwum/est_prod_zone_botm.tif...
+finished in 0.14s
+
+reading ../mapgwm/tests/data/extents/ms_delta.shp...
+--&gt; building dataframe... (may take a while for large shapefiles)
+Culling 42258 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+wrote output/iwum_m3.csv
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">ag_wu</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>iwum_loc</th>
+      <th>x</th>
+      <th>y</th>
+      <th>screen_top</th>
+      <th>screen_botm</th>
+      <th>start_datetime</th>
+      <th>end_datetime</th>
+      <th>flux_m3d</th>
+      <th>geometry</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>179</th>
+      <td>179</td>
+      <td>477955.0</td>
+      <td>1041285.0</td>
+      <td>46.24</td>
+      <td>22.32</td>
+      <td>2017-06-01</td>
+      <td>2017-06-30</td>
+      <td>-2043.222778</td>
+      <td>POINT (477955 1041285)</td>
+    </tr>
+    <tr>
+      <th>314</th>
+      <td>314</td>
+      <td>476955.0</td>
+      <td>1042285.0</td>
+      <td>43.85</td>
+      <td>20.30</td>
+      <td>2017-06-01</td>
+      <td>2017-06-30</td>
+      <td>-2093.868652</td>
+      <td>POINT (476955 1042285)</td>
+    </tr>
+    <tr>
+      <th>315</th>
+      <td>315</td>
+      <td>477955.0</td>
+      <td>1042285.0</td>
+      <td>45.02</td>
+      <td>20.84</td>
+      <td>2017-06-01</td>
+      <td>2017-06-30</td>
+      <td>-1526.927734</td>
+      <td>POINT (477955 1042285)</td>
+    </tr>
+    <tr>
+      <th>443</th>
+      <td>443</td>
+      <td>469955.0</td>
+      <td>1043285.0</td>
+      <td>36.24</td>
+      <td>10.55</td>
+      <td>2017-06-01</td>
+      <td>2017-06-30</td>
+      <td>-1283.890991</td>
+      <td>POINT (469955 1043285)</td>
+    </tr>
+    <tr>
+      <th>444</th>
+      <td>444</td>
+      <td>470955.0</td>
+      <td>1043285.0</td>
+      <td>36.40</td>
+      <td>10.93</td>
+      <td>2017-06-01</td>
+      <td>2017-06-30</td>
+      <td>-1245.565308</td>
+      <td>POINT (470955 1043285)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<div class="section" id="Plot-average-pumping-at-each-location">
+<h3>Plot average pumping at each location<a class="headerlink" href="#Plot-average-pumping-at-each-location" title="Permalink to this headline">¶</a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[28]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">site_means</span> <span class="o">=</span> <span class="n">ag_wu</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;iwum_loc&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">site_means</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;scatter&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;flux_m3d&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis_r&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">site_means</span><span class="o">.</span><span class="n">flux_m3d</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_Example_40_0.png" src="../_images/notebooks_Example_40_0.png" />
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -2038,6 +2248,7 @@ writing output/preprocessed_monthly_headobs.csv
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
 <span></span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -2064,7 +2275,7 @@ writing output/preprocessed_monthly_headobs.csv
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 01, 2020.
+        Last updated on Oct 05, 2020.
       </span>
 
     </p>

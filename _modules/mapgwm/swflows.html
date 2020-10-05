@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.swflows &mdash; usgs-map-gwmodels 0.post35.dev0+gc6a63b8 documentation</title>
+  <title>mapgwm.swflows &mdash; usgs-map-gwmodels 0.post36.dev0+g3a06853 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post35.dev0+gc6a63b8
+                0.post36.dev0+g3a06853
               </div>
             
           
@@ -514,10 +514,10 @@
 
     <span class="c1"># cull data to that within the model area</span>
     <span class="k">if</span> <span class="n">active_area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">df</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">cull_data_to_active_area</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">md</span><span class="p">,</span> <span class="n">active_area</span><span class="p">,</span>
+        <span class="n">df</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">cull_data_to_active_area</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">active_area</span><span class="p">,</span>
                                           <span class="n">active_area_id_column</span><span class="p">,</span>
                                           <span class="n">active_area_feature_id</span><span class="p">,</span>
-                                          <span class="n">data_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+                                          <span class="n">data_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">md</span><span class="p">)</span>
 
     <span class="c1"># get the hydrography IDs corresponding to each site</span>
     <span class="c1"># using the included lookup table</span>
@@ -995,7 +995,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 01, 2020.
+        Last updated on Oct 05, 2020.
       </span>
 
     </p>
