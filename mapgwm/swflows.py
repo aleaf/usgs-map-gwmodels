@@ -340,10 +340,10 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
 
     # cull data to that within the model area
     if active_area is not None:
-        df, md = cull_data_to_active_area(df, md, active_area,
+        df, md = cull_data_to_active_area(df, active_area,
                                           active_area_id_column,
                                           active_area_feature_id,
-                                          data_crs=dest_crs)
+                                          data_crs=dest_crs, metadata=md)
 
     # get the hydrography IDs corresponding to each site
     # using the included lookup table

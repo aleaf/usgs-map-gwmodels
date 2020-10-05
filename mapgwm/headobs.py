@@ -457,10 +457,10 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
 
     # cull data to that within the model area
     if active_area is not None:
-        df, md = cull_data_to_active_area(df, well_info, active_area,
+        df, md = cull_data_to_active_area(df, active_area,
                                           active_area_id_column,
                                           active_area_feature_id,
-                                          data_crs=dest_crs)
+                                          data_crs=dest_crs, metadata=well_info)
 
     # convert length units; convert screen tops and botms to depths
     missing_elevations = well_info.well_el.isna()

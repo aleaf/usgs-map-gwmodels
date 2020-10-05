@@ -29,7 +29,7 @@ def test_output_folder(project_root_path):
     """(Re)make an output folder for the tests
     at the begining of each test session."""
     folder = os.path.join(project_root_path, 'mapgwm', 'tests', 'output')
-    reset = False
+    reset = True
     if reset:
         if os.path.isdir(folder):
             shutil.rmtree(folder)

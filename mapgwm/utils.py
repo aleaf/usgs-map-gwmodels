@@ -3,7 +3,10 @@ Utility functions shared by other modules
 """
 import os
 from pathlib import Path
+
+import gisutils
 import numpy as np
+from scipy import interpolate
 from shapely.geometry import MultiPolygon
 import pandas as pd
 from gisutils import shp2df
@@ -42,11 +45,12 @@ def assign_geographic_obsgroups(metadata, geographic_groups, geographic_groups_c
     return metadata
 
 
-def cull_data_to_active_area(data, metadata, active_area, active_area_id_column,
+def cull_data_to_active_area(data, active_area, active_area_id_column,
                              active_area_feature_id,
-                             data_crs):
+                             data_crs, metadata=None):
     df = data.copy()
-    md = metadata.copy()
+    if metadata is not None:
+        md = metadata.copy()
     if isinstance(active_area, Path) or isinstance(active_area, str):
         active_area = [active_area]
     active_area = [str(filepath) for filepath in active_area]
@@ -57,11 +61,20 @@ def cull_data_to_active_area(data, metadata, active_area, active_area_id_column,
         active_area_polygon = active_area_df.loc[loc, 'geometry']
     else:
         active_area_polygon = MultiPolygon(active_area_df.geometry.tolist())
-    within = np.array([g.within(active_area_polygon) for g in md.geometry])
+
+    if metadata is not None:
+        within = np.array([g.within(active_area_polygon) for g in md.geometry])
+        md = md.loc[within]
+        df_within = df.site_no.isin(md['site_no'])
+    else:
+        within = np.array([g.within(active_area_polygon) for g in df.geometry])
+        df_within = within
     if not np.all(within):
         print('Culling {} wells outside of the model area defined by {}.'
               .format(np.sum(~within), active_area))
-    md = md.loc[within]
-    df_within = df.site_no.isin(md['site_no'])
     df = df.loc[df_within]
-    return df, md
+    if metadata is not None:
+        return df, md
+    return df
+
+
