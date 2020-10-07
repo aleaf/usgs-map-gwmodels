@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post41.dev0+g794782a documentation</title>
+  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post41.dev0+gf1bf764 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post41.dev0+g794782a
+                0.post41.dev0+gf1bf764
               </div>
             
           
@@ -506,7 +506,7 @@ div.rendered_html tbody tr:hover {
 </li>
 </ul>
 <p><a class="reference external" href="https://aleaf.github.io/usgs-map-gwmodels/references.html">Cited References</a></p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -520,6 +520,14 @@ div.rendered_html tbody tr:hover {
 <span class="kn">from</span> <span class="nn">mfsetup.grid</span> <span class="kn">import</span> <span class="n">MFsetupGrid</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+flopy is installed in /home/travis/miniconda/envs/test/lib/python3.7/site-packages/flopy
+</pre></div></div>
 </div>
 <div class="section" id="Define-some-global-inputs">
 <h2>Define some global inputs<a class="headerlink" href="#Define-some-global-inputs" title="Permalink to this headline">¶</a></h2>
@@ -629,13 +637,13 @@ finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/ucaq_surf.tif...
 finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mccu_surf.tif...
-finished in 0.03s
+finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mcaq_surf.tif...
-finished in 0.03s
+finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/lccu_surf.tif...
 finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/lcaq_surf.tif...
-finished in 0.03s
+finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mwaq_surf.tif...
 finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/lwaq_surf.tif...
@@ -643,10 +651,10 @@ finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mdwy_surf.tif...
 finished in 0.02s
 computing cell thicknesses...
-finished in 5.94s
+finished in 6.35s
 
 computing cell thicknesses...
-finished in 13.12s
+finished in 13.99s
 
 wrote output/botm_array/model_top.tif
 wrote output/botm_array/botm0.tif
@@ -777,10 +785,10 @@ opening ../mapgwm/tests/data/swb/delta_swb_summer2018.nc...
 culling to bounding box: (434955.0, 1040285.0, 569955.0, 1342785.0)
 Aggregating to monthly values...
 wrote output/swb_monthly_means.nc
-took 0.13s
+took 0.14s
 
 checking compressed file
-finished in 0.14s
+finished in 0.15s
 
 </pre></div></div>
 </div>
@@ -2796,9 +2804,9 @@ reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
 Culling 405 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
-finished in 0.14s
+finished in 0.13s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_bot.tif...
-finished in 0.14s
+finished in 0.13s
 wrote output/preprocessed_te_data.csv
 writing output/preprocessed_te_data.shp...
 </pre></div></div>
@@ -2843,8 +2851,8 @@ writing output/preprocessed_te_data.shp...
       <th>screen_botm</th>
       <th>q</th>
       <th>geometry</th>
-      <th>source_name</th>
       <th>site_name</th>
+      <th>source_name</th>
     </tr>
   </thead>
   <tbody>
@@ -2858,8 +2866,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
     <tr>
       <th>2008-02-01</th>
@@ -2871,8 +2879,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
     <tr>
       <th>2008-03-01</th>
@@ -2884,8 +2892,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
     <tr>
       <th>2008-04-01</th>
@@ -2897,8 +2905,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
     <tr>
       <th>2008-05-01</th>
@@ -2910,8 +2918,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
   </tbody>
 </table>

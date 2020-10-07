@@ -18,7 +18,7 @@ input data to the
 Input data are derived from other components within the MAP project and from
 external sources such as the National Water Information System (NWIS). Preprocessed
 data are output in clean formats that are independent of a particular model
-grid, and therefore allow the model discretization to be easily changed. By having
+grid, allowing the model discretization to be easily changed without rerunning the preprocessing. By having
 a single code base that is well tested and documented, we avoid the potential errors and
 confusion that are inherent in ad-hoc scripting. This also facilitates reproducability
 in the modeling workflow, and incremental updating of the models as new data
