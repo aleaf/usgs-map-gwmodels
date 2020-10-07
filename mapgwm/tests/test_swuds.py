@@ -1,39 +1,47 @@
 import os
-from mapgwm import swuds
+import numpy as np
+from mfsetup.units import convert_length_units, convert_volume_units
+from mapgwm.swuds import Swuds, preprocess_swuds
 
 
-def test_preprocess_swuds(test_output_folder, test_data_path):
-   
-    # output
-    outcsv = os.path.join(test_output_folder, 'withdrawals_test.csv')
-    outputshp = os.path.join(test_output_folder, 'swuds_select_wells.shp')
-    processed_csv = os.path.join(test_output_folder, 'processed_swuds.csv')
+def test_preprocess_swuds(test_data_path, test_output_folder):
 
-    # required data
     swuds_input = os.path.join(test_data_path, 'swuds', 'withdrawals_test_dataset.xlsx')
     worksheet = 'LMG-withdrawals-2000-2018'
+    outfile = test_output_folder / 'preprocessed_swuds_data.csv'
 
-    # required rasters and shapefile
     dem = os.path.join(test_data_path, 'rasters', 'dem_mean_elevs.tif')
-    mc_top = os.path.join(test_data_path, 'rasters', 'mcaq_surf.tif')
-    mc_bot = os.path.join(test_data_path, 'rasters', 'mccu_surf.tif')
-    lc_top = os.path.join(test_data_path, 'rasters', 'lcaq_surf.tif')
-    lc_bot = os.path.join(test_data_path, 'rasters', 'lccu_surf.tif')
-    meras_shp = os.path.join(test_data_path, 'extents', 'MERAS_Extent.shp')
 
-    # make a swuds object and process it
-    wu = swuds.Swuds(xlsx=swuds_input, sheet=worksheet, csvfile=outcsv)
-    wu.sort_sites()
-    wu.reproject()
-    wu.apply_footprint(meras_shp, outshp=outputshp)
-    wu.assign_missing_elev(dem)
+    production_zones = {'mrva': (test_data_path / 'swuds/rasters/pz_MCAQP_top.tif',
+                                 test_data_path / 'swuds/rasters/pz_MCAQP_bot.tif',
+                                 ),
+                        'mcaq': (test_data_path / 'swuds/rasters/pz_MCAQP_top.tif',
+                                 test_data_path / 'swuds/rasters/pz_MCAQP_bot.tif',
+                                 'feet'),
+                        'lcaq': (test_data_path / 'swuds/rasters/pz_LCAQP_top.tif',
+                                 test_data_path / 'swuds/rasters/pz_LCAQP_bot.tif')
+                        }
 
-    mc = ['middle_claiborne', mc_top, mc_bot]
-    lc = ['lower_claiborne', lc_top, lc_bot]
-    wu.make_production_zones([mc, lc])
-    wu.assign_monthly_production(processed_csv)
-
-    assert os.path.exists(outcsv)
-    assert os.path.exists(outputshp)
-    assert os.path.exists(processed_csv)
-    
+    results = preprocess_swuds(swuds_input, worksheet,
+                               dem=dem, dem_units='feet',
+                               start_date=None,
+                               end_date=None,
+                               active_area=os.path.join(test_data_path, 'extents/ms_delta.shp'),
+                               production_zones=production_zones,
+                               source_crs=4269,
+                               dest_crs=5070,
+                               data_length_units='feet',
+                               data_volume_units='mgal',
+                               model_length_units='meters',
+                               outfile=outfile)
+    assert results.data_length_units == 'feet'
+    assert np.allclose(convert_length_units(results.data_length_units,
+                                            results.model_length_units), 0.3048)
+    assert np.allclose(convert_volume_units(results.data_volume_units,
+                                            results.model_length_units), 3785.4, atol=0.02)
+    assert outfile.exists()
+    assert outfile.with_suffix('.shp').exists()
+    check_cols = ['q', 'screen_top_m', 'screen_bot_m', 'x', 'y', 'datetime', 'site_no']
+    for col in check_cols:
+        assert not results.df[col].isnull().any()
+    j=2
