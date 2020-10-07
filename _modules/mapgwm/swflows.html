@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.swflows &mdash; usgs-map-gwmodels 0.post36.dev0+g3a06853 documentation</title>
+  <title>mapgwm.swflows &mdash; usgs-map-gwmodels 0.post41.dev0+g794782a documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post36.dev0+g3a06853
+                0.post41.dev0+g794782a
               </div>
             
           
@@ -582,6 +582,7 @@
     <span class="n">data_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">flow_data_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">data_cols</span><span class="p">]</span>
 
+    <span class="n">md</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span>
     <span class="c1"># save out the results</span>
     <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">df2shp</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
@@ -995,7 +996,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 05, 2020.
+        Last updated on Oct 07, 2020.
       </span>
 
     </p>

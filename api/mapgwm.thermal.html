@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.ThermalUse Class &mdash; usgs-map-gwmodels 0.post36.dev0+g3a06853 documentation</title>
+  <title>mapgwm.te_wateruse module &mdash; usgs-map-gwmodels 0.post41.dev0+g794782a documentation</title>
   
 
   
@@ -41,7 +41,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Additional description of input data" href="../inputs.html" />
-    <link rel="prev" title="mapgwm.Swuds Class" href="mapgwm.swuds.html" /> 
+    <link rel="prev" title="mapgwm.swuds module" href="mapgwm.swuds.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post36.dev0+g3a06853
+                0.post41.dev0+g794782a
               </div>
             
           
@@ -110,8 +110,8 @@
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.swflows.html">mapgwm.swflows module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mapgwm.swuds.html">mapgwm.Swuds Class</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.ThermalUse Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.swuds.html">mapgwm.swuds module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.te_wateruse module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../inputs.html"> Input Data Descriptions</a></li>
@@ -169,7 +169,7 @@
         
           <li><a href="index.html">Modules</a> &raquo;</li>
         
-      <li>mapgwm.ThermalUse Class</li>
+      <li>mapgwm.te_wateruse module</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -212,128 +212,197 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="mapgwm-thermaluse-class">
-<h1>mapgwm.ThermalUse Class<a class="headerlink" href="#mapgwm-thermaluse-class" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="mapgwm.te_wateruse.ThermalUse">
-<em class="property">class </em><code class="sig-prename descclassname">mapgwm.te_wateruse.</code><code class="sig-name descname">ThermalUse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xlsx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sheet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">csvfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cols</span><span class="o">=</span><span class="default_value">['2010', '2015']</span></em>, <em class="sig-param"><span class="n">skiprows</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">newheaders</span><span class="o">=</span><span class="default_value">['2010', '2015']</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">['plant_code', 'plant_code']</span></em>, <em class="sig-param"><span class="n">epsg</span><span class="o">=</span><span class="default_value">5070</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/te_wateruse.html#ThermalUse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.te_wateruse.ThermalUse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="mapgwm.swuds.html#mapgwm.swuds.Swuds" title="mapgwm.swuds.Swuds"><code class="xref py py-class docutils literal notranslate"><span class="pre">mapgwm.swuds.Swuds</span></code></a></p>
-<p>Code for preprocessing thermal electric (TE) water use information
-into clean CSV input to MODFLOW setup. Original functions were hard-coded
-for 2010 and 2015 data, and the input data from these years had different
-column headings.  This class repeats that code, but it should be general
-enough to use other data.</p>
-<p>This is a derived class ecause many of the functions needed to pre-process
-the data are in the Swuds() class.</p>
-<dl class="py method">
-<dt id="mapgwm.te_wateruse.ThermalUse.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xlsx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sheet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">csvfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cols</span><span class="o">=</span><span class="default_value">['2010', '2015']</span></em>, <em class="sig-param"><span class="n">skiprows</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">newheaders</span><span class="o">=</span><span class="default_value">['2010', '2015']</span></em>, <em class="sig-param"><span class="n">keys</span><span class="o">=</span><span class="default_value">['plant_code', 'plant_code']</span></em>, <em class="sig-param"><span class="n">epsg</span><span class="o">=</span><span class="default_value">5070</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/te_wateruse.html#ThermalUse.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.te_wateruse.ThermalUse.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor for the ThermalUse class. Unlike the Swuds() class,
-ThermalUse will accept a list of xlsx names, sheetnames, and csvfiles.
-If multiple input datasets are sent, they are read in and combined to a single
-dataframe. The cols and header parameters map the columns read to common 
-names used for the join.</p>
-<dl class="field-list simple">
+<div class="section" id="module-mapgwm.te_wateruse">
+<span id="mapgwm-te-wateruse-module"></span><h1>mapgwm.te_wateruse module<a class="headerlink" href="#module-mapgwm.te_wateruse" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="mapgwm.te_wateruse.preprocess_te_wateruse">
+<code class="sig-prename descclassname">mapgwm.te_wateruse.</code><code class="sig-name descname">preprocess_te_wateruse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_id_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_feature_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">estimated_production_zone_top</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">estimated_production_zone_botm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">estimated_production_surface_units</span><span class="o">=</span><span class="default_value">'feet'</span></em>, <em class="sig-param"><span class="n">source_crs</span><span class="o">=</span><span class="default_value">4269</span></em>, <em class="sig-param"><span class="n">dest_crs</span><span class="o">=</span><span class="default_value">5070</span></em>, <em class="sig-param"><span class="n">interp_method</span><span class="o">=</span><span class="default_value">'linear'</span></em>, <em class="sig-param"><span class="n">data_volume_units</span><span class="o">=</span><span class="default_value">'mgal'</span></em>, <em class="sig-param"><span class="n">model_length_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/te_wateruse.html#preprocess_te_wateruse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.te_wateruse.preprocess_te_wateruse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preprocess water use data from thermoelectric power plants:</p>
+<ul class="simple">
+<li><p>reproject data to a destination CRS <cite>dest_crs</cite>)</p></li>
+<li><p>cull data to an area of interest (<cite>active_area</cite>)</p></li>
+<li><p>if input data do not have information on the well screen intervals;
+sample screen tops and bottoms from raster surfaces bounding
+an estimated production zone (e.g. <cite>estimated_production_zone_top</cite>)</p></li>
+<li><p>reindex the data to continous monthly values extending from <cite>start_date</cite>
+to <cite>end_date</cite>. Typically, these would bracket the time period for which
+the pumping should be simulated in a model. For example, the earliest data
+may be from 2010, but if the model starts in 2008, it may be appropriate to
+begin using the 2010 rates then (<code class="docutils literal notranslate"><span class="pre">start_date='2008'</span></code>). If no start or end
+date are given, the first and last years of pumping in <cite>data</cite> are used.</p></li>
+<li><p>fill empty months by interpolation via a specified <cite>interp_method</cite></p></li>
+<li><p>backfill any remaining empty months going back to the <cite>start_date</cite></p></li>
+<li><p>write processed data to a CSV file and shapefile of the same name</p></li>
+</ul>
+<dl class="field-list">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>xlsx: str</strong></dt><dd><p>Path to xlsx data to be read.  If xlsx file is passed, then a
-selected worksheet from it will be converted to a csv file unless
-the csvfile parameter is specified as None.  If a list is passed,
-each will be read in, converted, and the dataframes combined.</p>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier">DataFrame</span></dt><dd><p>Thermoelectric water use data in the following format
+(similar to that output by <a class="reference internal" href="#mapgwm.te_wateruse.read_te_water_use_spreadsheet" title="mapgwm.te_wateruse.read_te_water_use_spreadsheet"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapgwm.te_wateruse.read_te_water_use_spreadsheet()</span></code></a>):</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 88%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>power plant identifier (plant code)</p></td>
+</tr>
+<tr class="row-even"><td><p>date</p></td>
+<td><p>pandas datetime representative of flux (e.g. ‘2010’)</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>x-coordinate of withdrawl, in <cite>source_crs</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>y</p></td>
+<td><p>y-coordinate of withdrawl, in <cite>source_crs</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>q</p></td>
+<td><p>withdrawl flux, in <cite>data_volume_units</cite> per days</p></td>
+</tr>
+</tbody>
+</table>
 </dd>
-<dt><strong>csvfile: str</strong></dt><dd><p>Path to csv file with data (if xlsx if None) or to a csvfile
-that is created from the selected worksheet.  If xlsx is None,
-then csvfile must be provided. If a list is passed,
-each will be read in or used for output of the xlsx. Individual
-dataframes will be combined.</p>
+<dt><strong>start_date</strong><span class="classifier">str</span></dt><dd><p>Start date for pumping rates. If earlier than the dates in <cite>data</cite>,
+pumping rates will be backfilled to this date.</p>
 </dd>
-<dt><strong>sheet: str</strong></dt><dd><p>Name of worksheet(s) in xlsx to be read, ignored if xlsx is None.
-Must be a list of xlsx is a list.</p>
+<dt><strong>end_date</strong><span class="classifier">str</span></dt><dd><p>End date for pumping rates. If later than the dates in <cite>data</cite>,
+pumping rates will be forward filled to this date.</p>
 </dd>
-<dt><strong>cols: list of str</strong></dt><dd><p>List of columns to read from xlsx or csv, if None all columns are read.
-If ‘[‘2010’, ‘2015’]’ (which is the default if nothing is specified) the default
-list of columns for 2010 and 2015 hard-coded in the script are used.  This
-parameter will be a list of lists of strings if xlsx is a list and defaults or
-None is not used.</p>
+<dt><strong>active_area</strong><span class="classifier">str</span></dt><dd><p>Shapefile with polygon to cull observations to. Automatically reprojected
+to dest_crs if the shapefile includes a .prj file.
+by default, None.</p>
 </dd>
-<dt><strong>skiprows: int</strong></dt><dd><p>Number of rows to skip when reading in the xlsx file. Must be a list of ints
-if xlsx is a list.</p>
+<dt><strong>active_area_id_column</strong><span class="classifier">str, optional</span></dt><dd><p>Column in active_area with feature ids.
+By default, None, in which case all features are used.</p>
 </dd>
-<dt><strong>newheaders: dict</strong></dt><dd><p>Dictionary converting column names in input to common columns 
-used to combine data frames. If the default is used, 
-dictionaries for 2010 and 2015 hard-coded 
-in the script are used.  This parameter will be a list of
-dictionaries if xlsx is a list and the default is not used. 
-If None is passed the column names are not changed.</p>
+<dt><strong>active_area_feature_id</strong><span class="classifier">str, optional</span></dt><dd><p>ID of feature to use for active area
+By default, None, in which case all features are used.</p>
 </dd>
-<dt><strong>keys: str</strong></dt><dd><p>keys used to join dataframes into a single dataframe, pass None if only
-one dataset is read in.  Defaults to plant_code used in 2010, 2015 datasets.</p>
+<dt><strong>estimated_production_zone_top</strong><span class="classifier">file path</span></dt><dd><p>Raster surface for assigning screen tops</p>
 </dd>
-<dt><strong>epsg: int</strong></dt><dd><p>valid epsg code for coordinate system used in column name in df_swuds.  
-Defaults to 5070 - Albers</p>
+<dt><strong>estimated_production_zone_botm</strong><span class="classifier">file path</span></dt><dd><p>Raster surface for assigning screen bottoms</p>
 </dd>
-</dl>
+<dt><strong>estimated_production_surface_units</strong><span class="classifier">str, {‘meters’, ‘ft’, etc.}</span></dt><dd><p>Length units of elevations in estimated production surface rasters.</p>
 </dd>
-<dt class="field-even">Attributes</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>same as the Swuds() class.</strong></dt><dd></dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mapgwm.te_wateruse.ThermalUse.assign_monthly_production">
-<code class="sig-name descname">assign_monthly_production</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outfile</span></em>, <em class="sig-param"><span class="n">year_cols</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/te_wateruse.html#ThermalUse.assign_monthly_production"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.te_wateruse.ThermalUse.assign_monthly_production" title="Permalink to this definition">¶</a></dt>
-<dd><p>Assign production wells for TE water use.  Overrides the method
-from Swuds() class.  The TE model does not include well information, 
-so the production zones assigned to the object are used with the
-default screen length to define the pumping interval.  If a location
-does not have have production zone information, then nan is assigned
-and the user will have to assign tops and bottoms to the dataframe
-and final csv.</p>
-<p>Production is given in cubic m per day.</p>
-<p>todo:  add unit conversion parameter so other units can be used?</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>outfile: str</strong></dt><dd><p>path to final processed monthly TE water-use file.</p>
-</dd>
-<dt><strong>year_cols: list of str</strong></dt><dd><p>list with columns to be gathered to assign monthly values
-Usually these are from 5-year TE model runs.  Should contain
-a 4-digit year data that can be matched in each string. These
-will correpond to the names assigned in the constructor.</p>
+<dt><strong>source_crs</strong><span class="classifier">obj</span></dt><dd><p>Coordinate reference system of the head observation locations.
+A Python int, dict, str, or <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS" title="(in pyproj v2.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyproj.crs.CRS</span></code></a> instance
+passed to <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS.from_user_input" title="(in pyproj v2.6.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyproj.crs.CRS.from_user_input()</span></code></a></p>
+<dl class="simple">
+<dt>Can be any of:</dt><dd><ul class="simple">
+<li><p>PROJ string</p></li>
+<li><p>Dictionary of PROJ parameters</p></li>
+<li><p>PROJ keyword arguments for parameters</p></li>
+<li><p>JSON string with PROJ parameters</p></li>
+<li><p>CRS WKT string</p></li>
+<li><p>An authority string [i.e. ‘epsg:4326’]</p></li>
+<li><p>An EPSG integer code [i.e. 4326]</p></li>
+<li><p>A tuple of (“auth_name”: “auth_code”) [i.e (‘epsg’, ‘4326’)]</p></li>
+<li><p>An object with a <cite>to_wkt</cite> method.</p></li>
+<li><p>A <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS" title="(in pyproj v2.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyproj.crs.CRS</span></code></a> class</p></li>
+</ul>
 </dd>
 </dl>
+<p>By default, epsg:4269</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mapgwm.te_wateruse.ThermalUse.from_yaml">
-<em class="property">classmethod </em><code class="sig-name descname">from_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yamlfile</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/te_wateruse.html#ThermalUse.from_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.te_wateruse.ThermalUse.from_yaml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read input and output files from yaml file
-and run all the processing steps in the class to
-produce the processed csv file.  Overrided method
-from Swuds class to do the steps for 
-ThermalUse object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>yamlfile: str</strong></dt><dd><p>path to a yaml file containing input and output information</p>
+<dt><strong>dest_crs</strong><span class="classifier">obj</span></dt><dd><p>Coordinate reference system of the model. Same input types
+as <code class="docutils literal notranslate"><span class="pre">source_crs</span></code>.
+By default, epsg:5070</p>
+</dd>
+<dt><strong>interp_method</strong><span class="classifier">str</span></dt><dd><p>Interpolation method to use for filling pumping rates to monthly values.
+By default, ‘linear’</p>
+</dd>
+<dt><strong>data_volume_units</strong><span class="classifier">str; e.g. ‘mgal’, ‘m3’, ‘cubic feet’, etc.</span></dt><dd><p>Volume units of pumping data. All time units are assumed to be in days.</p>
+</dd>
+<dt><strong>model_length_units</strong><span class="classifier">str; e.g. ‘feet’, ‘m’, ‘meters’, etc.</span></dt><dd><p>Length units of model.</p>
+</dd>
+<dt><strong>outfile</strong><span class="classifier">str</span></dt><dd><p>Path for output file. A shapefile of the same name is also written.
+If None, no output file is written. By default, None</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt>te: ThermalUse object</dt><dd><p>returns a ThermalUse object and also generates processed csv file
-specified in the yaml file.</p>
-</dd>
+<dt><strong>df_monthly</strong><span class="classifier">DataFrame</span></dt><dd></dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>time units for TE data and model are assumed to be days</p></li>
+</ul>
 </dd></dl>
 
+<dl class="py function">
+<dt id="mapgwm.te_wateruse.read_te_water_use_spreadsheet">
+<code class="sig-prename descclassname">mapgwm.te_wateruse.</code><code class="sig-name descname">read_te_water_use_spreadsheet</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xlsx_file</span></em>, <em class="sig-param"><span class="n">date</span><span class="o">=</span><span class="default_value">'2010'</span></em>, <em class="sig-param"><span class="n">site_no_col</span><span class="o">=</span><span class="default_value">'site_no'</span></em>, <em class="sig-param"><span class="n">site_name_col</span><span class="o">=</span><span class="default_value">'site_name'</span></em>, <em class="sig-param"><span class="n">x_coord_col</span><span class="o">=</span><span class="default_value">'x'</span></em>, <em class="sig-param"><span class="n">y_coord_col</span><span class="o">=</span><span class="default_value">'y'</span></em>, <em class="sig-param"><span class="n">q_col</span><span class="o">=</span><span class="default_value">'q'</span></em>, <em class="sig-param"><span class="n">source_name_col</span><span class="o">=</span><span class="default_value">'source_name'</span></em>, <em class="sig-param"><span class="n">source_code_col</span><span class="o">=</span><span class="default_value">'WATER_SOURCE_CODE'</span></em>, <em class="sig-param"><span class="n">source_code_filter</span><span class="o">=</span><span class="default_value">['GW']</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/te_wateruse.html#read_te_water_use_spreadsheet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.te_wateruse.read_te_water_use_spreadsheet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read water use data for thermoelectric power generation from
+a spreadsheet; filter by a source code, and rename columns to
+uniform names so that multiple datasets from spreadsheets with different
+formatting can be easily combined.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>xlsx_file</strong><span class="classifier">Excel spreadsheet</span></dt><dd><p>Thermoelectric power water use data, in a format readable by
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html#pandas.read_excel" title="(in pandas v1.1.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.read_excel()</span></code></a>.</p>
+</dd>
+<dt><strong>date</strong><span class="classifier">str</span></dt><dd><p>Date string in a format readable by <code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.Timestamp()</span></code>,
+indicating the time of the water use data (most likely a year).</p>
+</dd>
+<dt><strong>site_no_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>xlsx_file</cite> with identifiers for water users (power plants).</p>
+</dd>
+<dt><strong>site_name_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>xlsx_file</cite> with names of water users (power plants).</p>
+</dd>
+<dt><strong>x_coord_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>xlsx_file</cite> with power plant location x-coordinates.</p>
+</dd>
+<dt><strong>y_coord_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>xlsx_file</cite> with power plant location y-coordinates.</p>
+</dd>
+<dt><strong>q_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>xlsx_file</cite> with power plant pumping rates.</p>
+</dd>
+<dt><strong>source_name_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>xlsx_file</cite> with names of water sources.</p>
+</dd>
+<dt><strong>source_code_col</strong><span class="classifier">str</span></dt><dd><p>Column in <cite>xlsx_file</cite> with codes for water supply sources.</p>
+</dd>
+<dt><strong>source_code_filter</strong><span class="classifier">sequence of strings</span></dt><dd><p>Source code(s) in <cite>source_code_col</cite> to filter on; e.g. ‘GW’ for groundwater</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">keywword arguments to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html#pandas.read_excel" title="(in pandas v1.1.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.read_excel()</span></code></a></span></dt><dd><p>Arguments to read_excel that might be needed to read
+<cite>xlsx_file</cite>; for example <code class="docutils literal notranslate"><span class="pre">sheet_name</span></code> or <code class="docutils literal notranslate"><span class="pre">skiprows</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>df</strong><span class="classifier">DataFrame</span></dt><dd><p>TE data with unified column names:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 85%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>power plant identifier (plant code)</p></td>
+</tr>
+<tr class="row-even"><td><p>date</p></td>
+<td><p>pandas datetime representative of flux (e.g. ‘2010’)</p></td>
+</tr>
+<tr class="row-odd"><td><p>x</p></td>
+<td><p>x-coordinate of withdrawl, in <cite>source_crs</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>y</p></td>
+<td><p>y-coordinate of withdrawl, in <cite>source_crs</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>q</p></td>
+<td><p>withdrawl flux, in <cite>data_volume_units</cite> per days</p></td>
+</tr>
+<tr class="row-even"><td><p>site_name</p></td>
+<td><p>name of power plant, if provided</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -349,7 +418,7 @@ specified in the yaml file.</p>
         <a href="../inputs.html" class="btn btn-neutral float-right" title="Additional description of input data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="mapgwm.swuds.html" class="btn btn-neutral float-left" title="mapgwm.Swuds Class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="mapgwm.swuds.html" class="btn btn-neutral float-left" title="mapgwm.swuds module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -359,7 +428,7 @@ specified in the yaml file.</p>
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 05, 2020.
+        Last updated on Oct 07, 2020.
       </span>
 
     </p>

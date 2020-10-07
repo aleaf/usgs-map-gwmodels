@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.swuds &mdash; usgs-map-gwmodels 0.post36.dev0+g3a06853 documentation</title>
+  <title>mapgwm.swuds &mdash; usgs-map-gwmodels 0.post41.dev0+g794782a documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post36.dev0+g3a06853
+                0.post41.dev0+g794782a
               </div>
             
           
@@ -173,17 +173,19 @@
             
   <h1>Source code for mapgwm.swuds</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
 
-<span class="kn">from</span> <span class="nn">gisutils</span> <span class="kn">import</span> <span class="n">df2shp</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">raster</span><span class="p">,</span> <span class="n">shp2df</span>
+<span class="kn">from</span> <span class="nn">gisutils</span> <span class="kn">import</span> <span class="n">df2shp</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">raster</span>
+<span class="kn">from</span> <span class="nn">mfsetup.units</span> <span class="kn">import</span> <span class="n">convert_length_units</span><span class="p">,</span> <span class="n">convert_volume_units</span>
 <span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">aq_codes_dict</span>
+<span class="kn">from</span> <span class="nn">mapgwm.utils</span> <span class="kn">import</span> <span class="n">cull_data_to_active_area</span>
 
 
 <div class="viewcode-block" id="Swuds"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds">[docs]</a><span class="k">class</span> <span class="nc">Swuds</span><span class="p">:</span>
@@ -193,7 +195,17 @@
 <span class="sd">    as data at many sites are limited to survey years (e.g. 2010 and 2015).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Swuds.__init__"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlsx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">csvfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">epsg</span><span class="o">=</span><span class="mi">5070</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xlsx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">csvfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">site_no_col</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">,</span>
+                 <span class="n">x_coord_col</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LONG_VA&#39;</span><span class="p">,</span>
+                 <span class="n">y_coord_col</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LAT_VA&#39;</span><span class="p">,</span>
+                 <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                 <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">,</span>
+                 <span class="n">data_volume_units</span><span class="o">=</span><span class="s1">&#39;mgal&#39;</span><span class="p">,</span>
+                 <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                 <span class="n">default_screen_len</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                 <span class="n">cols</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Constructor for the swuds class. Class methods will help pre-process</span>
 <span class="sd">        water-use data for MAP models.  Dataframe produced by constructor</span>
 <span class="sd">        has original SWUDS data, useful for debugging.</span>
@@ -213,14 +225,55 @@
 <span class="sd">        cols: list of str</span>
 <span class="sd">            List of columns to read from xlsx or csv, if None all columns are read.</span>
 <span class="sd">            If &#39;default&#39; (which is the default if nothing is specified) the default</span>
-<span class="sd">            list of columns coded in the script is read.  </span>
-<span class="sd">        epsg: int</span>
-<span class="sd">            valid epsg code for coordinate system used in column name in df_swuds.  </span>
-<span class="sd">            Defaults to 5070 - Albers</span>
+<span class="sd">            list of columns coded in the script is read.</span>
+<span class="sd">        site_no_col : str, optional</span>
+<span class="sd">            Column name in data with site identifiers,</span>
+<span class="sd">            by default &#39;SITE_NO&#39;</span>
+<span class="sd">        x_coord_col : str, optional</span>
+<span class="sd">            Column name in data with x-coordinates,</span>
+<span class="sd">            by default &#39;x&#39;</span>
+<span class="sd">        y_coord_col : str, optional</span>
+<span class="sd">            Column name in data with y-coordinates,</span>
+<span class="sd">            by default &#39;y&#39;</span>
+<span class="sd">        start_date: str</span>
+<span class="sd">            start time for simulation as string &#39;yyyy-mm-dd&#39;</span>
+<span class="sd">        end_date: str</span>
+<span class="sd">            end time for simulation as string &#39;yyyy-mm-dd&#39;</span>
+<span class="sd">        source_crs : obj</span>
+<span class="sd">            Coordinate reference system of the head observation locations.</span>
+<span class="sd">            A Python int, dict, str, or :class:`pyproj.crs.CRS` instance</span>
+<span class="sd">            passed to :meth:`pyproj.crs.CRS.from_user_input`</span>
+
+<span class="sd">            Can be any of:</span>
+<span class="sd">              - PROJ string</span>
+<span class="sd">              - Dictionary of PROJ parameters</span>
+<span class="sd">              - PROJ keyword arguments for parameters</span>
+<span class="sd">              - JSON string with PROJ parameters</span>
+<span class="sd">              - CRS WKT string</span>
+<span class="sd">              - An authority string [i.e. &#39;epsg:4326&#39;]</span>
+<span class="sd">              - An EPSG integer code [i.e. 4326]</span>
+<span class="sd">              - A tuple of (&quot;auth_name&quot;: &quot;auth_code&quot;) [i.e (&#39;epsg&#39;, &#39;4326&#39;)]</span>
+<span class="sd">              - An object with a `to_wkt` method.</span>
+<span class="sd">              - A :class:`pyproj.crs.CRS` class</span>
+
+<span class="sd">            By default, epsg:4269</span>
+<span class="sd">        dest_crs : obj</span>
+<span class="sd">            Coordinate reference system of the model. Same input types</span>
+<span class="sd">            as ``source_crs``.</span>
+<span class="sd">            By default, epsg:5070</span>
+<span class="sd">        data_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
+<span class="sd">            Units of lengths in data (elevations, depths, etc.)</span>
+<span class="sd">            by default, &#39;feet&#39;</span>
+<span class="sd">        data_volume_units : str; &#39;mgd&#39;, &#39;ft3&#39;, etc</span>
+<span class="sd">            Volumetric unit of pumping rates</span>
+<span class="sd">            by default, &#39;mgd&#39; (million gallons per day)</span>
+<span class="sd">        model_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
+<span class="sd">            Length units of model.</span>
+<span class="sd">            by default, &#39;meters&#39;</span>
 
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
-<span class="sd">        df_swuds: pandas dataframe</span>
+<span class="sd">        df: pandas dataframe</span>
 <span class="sd">            pandas dataframe read from spreadsheet or csv.  Manipulated by other</span>
 <span class="sd">            methods of the class</span>
 <span class="sd">        aquifer_names: dict</span>
@@ -229,13 +282,13 @@
 <span class="sd">        regional_aquifers: dict</span>
 <span class="sd">            dictionary of regional aquifers keyed by NWIS codes, read using import</span>
 <span class="sd">            statement from mapgwm.lookups</span>
-<span class="sd">        epsg: int</span>
-<span class="sd">            epsg code used in projections</span>
+<span class="sd">        crs: int</span>
+<span class="sd">            pyproj.crs.CRS instance describing the output coordinate reference system</span>
 <span class="sd">        monthly_cols: list of str</span>
 <span class="sd">            list of column names for monthly values</span>
-<span class="sd">        sim_start_dt: str</span>
+<span class="sd">        start_date: str</span>
 <span class="sd">            start time for simulation as string &#39;yyyy-mm-dd&#39;</span>
-<span class="sd">        sim_end_dt: str</span>
+<span class="sd">        end_date: str</span>
 <span class="sd">            end time for simulation as string &#39;yyyy-mm-dd&#39;</span>
 <span class="sd">        default_screen_len: float</span>
 <span class="sd">            default screen length in meters</span>
@@ -262,13 +315,18 @@
                              <span class="s1">&#39;NOV_VAL&#39;</span><span class="p">,</span> <span class="s1">&#39;DEC_VAL&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aquifer_names</span> <span class="o">=</span> <span class="n">aq_codes_dict</span><span class="p">[</span><span class="s1">&#39;aquifer_code_names&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">regional_aquifers</span> <span class="o">=</span> <span class="n">aq_codes_dict</span><span class="p">[</span><span class="s1">&#39;regional_aquifer&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sim_start_dt</span> <span class="o">=</span> <span class="s1">&#39;2008-01-01&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sim_end_dt</span> <span class="o">=</span> <span class="s1">&#39;2017-12-31&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_screen_len</span> <span class="o">=</span> <span class="mf">50.</span> <span class="o">*</span> <span class="mf">0.3028</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">epsg</span> <span class="o">=</span> <span class="n">epsg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="n">start_date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="n">end_date</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_screen_len</span> <span class="o">=</span> <span class="n">default_screen_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_crs</span> <span class="o">=</span> <span class="n">source_crs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dest_crs</span> <span class="o">=</span> <span class="n">dest_crs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_length_units</span> <span class="o">=</span> <span class="n">data_length_units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_volume_units</span> <span class="o">=</span> <span class="n">data_volume_units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_length_units</span> <span class="o">=</span> <span class="n">model_length_units</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_bot_m</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">site_no_col</span> <span class="o">=</span> <span class="n">site_no_col</span>
 
         <span class="c1"># now read in excel or csv file</span>
         <span class="n">defaultcols</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SITE_NO&quot;</span><span class="p">,</span><span class="s2">&quot;WATER_CD&quot;</span><span class="p">,</span><span class="s2">&quot;FROM_DEC_LAT_VA&quot;</span><span class="p">,</span><span class="s2">&quot;FROM_DEC_LONG_VA&quot;</span><span class="p">,</span><span class="s2">&quot;FROM_WELL_DEPTH_VA&quot;</span><span class="p">,</span>
@@ -285,32 +343,36 @@
             <span class="n">usecols</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">xlsx</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">csvfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="s1">&#39;both xlsx and csvfile cannont be None for SWUDS object&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;both xlsx and csvfile cannont be None for SWUDS object&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">xlsx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">usecols</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">usecols</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">xlsx</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="n">sheet</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">usecols</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">xlsx</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="n">sheet</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">usecols</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">csvfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
         <span class="c1"># remove trailing spaces from code names</span>
-        <span class="k">if</span> <span class="s1">&#39;FROM_AQFR_CD&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s2">&quot;FROM_AQFR_CD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s2">&quot;FROM_AQFR_CD&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;FROM_AQFR_CD&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;FROM_AQFR_CD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;FROM_AQFR_CD&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
         <span class="c1"># make depths floats</span>
-        <span class="k">if</span> <span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="k">if</span> <span class="s1">&#39;FROM_ALT_VA&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">if</span> <span class="s1">&#39;FROM_ALT_VA&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
 
         <span class="c1"># make dictionaries</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">depths_m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.3048</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations_m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.3048</span><span class="p">))</span></div>
+        <span class="n">length_conversion</span> <span class="o">=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">data_length_units</span><span class="p">,</span> <span class="n">model_length_units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depths_m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">length_conversion</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations_m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">length_conversion</span><span class="p">))</span>
 
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_sites</span><span class="p">(</span><span class="n">primarysort</span><span class="o">=</span><span class="n">site_no_col</span><span class="p">)</span>
+        <span class="c1"># Best to reproject on init so that we know the points are in the dest_crs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reproject</span><span class="p">(</span><span class="n">x_coord_col</span><span class="o">=</span><span class="n">x_coord_col</span><span class="p">,</span> <span class="n">y_coord_col</span><span class="o">=</span><span class="n">y_coord_col</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">site_no_col</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Swuds.sort_sites"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.sort_sites">[docs]</a>    <span class="k">def</span> <span class="nf">sort_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">primarysort</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">,</span> <span class="n">secondarysort</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sort the dataframe by site number and quantity, or passed parameter</span>
 
@@ -322,60 +384,63 @@
 <span class="sd">            variable in dataframe to sort SITE_NO groups, default is None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">secondarysort</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="n">primarysort</span><span class="p">,</span> <span class="n">secondarysort</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="n">primarysort</span><span class="p">,</span> <span class="n">secondarysort</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">primarysort</span><span class="p">])</span><span class="o">.</span><span class="n">last</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Swuds.reproject"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.reproject">[docs]</a>    <span class="k">def</span> <span class="nf">reproject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LONG_VA&#39;</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LAT_VA&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Reproject from lat/lon to self.epsg using gisutils</span>
+<div class="viewcode-block" id="Swuds.reproject"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.reproject">[docs]</a>    <span class="k">def</span> <span class="nf">reproject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_coord_col</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LONG_VA&#39;</span><span class="p">,</span> <span class="n">y_coord_col</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LAT_VA&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Reproject from self.source_crs to self.dest_crs using gisutils</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        long: str</span>
-<span class="sd">            string variable name (column in dataframe) with longitude for input</span>
-<span class="sd">        lat: str</span>
-<span class="sd">            string variable name (column in dataframe) with latitude </span>
+<span class="sd">        x_coord_col : str, optional</span>
+<span class="sd">            Column name in data with x-coordinates,</span>
+<span class="sd">            by default &#39;x&#39;</span>
+<span class="sd">        y_coord_col : str, optional</span>
+<span class="sd">            Column name in data with y-coordinates,</span>
+<span class="sd">            by default &#39;y&#39;</span>
 <span class="sd">        key: str</span>
 <span class="sd">            key for the dictionary made, defaults to SITE_NO</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">x_reprj</span><span class="p">,</span> <span class="n">y_reprj</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">long</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">lat</span><span class="p">]),</span> 
-                                 <span class="s1">&#39;epsg:4269&#39;</span><span class="p">,</span> 
-                                 <span class="s1">&#39;epsg:</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span> <span class="o">=</span> <span class="n">x_reprj</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span> <span class="o">=</span> <span class="n">y_reprj</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_reprj</span><span class="p">,</span> <span class="n">y_reprj</span><span class="p">)]</span>
+        <span class="n">x_reprj</span><span class="p">,</span> <span class="n">y_reprj</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">x_coord_col</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">y_coord_col</span><span class="p">]),</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">source_crs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dest_crs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_reprj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_reprj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_reprj</span><span class="p">,</span> <span class="n">y_reprj</span><span class="p">)]</span>
 
         <span class="c1"># drop entries if no location information</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">),</span> <span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># make dictionary of location </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)])))))</span></div>
-        
-    
-<div class="viewcode-block" id="Swuds.apply_footprint"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.apply_footprint">[docs]</a>    <span class="k">def</span> <span class="nf">apply_footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bounding_shp</span><span class="p">,</span> <span class="n">outshp</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Keep sites in the df_swuds pandas dataframe that fall</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">locations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])))))</span></div>
+
+<div class="viewcode-block" id="Swuds.apply_footprint"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.apply_footprint">[docs]</a>    <span class="k">def</span> <span class="nf">apply_footprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">active_area</span><span class="p">,</span> <span class="n">active_area_id_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">active_area_feature_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,):</span>
+        <span class="sd">&quot;&quot;&quot;Keep sites in the df pandas dataframe that fall</span>
 <span class="sd">        into the passed bounding shapefile polygon. Requires</span>
-<span class="sd">        that df_swuds dataframe has a Point geometry column as assigned</span>
-<span class="sd">        in the reproject method. Method uses the first polygon</span>
-<span class="sd">        in the bounding shapefile if it contains more than one.</span>
-<span class="sd">        todo: dissolve multiple polygons in bounding_shp?</span>
+<span class="sd">        that df dataframe has a Point geometry column as assigned</span>
+<span class="sd">        in the reproject method.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        bounding_shp: str</span>
+<span class="sd">        active_area: str</span>
 <span class="sd">            path to shapefile with footprint for current analysis</span>
+<span class="sd">        active_area_id_column : str, optional</span>
+<span class="sd">            Column in active_area with feature ids.</span>
+<span class="sd">            By default, None, in which case all features are used.</span>
+<span class="sd">        active_area_feature_id : str, optional</span>
+<span class="sd">            ID of feature to use for active area</span>
+<span class="sd">            By default, None, in which case all features are used.</span>
 <span class="sd">        outshp: str</span>
 <span class="sd">            optional path to output shapefile with points within the footprint</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">g2</span> <span class="o">=</span> <span class="n">shp2df</span><span class="p">(</span><span class="n">bounding_shp</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)</span>
-        <span class="n">poly</span> <span class="o">=</span> <span class="n">g2</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">within</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">within</span><span class="p">(</span><span class="n">poly</span><span class="p">)</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]]</span>   <span class="c1"># shapely within method</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">within</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">outshp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">df2shp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">,</span> <span class="n">outshp</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">cull_data_to_active_area</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">active_area</span><span class="p">,</span>
+                                           <span class="n">active_area_id_column</span><span class="p">,</span>
+                                           <span class="n">active_area_feature_id</span><span class="p">,</span>
+                                           <span class="n">data_crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dest_crs</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="Swuds.assign_missing_elev"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.assign_missing_elev">[docs]</a>    <span class="k">def</span> <span class="nf">assign_missing_elev</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_raster</span><span class="p">,</span> <span class="n">elev_field</span><span class="o">=</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Swuds.assign_missing_elevs"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.assign_missing_elevs">[docs]</a>    <span class="k">def</span> <span class="nf">assign_missing_elevs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_raster</span><span class="p">,</span> <span class="n">dem_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span>
+                             <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Use the top of model raster, or land-surface raster,</span>
 <span class="sd">        to assign the elevation for points where elevation is missing.</span>
 <span class="sd">        </span>
@@ -385,21 +450,23 @@
 <span class="sd">            path to raster data set with land surface or model top elevation, used</span>
 <span class="sd">            to assign missing values to water-use points</span>
 <span class="sd">        elev_field: str</span>
-<span class="sd">            field in df_swuds with elevation data, default is &#39;FROM_ALT_VA&#39;</span>
+<span class="sd">            field in df with elevation data, default is &#39;FROM_ALT_VA&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">no_elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span>
-        <span class="n">x_no_elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">no_elev</span><span class="p">,</span> <span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">y_no_elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">no_elev</span><span class="p">,</span> <span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">no_elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span>
+        <span class="n">x_no_elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">no_elev</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">y_no_elev</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">no_elev</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
         <span class="n">elevs</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">get_values_at_points</span><span class="p">(</span><span class="n">top_raster</span><span class="p">,</span>
                                             <span class="n">x</span><span class="o">=</span><span class="n">x_no_elev</span><span class="p">,</span>
-                                            <span class="n">y</span><span class="o">=</span><span class="n">y_no_elev</span>
+                                            <span class="n">y</span><span class="o">=</span><span class="n">y_no_elev</span><span class="p">,</span>
+                                            <span class="n">points_crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dest_crs</span>
                                             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">no_elev</span><span class="p">,</span> <span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elevs</span>
-        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span></div>
+        <span class="n">elevs</span> <span class="o">*=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">dem_units</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_length_units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">no_elev</span><span class="p">,</span> <span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elevs</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations_m</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]))</span></div>
 
-    
-<div class="viewcode-block" id="Swuds.make_production_zones"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.make_production_zones">[docs]</a>    <span class="k">def</span> <span class="nf">make_production_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zonelist</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Swuds.make_production_zones"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.make_production_zones">[docs]</a>    <span class="k">def</span> <span class="nf">make_production_zones</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">production_zones</span><span class="p">,</span> <span class="n">default_elevation_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Make dictionary attributes for production zones.</span>
 <span class="sd">        These are used to assign individual wells to production zones.</span>
 <span class="sd">        The defaultdict is keyed by zone_name and then SITE_NO.</span>
@@ -421,28 +488,28 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># if only one list is passed, put it into a list.</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">zonelist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">zonelist</span> <span class="o">=</span> <span class="p">[</span><span class="n">zonelist</span><span class="p">]</span>
+        <span class="c1">#if isinstance(zonelist[0], str):</span>
+        <span class="c1">#    zonelist = [zonelist]</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">site_no_col</span>
 
         <span class="c1"># get tops and bottoms of estimated production intervals at each well</span>
         <span class="c1"># make dictionaries to lookup by well</span>
-        <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">zonelist</span><span class="p">:</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">top_raster</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">bot_raster</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
-            <span class="n">lc_top</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">get_values_at_points</span><span class="p">(</span><span class="n">top_raster</span><span class="p">,</span>
-                                                <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-                                                <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3048</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">lc_top</span><span class="p">))</span>
-            <span class="n">lc_bot</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">get_values_at_points</span><span class="p">(</span><span class="n">bot_raster</span><span class="p">,</span>
-                                                <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-                                                <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3048</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_bot_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">lc_bot</span><span class="p">))</span></div>
-            
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">production_zones</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">top_raster</span><span class="p">,</span> <span class="n">botm_raster</span><span class="p">,</span> <span class="o">*</span><span class="n">units</span> <span class="o">=</span> <span class="n">info</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">units</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">units</span> <span class="k">else</span> <span class="n">default_elevation_units</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="n">length_unit_conversion</span> <span class="o">=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">units</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_length_units</span><span class="p">)</span>
+            <span class="n">top_elevations</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">get_values_at_points</span><span class="p">(</span><span class="n">top_raster</span><span class="p">,</span>
+                                                 <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">length_unit_conversion</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">top_elevations</span><span class="p">))</span>
+            <span class="n">botm_elevations</span> <span class="o">=</span> <span class="n">raster</span><span class="o">.</span><span class="n">get_values_at_points</span><span class="p">(</span><span class="n">botm_raster</span><span class="p">,</span>
+                                                          <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">length_unit_conversion</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_bot_m</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">botm_elevations</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_top&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">top_elevations</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_botm&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)]</span> <span class="o">=</span> <span class="n">botm_elevations</span></div>
 
-<div class="viewcode-block" id="Swuds.assign_monthly_production"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.assign_monthly_production">[docs]</a>    <span class="k">def</span> <span class="nf">assign_monthly_production</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="p">):</span>
+<div class="viewcode-block" id="Swuds.assign_monthly_production"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.assign_monthly_production">[docs]</a>    <span class="k">def</span> <span class="nf">assign_monthly_production</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;processed_swuds.csv&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Assign production wells for water use, skipping IR (irrigation) and</span>
 <span class="sd">        TE (thermal electric) to production zones.  If production zones are not</span>
 <span class="sd">        assigned or if the well bottom doesn&#39;t fall into a production zone, then</span>
@@ -461,26 +528,25 @@
 
         <span class="c1"># fill in missing monthly values with annual value</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monthly_cols</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;ANNUAL_VAL&#39;</span><span class="p">]</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="s1">&#39;ANNUAL_VAL&#39;</span><span class="p">]</span>
 
         <span class="c1"># pull out groundwater sites that are not IR, AQ or TE</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-                                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;WATER_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GW&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
-                                <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;IR&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
-                                <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;AQ&#39;</span><span class="p">)</span> <span class="o">&amp;</span> 
-                                <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">)</span>
-                                <span class="p">]</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;WATER_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;GW&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
+            <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;IR&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
+            <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;AQ&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
+            <span class="o">~</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_NAT_WATER_USE_CD&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">)</span>
+            <span class="p">]</span>
 
         <span class="c1"># reshape dataframe to have monthly values in same column</span>
-        <span class="n">stacked</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">monthly_cols</span><span class="p">]</span><span class="o">.</span><span class="n">stack</span><span class="p">())</span>
+        <span class="n">stacked</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">monthly_cols</span><span class="p">]</span><span class="o">.</span><span class="n">stack</span><span class="p">())</span>
         <span class="n">stacked</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">stacked</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;level_1&#39;</span><span class="p">:</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span>
                                 <span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;q_monthly&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">stacked</span><span class="o">.</span><span class="n">q_monthly</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">q_monthly</span>
         <span class="n">stacked</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">level_0</span>
-        <span class="n">stacked</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">)</span>
+        <span class="n">stacked</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">)</span>
         <span class="n">keep_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">stacked</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">monthly_cols</span><span class="p">]</span>
         <span class="n">stacked</span> <span class="o">=</span> <span class="n">stacked</span><span class="p">[</span><span class="n">keep_cols</span><span class="p">]</span>
         <span class="n">month</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">monthly_cols</span><span class="p">)}</span>
@@ -489,13 +555,19 @@
         <span class="n">stacked</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span>
         <span class="n">stacked</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+        <span class="c1"># set start and end dates if not already set</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_date</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_date</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
         <span class="n">groups</span> <span class="o">=</span> <span class="n">stacked</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">)</span>
         <span class="n">all_groups</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">site_no</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
             <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">group</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
-            <span class="n">start_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_start_dt</span><span class="p">)</span>
-            <span class="n">end_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_end_dt</span><span class="p">)</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_date</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_date</span><span class="p">)</span>
 
             <span class="n">monthly_values_2010</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">group</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span> <span class="o">==</span> <span class="mi">2010</span><span class="p">]</span>
             <span class="n">monthly_values_2010</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">monthly_values_2010</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
@@ -521,20 +593,22 @@
                 <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q_monthly</span><span class="p">)</span>
             
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
-            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">3785.4</span>  <span class="c1"># convert from mgd to cubic m per d</span>
+            <span class="c1">#group[&#39;q&#39;] = group[&#39;q&#39;] * 3785.4  # convert from mgd to cubic m per d</span>
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">convert_volume_units</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_volume_units</span><span class="p">,</span>
+                                                           <span class="bp">self</span><span class="o">.</span><span class="n">model_length_units</span><span class="p">)</span>
 
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">site_no</span>
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;well_elev_m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations_m</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span>
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;depth_m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depths_m</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span>
             <span class="n">well_botm_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations_m</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">depths_m</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span>
-            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)])</span>
-            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)])</span>
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">])</span>
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">])</span>
 
             <span class="c1"># assign a production zone from default dict.  If the bottom of the </span>
             <span class="c1"># well does not fall in a zone, or if the dictionary is empty; then</span>
             <span class="c1"># the production zone is assigned &#39;unnamed&#39;</span>
             <span class="n">production_zone</span> <span class="o">=</span> <span class="s1">&#39;unnamed&#39;</span>
-            <span class="k">for</span> <span class="n">prod_name</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">prod_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">prod_zone_top</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_top_m</span><span class="p">[</span><span class="n">prod_name</span><span class="p">][</span><span class="n">site_no</span><span class="p">]</span>
                 <span class="n">prod_zone_bot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prod_zone_bot_m</span><span class="p">[</span><span class="n">prod_name</span><span class="p">][</span><span class="n">site_no</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">prod_zone_top</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">prod_zone_bot</span><span class="p">):</span>  <span class="c1"># missing zone</span>
@@ -557,13 +631,19 @@
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;aquifer_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aquifer_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="s2">&quot;FROM_AQFR_CD&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;unnamed&#39;</span><span class="p">)</span>
 
             <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;q_monthly&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;well_elev_m&#39;</span><span class="p">,</span> <span class="s1">&#39;depth_m&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;screen_bot_m&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_top_m&#39;</span><span class="p">,</span> <span class="s1">&#39;x_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">),</span> <span class="s1">&#39;y_</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epsg</span><span class="p">)]</span>
+                    <span class="s1">&#39;screen_bot_m&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_top_m&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]</span>
             <span class="n">all_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="n">cols</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">index</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">df_swuds</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;processed SWUDS data written to </span><span class="si">{0}</span><span class="s1"> and in dataframe attribute&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">outfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;processed SWUDS data written to </span><span class="si">{0}</span><span class="s1"> and in dataframe attribute&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">y</span><span class="p">)]</span>
+            <span class="n">shapefile</span> <span class="o">=</span> <span class="n">outfile</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.shp&#39;</span><span class="p">)</span>
+            <span class="n">df2shp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="n">shapefile</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dest_crs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Swuds.from_yaml"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.Swuds.from_yaml">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yamlfile</span><span class="p">):</span>
@@ -612,7 +692,7 @@
         <span class="n">wu</span><span class="o">.</span><span class="n">reproject</span><span class="p">()</span>
 
         <span class="n">wu</span><span class="o">.</span><span class="n">apply_footprint</span><span class="p">(</span><span class="n">meras_shp</span><span class="p">,</span> <span class="n">outshp</span><span class="o">=</span><span class="n">wu_shp</span><span class="p">)</span>
-        <span class="n">wu</span><span class="o">.</span><span class="n">assign_missing_elev</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span>
+        <span class="n">wu</span><span class="o">.</span><span class="n">assign_missing_elevs</span><span class="p">(</span><span class="n">dem</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">zn</span> <span class="ow">in</span> <span class="n">yaml_inputs</span><span class="p">[</span><span class="s1">&#39;zones&#39;</span><span class="p">]:</span>
             <span class="n">zn</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">Swuds</span><span class="o">.</span><span class="n">fix_path</span><span class="p">(</span><span class="n">zn</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -677,6 +757,188 @@
     <span class="c1">#     return min(a[1], b[1]) - max(a[0], b[0])</span>
 
 
+<div class="viewcode-block" id="preprocess_swuds"><a class="viewcode-back" href="../../api/mapgwm.swuds.html#mapgwm.swuds.preprocess_swuds">[docs]</a><span class="k">def</span> <span class="nf">preprocess_swuds</span><span class="p">(</span><span class="n">swuds_input</span><span class="p">,</span> <span class="n">worksheet</span><span class="p">,</span> <span class="n">csv_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">dem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dem_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                     <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">active_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">active_area_id_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">active_area_feature_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">site_no_col</span><span class="o">=</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">,</span>
+                     <span class="n">x_coord_col</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LONG_VA&#39;</span><span class="p">,</span>
+                     <span class="n">y_coord_col</span><span class="o">=</span><span class="s1">&#39;FROM_DEC_LAT_VA&#39;</span><span class="p">,</span>
+                     <span class="n">production_zones</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">estimated_production_surface_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">,</span>
+                     <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span>
+                     <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                     <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">,</span>
+                     <span class="n">data_volume_units</span><span class="o">=</span><span class="s1">&#39;mgal&#39;</span><span class="p">,</span>
+                     <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                     <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Preprocess water use data from the USGS Site-Specific Water Use Database (SWUDS).</span>
+
+<span class="sd">    * reproject data to a destination CRS `dest_crs`)</span>
+<span class="sd">    * cull data to an area of interest (`active_area`)</span>
+<span class="sd">    * assign any missing wellhead elevations from a DEM</span>
+<span class="sd">    * if input data do not have information on the well screen intervals;</span>
+<span class="sd">      sample screen tops and bottoms from raster surfaces bounding</span>
+<span class="sd">      an estimated production zone (e.g. `estimated_production_zone_top`). Well</span>
+<span class="sd">      bottom information is used to discriminate between multiple production zones.</span>
+<span class="sd">    * reindex the data to continous monthly values extending from `start_date`</span>
+<span class="sd">      to `end_date`. Typically, these would bracket the time period for which</span>
+<span class="sd">      the pumping should be simulated in a model. For example, the earliest data</span>
+<span class="sd">      may be from 2010, but if the model starts in 2008, it may be appropriate to</span>
+<span class="sd">      begin using the 2010 rates then (``start_date=&#39;2008&#39;``). If no start or end</span>
+<span class="sd">      date are given, the first and last years of pumping in `data` are used.</span>
+<span class="sd">    * fill empty months using 2010 data (the most complete survey year) if available,</span>
+<span class="sd">      otherwise use the average value for the site.</span>
+<span class="sd">    * backfill any remaining empty months going back to the `start_date` in the same way</span>
+<span class="sd">    * write processed data to a CSV file and shapefile of the same name</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    swuds_input: str</span>
+<span class="sd">        Excel spreadsheet of SWUDs data, in a format readable by</span>
+<span class="sd">        :func:`pandas.read_excel`. If xlsx file is passed, then a</span>
+<span class="sd">        selected worksheet from it will be converted to a csv file unless</span>
+<span class="sd">        the csvfile parameter is specified as None.</span>
+<span class="sd">    worksheet : str</span>
+<span class="sd">        Worksheet in `swuds_input` to read.</span>
+<span class="sd">    csvfile: str, optional</span>
+<span class="sd">        Path to csv file with data (if xlsx if None) or to a csvfile</span>
+<span class="sd">        that is created from the selected worksheet.  If xlsx is None,</span>
+<span class="sd">        then csvfile must be provided.</span>
+<span class="sd">    sheet: str</span>
+<span class="sd">        Name of worksheet in xlsx to be read, ignored if xlsx is None.</span>
+<span class="sd">    dem : str, optional</span>
+<span class="sd">        DEM raster of the land surface. Used for estimating missing wellhead elevations.</span>
+<span class="sd">        Any reprojection to dest_crs is handled automatically, assuming</span>
+<span class="sd">        the DEM raster has CRS information embedded (arc-ascii grids do not!)</span>
+<span class="sd">        By default, None.</span>
+<span class="sd">    dem_units : str, {&#39;feet&#39;, &#39;meters&#39;, ..}</span>
+<span class="sd">        Units of DEM elevations, by default, &#39;meters&#39;</span>
+<span class="sd">    start_date : str</span>
+<span class="sd">        Start date for pumping rates. If earlier than the dates in `data`,</span>
+<span class="sd">        pumping rates will be backfilled to this date.</span>
+<span class="sd">    end_date : str</span>
+<span class="sd">        End date for pumping rates. If later than the dates in `data`,</span>
+<span class="sd">        pumping rates will be forward filled to this date.</span>
+<span class="sd">    active_area : str</span>
+<span class="sd">        Shapefile with polygon to cull observations to. Automatically reprojected</span>
+<span class="sd">        to dest_crs if the shapefile includes a .prj file.</span>
+<span class="sd">        by default, None.</span>
+<span class="sd">    active_area_id_column : str, optional</span>
+<span class="sd">        Column in active_area with feature ids.</span>
+<span class="sd">        By default, None, in which case all features are used.</span>
+<span class="sd">    active_area_feature_id : str, optional</span>
+<span class="sd">        ID of feature to use for active area</span>
+<span class="sd">        By default, None, in which case all features are used.</span>
+<span class="sd">    site_no_col : str, optional</span>
+<span class="sd">        Column name in data with site identifiers,</span>
+<span class="sd">        by default &#39;SITE_NO&#39;</span>
+<span class="sd">    x_coord_col : str, optional</span>
+<span class="sd">        Column name in data with x-coordinates,</span>
+<span class="sd">        by default &#39;FROM_DEC_LONG_VA&#39;</span>
+<span class="sd">    y_coord_col : str, optional</span>
+<span class="sd">        Column name in data with y-coordinates,</span>
+<span class="sd">        by default &#39;FROM_DEC_LAT_VA&#39;</span>
+<span class="sd">    production_zones : dict</span>
+<span class="sd">        Dictionary of production zone tops and bottoms, and optionally,</span>
+<span class="sd">        production zone surface elevation units, keyed by an abbreviated name.</span>
+
+<span class="sd">        Example::</span>
+<span class="sd">        </span>
+<span class="sd">            production_zones={&#39;mrva&#39;: (test_data_path / &#39;swuds/rasters/pz_MCAQP_top.tif&#39;,</span>
+<span class="sd">                                       test_data_path / &#39;swuds/rasters/pz_MCAQP_bot.tif&#39;,</span>
+<span class="sd">                                    ),</span>
+<span class="sd">                              &#39;mcaq&#39;: (test_data_path / &#39;swuds/rasters/pz_MCAQP_top.tif&#39;,</span>
+<span class="sd">                                       test_data_path / &#39;swuds/rasters/pz_MCAQP_bot.tif&#39;,</span>
+<span class="sd">                                       &#39;feet&#39;)</span>
+<span class="sd">                              }</span>
+
+<span class="sd">        Where zone &#39;mrva&#39; has a top and bottom raster, but no units assigned,</span>
+<span class="sd">        and zone &#39;mcaq&#39; has a top and bottom raster and units. For zones</span>
+<span class="sd">        with no units, the `estimated_production_surface_units` will be used.</span>
+
+<span class="sd">    estimated_production_surface_units : str, {&#39;meters&#39;, &#39;ft&#39;, etc.}</span>
+<span class="sd">        Length units of elevations in estimated production surface rasters.</span>
+<span class="sd">        by default, &#39;feet&#39;</span>
+<span class="sd">    source_crs : obj</span>
+<span class="sd">        Coordinate reference system of the head observation locations.</span>
+<span class="sd">        A Python int, dict, str, or :class:`pyproj.crs.CRS` instance</span>
+<span class="sd">        passed to :meth:`pyproj.crs.CRS.from_user_input`</span>
+
+<span class="sd">        Can be any of:</span>
+<span class="sd">          - PROJ string</span>
+<span class="sd">          - Dictionary of PROJ parameters</span>
+<span class="sd">          - PROJ keyword arguments for parameters</span>
+<span class="sd">          - JSON string with PROJ parameters</span>
+<span class="sd">          - CRS WKT string</span>
+<span class="sd">          - An authority string [i.e. &#39;epsg:4326&#39;]</span>
+<span class="sd">          - An EPSG integer code [i.e. 4326]</span>
+<span class="sd">          - A tuple of (&quot;auth_name&quot;: &quot;auth_code&quot;) [i.e (&#39;epsg&#39;, &#39;4326&#39;)]</span>
+<span class="sd">          - An object with a `to_wkt` method.</span>
+<span class="sd">          - A :class:`pyproj.crs.CRS` class</span>
+
+<span class="sd">        By default, epsg:4269</span>
+
+<span class="sd">    dest_crs : obj</span>
+<span class="sd">        Coordinate reference system of the model. Same input types</span>
+<span class="sd">        as ``source_crs``.</span>
+<span class="sd">        By default, epsg:5070</span>
+<span class="sd">    data_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
+<span class="sd">        Units of lengths in data (elevations, etc.)</span>
+<span class="sd">        by default, &#39;meters&#39;</span>
+<span class="sd">    data_volume_units : str; &#39;mgd&#39;, &#39;ft3&#39;, etc</span>
+<span class="sd">        Volumetric unit of pumping rates</span>
+<span class="sd">        by default, &#39;mgd&#39; (million gallons per day)</span>
+<span class="sd">    model_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
+<span class="sd">        Length units of model.</span>
+<span class="sd">        by default, &#39;meters&#39;</span>
+<span class="sd">    outfile : str</span>
+<span class="sd">        Path for output file. A shapefile of the same name is also written.</span>
+<span class="sd">        If None, no output file is written. By default, None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wu : :class:`mapgwm.swuds.Swuds` instance</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    * time units for SWUDs data and model are assumed to be days</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># make a swuds object and process it</span>
+    <span class="n">wu</span> <span class="o">=</span> <span class="n">Swuds</span><span class="p">(</span><span class="n">xlsx</span><span class="o">=</span><span class="n">swuds_input</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="n">worksheet</span><span class="p">,</span> <span class="n">csvfile</span><span class="o">=</span><span class="n">csv_input</span><span class="p">,</span>
+               <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+               <span class="n">end_date</span><span class="o">=</span><span class="n">end_date</span><span class="p">,</span>
+               <span class="n">site_no_col</span><span class="o">=</span><span class="n">site_no_col</span><span class="p">,</span>
+               <span class="n">x_coord_col</span><span class="o">=</span><span class="n">x_coord_col</span><span class="p">,</span>
+               <span class="n">y_coord_col</span><span class="o">=</span><span class="n">y_coord_col</span><span class="p">,</span>
+               <span class="n">source_crs</span><span class="o">=</span><span class="n">source_crs</span><span class="p">,</span>
+               <span class="n">dest_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">,</span>
+               <span class="n">data_length_units</span><span class="o">=</span><span class="n">data_length_units</span><span class="p">,</span>
+               <span class="n">data_volume_units</span><span class="o">=</span><span class="n">data_volume_units</span><span class="p">,</span>
+               <span class="n">model_length_units</span><span class="o">=</span><span class="n">model_length_units</span><span class="p">,</span>
+               <span class="p">)</span>
+
+    <span class="c1"># cull the data to the model area, if provided</span>
+    <span class="k">if</span> <span class="n">active_area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">wu</span><span class="o">.</span><span class="n">apply_footprint</span><span class="p">(</span><span class="n">active_area</span><span class="o">=</span><span class="n">active_area</span><span class="p">,</span>
+                           <span class="n">active_area_id_column</span><span class="o">=</span><span class="n">active_area_id_column</span><span class="p">,</span>
+                           <span class="n">active_area_feature_id</span><span class="o">=</span><span class="n">active_area_feature_id</span><span class="p">)</span>
+    <span class="n">wu</span><span class="o">.</span><span class="n">assign_missing_elevs</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="n">dem_units</span><span class="o">=</span><span class="n">dem_units</span>
+                            <span class="p">)</span>
+
+    <span class="c1">#mc = [&#39;middle_claiborne&#39;, mc_top, mc_bot]</span>
+    <span class="c1">#lc = [&#39;lower_claiborne&#39;, lc_top, lc_bot]</span>
+    <span class="k">if</span> <span class="n">production_zones</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">wu</span><span class="o">.</span><span class="n">make_production_zones</span><span class="p">(</span><span class="n">production_zones</span><span class="p">,</span>
+                                 <span class="n">default_elevation_units</span><span class="o">=</span><span class="n">estimated_production_surface_units</span><span class="p">)</span>
+    <span class="n">wu</span><span class="o">.</span><span class="n">assign_monthly_production</span><span class="p">(</span><span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wu</span></div>
+
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
 
     <span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
@@ -699,13 +961,13 @@
     <span class="c1"># swuds.reproject()</span>
 
     <span class="c1"># swuds.apply_footprint(meras_shp, outshp=wu_shp)</span>
-    <span class="c1"># swuds.assign_missing_elev(dem)</span>
+    <span class="c1"># swuds.assign_missing_elevs(dem)</span>
 
     <span class="c1"># mc = [&#39;middle_claiborne&#39;, mc_top, mc_bot]</span>
     <span class="c1"># lc = [&#39;lower_claiborne&#39;, lc_top, lc_bot]</span>
     <span class="c1"># swuds.make_production_zones([mc, lc])</span>
     <span class="c1"># swuds.assign_monthly_production(os.path.join(data_path, &#39;processed_swuds.csv&#39;))</span>
-    <span class="c1"># print(swuds.df_swuds.head())</span>
+    <span class="c1"># print(swuds.df.head())</span>
 
     <span class="n">yml_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;swuds_input.yml&#39;</span><span class="p">)</span>
     <span class="n">wu</span> <span class="o">=</span> <span class="n">Swuds</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">yml_file</span><span class="p">)</span>
@@ -722,7 +984,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 05, 2020.
+        Last updated on Oct 07, 2020.
       </span>
 
     </p>

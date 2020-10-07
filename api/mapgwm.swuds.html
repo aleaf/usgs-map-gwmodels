@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.Swuds Class &mdash; usgs-map-gwmodels 0.post36.dev0+g3a06853 documentation</title>
+  <title>mapgwm.swuds module &mdash; usgs-map-gwmodels 0.post41.dev0+g794782a documentation</title>
   
 
   
@@ -40,7 +40,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="mapgwm.ThermalUse Class" href="mapgwm.thermal.html" />
+    <link rel="next" title="mapgwm.te_wateruse module" href="mapgwm.thermal.html" />
     <link rel="prev" title="mapgwm.swflows module" href="mapgwm.swflows.html" /> 
 </head>
 
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post36.dev0+g3a06853
+                0.post41.dev0+g794782a
               </div>
             
           
@@ -110,8 +110,8 @@
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mapgwm.swflows.html">mapgwm.swflows module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.Swuds Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mapgwm.thermal.html">mapgwm.ThermalUse Class</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.swuds module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.thermal.html">mapgwm.te_wateruse module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../inputs.html"> Input Data Descriptions</a></li>
@@ -169,7 +169,7 @@
         
           <li><a href="index.html">Modules</a> &raquo;</li>
         
-      <li>mapgwm.Swuds Class</li>
+      <li>mapgwm.swuds module</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -212,97 +212,33 @@
     text-align: unset;
 }
 </style>
-<div class="section" id="mapgwm-swuds-class">
-<h1>mapgwm.Swuds Class<a class="headerlink" href="#mapgwm-swuds-class" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-mapgwm.swuds">
+<span id="mapgwm-swuds-module"></span><h1>mapgwm.swuds module<a class="headerlink" href="#module-mapgwm.swuds" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="mapgwm.swuds.Swuds">
-<em class="property">class </em><code class="sig-prename descclassname">mapgwm.swuds.</code><code class="sig-name descname">Swuds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xlsx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sheet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">csvfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cols</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">epsg</span><span class="o">=</span><span class="default_value">5070</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="sig-prename descclassname">mapgwm.swuds.</code><code class="sig-name descname">Swuds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xlsx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sheet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">csvfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">site_no_col</span><span class="o">=</span><span class="default_value">'SITE_NO'</span></em>, <em class="sig-param"><span class="n">x_coord_col</span><span class="o">=</span><span class="default_value">'FROM_DEC_LONG_VA'</span></em>, <em class="sig-param"><span class="n">y_coord_col</span><span class="o">=</span><span class="default_value">'FROM_DEC_LAT_VA'</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source_crs</span><span class="o">=</span><span class="default_value">4269</span></em>, <em class="sig-param"><span class="n">dest_crs</span><span class="o">=</span><span class="default_value">5070</span></em>, <em class="sig-param"><span class="n">data_length_units</span><span class="o">=</span><span class="default_value">'feet'</span></em>, <em class="sig-param"><span class="n">data_volume_units</span><span class="o">=</span><span class="default_value">'mgal'</span></em>, <em class="sig-param"><span class="n">model_length_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">default_screen_len</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">cols</span><span class="o">=</span><span class="default_value">'default'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Code for preprocessing non-agricultural water use information
 into clean CSV input to MODFLOW setup. Class excludes AQ, IR, and TE
 water use from a swuds excel dataset. Includes logic to fill missing  data,
 as data at many sites are limited to survey years (e.g. 2010 and 2015).</p>
 <dl class="py method">
-<dt id="mapgwm.swuds.Swuds.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xlsx</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sheet</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">csvfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cols</span><span class="o">=</span><span class="default_value">'default'</span></em>, <em class="sig-param"><span class="n">epsg</span><span class="o">=</span><span class="default_value">5070</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructor for the swuds class. Class methods will help pre-process
-water-use data for MAP models.  Dataframe produced by constructor
-has original SWUDS data, useful for debugging.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>xlsx: str</strong></dt><dd><p>Path to xlsx data to be read.  If xlsx file is passed, then a
-selected worksheet from it will be converted to a csv file unless
-the csvfile parameter is specified as None.</p>
-</dd>
-<dt><strong>csvfile: str</strong></dt><dd><p>Path to csv file with data (if xlsx if None) or to a csvfile
-that is created from the selected worksheet.  If xlsx is None,
-then csvfile must be provided.</p>
-</dd>
-<dt><strong>sheet: str</strong></dt><dd><p>Name of worksheet in xlsx to be read, ignored if xlsx is None.</p>
-</dd>
-<dt><strong>cols: list of str</strong></dt><dd><p>List of columns to read from xlsx or csv, if None all columns are read.
-If ‘default’ (which is the default if nothing is specified) the default
-list of columns coded in the script is read.</p>
-</dd>
-<dt><strong>epsg: int</strong></dt><dd><p>valid epsg code for coordinate system used in column name in df_swuds.  
-Defaults to 5070 - Albers</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Attributes</dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>df_swuds: pandas dataframe</strong></dt><dd><p>pandas dataframe read from spreadsheet or csv.  Manipulated by other
-methods of the class</p>
-</dd>
-<dt><strong>aquifer_names: dict</strong></dt><dd><p>dictionary of aquifer names keyed by NWIS codes, read using import 
-statement from mapgwm.lookups</p>
-</dd>
-<dt><strong>regional_aquifers: dict</strong></dt><dd><p>dictionary of regional aquifers keyed by NWIS codes, read using import
-statement from mapgwm.lookups</p>
-</dd>
-<dt><strong>epsg: int</strong></dt><dd><p>epsg code used in projections</p>
-</dd>
-<dt><strong>monthly_cols: list of str</strong></dt><dd><p>list of column names for monthly values</p>
-</dd>
-<dt><strong>sim_start_dt: str</strong></dt><dd><p>start time for simulation as string ‘yyyy-mm-dd’</p>
-</dd>
-<dt><strong>sim_end_dt: str</strong></dt><dd><p>end time for simulation as string ‘yyyy-mm-dd’</p>
-</dd>
-<dt><strong>default_screen_len: float</strong></dt><dd><p>default screen length in meters</p>
-</dd>
-<dt><strong>locations: dict</strong></dt><dd><p>dictionary of x,y locations keyed by SITE_NO, added in reproject method</p>
-</dd>
-<dt><strong>depths_m: dict</strong></dt><dd><p>dictionary of depth keyed by SITE_NO</p>
-</dd>
-<dt><strong>well_elevations_m: dict</strong></dt><dd><p>dictionary of well elevations keyed by SITE_NO</p>
-</dd>
-<dt><strong>prod_zone_top_m: defaultdict(dict)</strong></dt><dd><p>defaultdict with production zone top (in meters) for each well
-First key is the production zone name, and second is the SITE_NO
-For example  self.prod_zone_top_m[‘lower_claiborne’][‘WEL001’] = top_elev</p>
-</dd>
-<dt><strong>prod_zone_bot_m: defaultdict(dict)</strong></dt><dd><p>defaultdict with production zone bottom (in meters) for each well
-First key is the production zone name, and second is the SITE_NO
-For example  self.prod_zone_bot_m[‘lower_claiborne’][‘WEL001’] = bot_elev</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="mapgwm.swuds.Swuds.apply_footprint">
-<code class="sig-name descname">apply_footprint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bounding_shp</span></em>, <em class="sig-param"><span class="n">outshp</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.apply_footprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.apply_footprint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Keep sites in the df_swuds pandas dataframe that fall
+<code class="sig-name descname">apply_footprint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">active_area</span></em>, <em class="sig-param"><span class="n">active_area_id_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_feature_id</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.apply_footprint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.apply_footprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Keep sites in the df pandas dataframe that fall
 into the passed bounding shapefile polygon. Requires
-that df_swuds dataframe has a Point geometry column as assigned
-in the reproject method. Method uses the first polygon
-in the bounding shapefile if it contains more than one.
-todo: dissolve multiple polygons in bounding_shp?</p>
+that df dataframe has a Point geometry column as assigned
+in the reproject method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bounding_shp: str</strong></dt><dd><p>path to shapefile with footprint for current analysis</p>
+<dt><strong>active_area: str</strong></dt><dd><p>path to shapefile with footprint for current analysis</p>
+</dd>
+<dt><strong>active_area_id_column</strong><span class="classifier">str, optional</span></dt><dd><p>Column in active_area with feature ids.
+By default, None, in which case all features are used.</p>
+</dd>
+<dt><strong>active_area_feature_id</strong><span class="classifier">str, optional</span></dt><dd><p>ID of feature to use for active area
+By default, None, in which case all features are used.</p>
 </dd>
 <dt><strong>outshp: str</strong></dt><dd><p>optional path to output shapefile with points within the footprint</p>
 </dd>
@@ -312,8 +248,8 @@ todo: dissolve multiple polygons in bounding_shp?</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mapgwm.swuds.Swuds.assign_missing_elev">
-<code class="sig-name descname">assign_missing_elev</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">top_raster</span></em>, <em class="sig-param"><span class="n">elev_field</span><span class="o">=</span><span class="default_value">'FROM_ALT_VA'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.assign_missing_elev"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.assign_missing_elev" title="Permalink to this definition">¶</a></dt>
+<dt id="mapgwm.swuds.Swuds.assign_missing_elevs">
+<code class="sig-name descname">assign_missing_elevs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">top_raster</span></em>, <em class="sig-param"><span class="n">dem_units</span><span class="o">=</span><span class="default_value">'meters'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.assign_missing_elevs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.assign_missing_elevs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the top of model raster, or land-surface raster,
 to assign the elevation for points where elevation is missing.</p>
 <dl class="field-list simple">
@@ -322,7 +258,7 @@ to assign the elevation for points where elevation is missing.</p>
 <dt><strong>top_raster: str</strong></dt><dd><p>path to raster data set with land surface or model top elevation, used
 to assign missing values to water-use points</p>
 </dd>
-<dt><strong>elev_field: str</strong></dt><dd><p>field in df_swuds with elevation data, default is ‘FROM_ALT_VA’</p>
+<dt><strong>elev_field: str</strong></dt><dd><p>field in df with elevation data, default is ‘FROM_ALT_VA’</p>
 </dd>
 </dl>
 </dd>
@@ -331,7 +267,7 @@ to assign missing values to water-use points</p>
 
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.assign_monthly_production">
-<code class="sig-name descname">assign_monthly_production</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outfile</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.assign_monthly_production"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.assign_monthly_production" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">assign_monthly_production</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">'processed_swuds.csv'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.assign_monthly_production"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.assign_monthly_production" title="Permalink to this definition">¶</a></dt>
 <dd><p>Assign production wells for water use, skipping IR (irrigation) and
 TE (thermal electric) to production zones.  If production zones are not
 assigned or if the well bottom doesn’t fall into a production zone, then
@@ -403,7 +339,7 @@ specified in the yaml file.</p>
 
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.make_production_zones">
-<code class="sig-name descname">make_production_zones</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zonelist</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'SITE_NO'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.make_production_zones"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.make_production_zones" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">make_production_zones</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">production_zones</span></em>, <em class="sig-param"><span class="n">default_elevation_units</span><span class="o">=</span><span class="default_value">'feet'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.make_production_zones"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.make_production_zones" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make dictionary attributes for production zones.
 These are used to assign individual wells to production zones.
 The defaultdict is keyed by zone_name and then SITE_NO.</p>
@@ -429,14 +365,16 @@ parameter zone dictionaries.  Defaults to SITE_NO</p>
 
 <dl class="py method">
 <dt id="mapgwm.swuds.Swuds.reproject">
-<code class="sig-name descname">reproject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">long</span><span class="o">=</span><span class="default_value">'FROM_DEC_LONG_VA'</span></em>, <em class="sig-param"><span class="n">lat</span><span class="o">=</span><span class="default_value">'FROM_DEC_LAT_VA'</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'SITE_NO'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.reproject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.reproject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reproject from lat/lon to self.epsg using gisutils</p>
+<code class="sig-name descname">reproject</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x_coord_col</span><span class="o">=</span><span class="default_value">'FROM_DEC_LONG_VA'</span></em>, <em class="sig-param"><span class="n">y_coord_col</span><span class="o">=</span><span class="default_value">'FROM_DEC_LAT_VA'</span></em>, <em class="sig-param"><span class="n">key</span><span class="o">=</span><span class="default_value">'SITE_NO'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#Swuds.reproject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.Swuds.reproject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reproject from self.source_crs to self.dest_crs using gisutils</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>long: str</strong></dt><dd><p>string variable name (column in dataframe) with longitude for input</p>
+<dt><strong>x_coord_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data with x-coordinates,
+by default ‘x’</p>
 </dd>
-<dt><strong>lat: str</strong></dt><dd><p>string variable name (column in dataframe) with latitude</p>
+<dt><strong>y_coord_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data with y-coordinates,
+by default ‘y’</p>
 </dd>
 <dt><strong>key: str</strong></dt><dd><p>key for the dictionary made, defaults to SITE_NO</p>
 </dd>
@@ -463,6 +401,146 @@ parameter zone dictionaries.  Defaults to SITE_NO</p>
 
 </dd></dl>
 
+<dl class="py function">
+<dt id="mapgwm.swuds.preprocess_swuds">
+<code class="sig-prename descclassname">mapgwm.swuds.</code><code class="sig-name descname">preprocess_swuds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">swuds_input</span></em>, <em class="sig-param"><span class="n">worksheet</span></em>, <em class="sig-param"><span class="n">csv_input</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dem</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">dem_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">start_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">end_date</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_id_column</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">active_area_feature_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">site_no_col</span><span class="o">=</span><span class="default_value">'SITE_NO'</span></em>, <em class="sig-param"><span class="n">x_coord_col</span><span class="o">=</span><span class="default_value">'FROM_DEC_LONG_VA'</span></em>, <em class="sig-param"><span class="n">y_coord_col</span><span class="o">=</span><span class="default_value">'FROM_DEC_LAT_VA'</span></em>, <em class="sig-param"><span class="n">production_zones</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">estimated_production_surface_units</span><span class="o">=</span><span class="default_value">'feet'</span></em>, <em class="sig-param"><span class="n">source_crs</span><span class="o">=</span><span class="default_value">4269</span></em>, <em class="sig-param"><span class="n">dest_crs</span><span class="o">=</span><span class="default_value">5070</span></em>, <em class="sig-param"><span class="n">data_length_units</span><span class="o">=</span><span class="default_value">'feet'</span></em>, <em class="sig-param"><span class="n">data_volume_units</span><span class="o">=</span><span class="default_value">'mgal'</span></em>, <em class="sig-param"><span class="n">model_length_units</span><span class="o">=</span><span class="default_value">'meters'</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/swuds.html#preprocess_swuds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mapgwm.swuds.preprocess_swuds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preprocess water use data from the USGS Site-Specific Water Use Database (SWUDS).</p>
+<ul class="simple">
+<li><p>reproject data to a destination CRS <cite>dest_crs</cite>)</p></li>
+<li><p>cull data to an area of interest (<cite>active_area</cite>)</p></li>
+<li><p>assign any missing wellhead elevations from a DEM</p></li>
+<li><p>if input data do not have information on the well screen intervals;
+sample screen tops and bottoms from raster surfaces bounding
+an estimated production zone (e.g. <cite>estimated_production_zone_top</cite>). Well
+bottom information is used to discriminate between multiple production zones.</p></li>
+<li><p>reindex the data to continous monthly values extending from <cite>start_date</cite>
+to <cite>end_date</cite>. Typically, these would bracket the time period for which
+the pumping should be simulated in a model. For example, the earliest data
+may be from 2010, but if the model starts in 2008, it may be appropriate to
+begin using the 2010 rates then (<code class="docutils literal notranslate"><span class="pre">start_date='2008'</span></code>). If no start or end
+date are given, the first and last years of pumping in <cite>data</cite> are used.</p></li>
+<li><p>fill empty months using 2010 data (the most complete survey year) if available,
+otherwise use the average value for the site.</p></li>
+<li><p>backfill any remaining empty months going back to the <cite>start_date</cite> in the same way</p></li>
+<li><p>write processed data to a CSV file and shapefile of the same name</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>swuds_input: str</strong></dt><dd><p>Excel spreadsheet of SWUDs data, in a format readable by
+<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_excel.html#pandas.read_excel" title="(in pandas v1.1.3)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.read_excel()</span></code></a>. If xlsx file is passed, then a
+selected worksheet from it will be converted to a csv file unless
+the csvfile parameter is specified as None.</p>
+</dd>
+<dt><strong>worksheet</strong><span class="classifier">str</span></dt><dd><p>Worksheet in <cite>swuds_input</cite> to read.</p>
+</dd>
+<dt><strong>csvfile: str, optional</strong></dt><dd><p>Path to csv file with data (if xlsx if None) or to a csvfile
+that is created from the selected worksheet.  If xlsx is None,
+then csvfile must be provided.</p>
+</dd>
+<dt><strong>sheet: str</strong></dt><dd><p>Name of worksheet in xlsx to be read, ignored if xlsx is None.</p>
+</dd>
+<dt><strong>dem</strong><span class="classifier">str, optional</span></dt><dd><p>DEM raster of the land surface. Used for estimating missing wellhead elevations.
+Any reprojection to dest_crs is handled automatically, assuming
+the DEM raster has CRS information embedded (arc-ascii grids do not!)
+By default, None.</p>
+</dd>
+<dt><strong>dem_units</strong><span class="classifier">str, {‘feet’, ‘meters’, ..}</span></dt><dd><p>Units of DEM elevations, by default, ‘meters’</p>
+</dd>
+<dt><strong>start_date</strong><span class="classifier">str</span></dt><dd><p>Start date for pumping rates. If earlier than the dates in <cite>data</cite>,
+pumping rates will be backfilled to this date.</p>
+</dd>
+<dt><strong>end_date</strong><span class="classifier">str</span></dt><dd><p>End date for pumping rates. If later than the dates in <cite>data</cite>,
+pumping rates will be forward filled to this date.</p>
+</dd>
+<dt><strong>active_area</strong><span class="classifier">str</span></dt><dd><p>Shapefile with polygon to cull observations to. Automatically reprojected
+to dest_crs if the shapefile includes a .prj file.
+by default, None.</p>
+</dd>
+<dt><strong>active_area_id_column</strong><span class="classifier">str, optional</span></dt><dd><p>Column in active_area with feature ids.
+By default, None, in which case all features are used.</p>
+</dd>
+<dt><strong>active_area_feature_id</strong><span class="classifier">str, optional</span></dt><dd><p>ID of feature to use for active area
+By default, None, in which case all features are used.</p>
+</dd>
+<dt><strong>site_no_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data with site identifiers,
+by default ‘SITE_NO’</p>
+</dd>
+<dt><strong>x_coord_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data with x-coordinates,
+by default ‘FROM_DEC_LONG_VA’</p>
+</dd>
+<dt><strong>y_coord_col</strong><span class="classifier">str, optional</span></dt><dd><p>Column name in data with y-coordinates,
+by default ‘FROM_DEC_LAT_VA’</p>
+</dd>
+<dt><strong>production_zones</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of production zone tops and bottoms, and optionally,
+production zone surface elevation units, keyed by an abbreviated name.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">production_zones</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;mrva&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MCAQP_top.tif&#39;</span><span class="p">,</span>
+                           <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MCAQP_bot.tif&#39;</span><span class="p">,</span>
+                        <span class="p">),</span>
+                  <span class="s1">&#39;mcaq&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MCAQP_top.tif&#39;</span><span class="p">,</span>
+                           <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MCAQP_bot.tif&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;feet&#39;</span><span class="p">)</span>
+                  <span class="p">}</span>
+</pre></div>
+</div>
+<p>Where zone ‘mrva’ has a top and bottom raster, but no units assigned,
+and zone ‘mcaq’ has a top and bottom raster and units. For zones
+with no units, the <cite>estimated_production_surface_units</cite> will be used.</p>
+</dd>
+<dt><strong>estimated_production_surface_units</strong><span class="classifier">str, {‘meters’, ‘ft’, etc.}</span></dt><dd><p>Length units of elevations in estimated production surface rasters.
+by default, ‘feet’</p>
+</dd>
+<dt><strong>source_crs</strong><span class="classifier">obj</span></dt><dd><p>Coordinate reference system of the head observation locations.
+A Python int, dict, str, or <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS" title="(in pyproj v2.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyproj.crs.CRS</span></code></a> instance
+passed to <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS.from_user_input" title="(in pyproj v2.6.1)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyproj.crs.CRS.from_user_input()</span></code></a></p>
+<dl class="simple">
+<dt>Can be any of:</dt><dd><ul class="simple">
+<li><p>PROJ string</p></li>
+<li><p>Dictionary of PROJ parameters</p></li>
+<li><p>PROJ keyword arguments for parameters</p></li>
+<li><p>JSON string with PROJ parameters</p></li>
+<li><p>CRS WKT string</p></li>
+<li><p>An authority string [i.e. ‘epsg:4326’]</p></li>
+<li><p>An EPSG integer code [i.e. 4326]</p></li>
+<li><p>A tuple of (“auth_name”: “auth_code”) [i.e (‘epsg’, ‘4326’)]</p></li>
+<li><p>An object with a <cite>to_wkt</cite> method.</p></li>
+<li><p>A <a class="reference external" href="http://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS" title="(in pyproj v2.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyproj.crs.CRS</span></code></a> class</p></li>
+</ul>
+</dd>
+</dl>
+<p>By default, epsg:4269</p>
+</dd>
+<dt><strong>dest_crs</strong><span class="classifier">obj</span></dt><dd><p>Coordinate reference system of the model. Same input types
+as <code class="docutils literal notranslate"><span class="pre">source_crs</span></code>.
+By default, epsg:5070</p>
+</dd>
+<dt><strong>data_length_units</strong><span class="classifier">str; ‘meters’, ‘feet’, etc.</span></dt><dd><p>Units of lengths in data (elevations, etc.)
+by default, ‘meters’</p>
+</dd>
+<dt><strong>data_volume_units</strong><span class="classifier">str; ‘mgd’, ‘ft3’, etc</span></dt><dd><p>Volumetric unit of pumping rates
+by default, ‘mgd’ (million gallons per day)</p>
+</dd>
+<dt><strong>model_length_units</strong><span class="classifier">str; ‘meters’, ‘feet’, etc.</span></dt><dd><p>Length units of model.
+by default, ‘meters’</p>
+</dd>
+<dt><strong>outfile</strong><span class="classifier">str</span></dt><dd><p>Path for output file. A shapefile of the same name is also written.
+If None, no output file is written. By default, None</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>wu</strong><span class="classifier"><a class="reference internal" href="#mapgwm.swuds.Swuds" title="mapgwm.swuds.Swuds"><code class="xref py py-class docutils literal notranslate"><span class="pre">mapgwm.swuds.Swuds</span></code></a> instance</span></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>time units for SWUDs data and model are assumed to be days</p></li>
+</ul>
+</dd></dl>
+
 </div>
 
 
@@ -473,7 +551,7 @@ parameter zone dictionaries.  Defaults to SITE_NO</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="mapgwm.thermal.html" class="btn btn-neutral float-right" title="mapgwm.ThermalUse Class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mapgwm.thermal.html" class="btn btn-neutral float-right" title="mapgwm.te_wateruse module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="mapgwm.swflows.html" class="btn btn-neutral float-left" title="mapgwm.swflows module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -486,7 +564,7 @@ parameter zone dictionaries.  Defaults to SITE_NO</p>
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 05, 2020.
+        Last updated on Oct 07, 2020.
       </span>
 
     </p>

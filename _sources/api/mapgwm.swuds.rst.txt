@@ -1,8 +1,7 @@
-mapgwm.Swuds Class
+mapgwm.swuds module
 =============================
 
-.. autoclass:: mapgwm.swuds.Swuds
+.. automodule:: mapgwm.swuds
     :members:
-    :special-members: __init__
     :undoc-members:
     :show-inheritance:

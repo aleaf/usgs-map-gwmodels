@@ -1,8 +1,7 @@
-mapgwm.ThermalUse Class
+mapgwm.te_wateruse module
 =============================
 
-.. autoclass:: mapgwm.te_wateruse.ThermalUse
+.. automodule:: mapgwm.te_wateruse
     :members:
-    :special-members: __init__
     :undoc-members:
     :show-inheritance:

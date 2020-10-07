@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Philosophy &mdash; usgs-map-gwmodels 0.post36.dev0+g3a06853 documentation</title>
+  <title>Philosophy &mdash; usgs-map-gwmodels 0.post41.dev0+g794782a documentation</title>
   
 
   
@@ -41,7 +41,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installation" href="installation.html" />
-    <link rel="prev" title="usgs-map-gwmodels 0.post36.dev0+g3a06853" href="index.html" /> 
+    <link rel="prev" title="usgs-map-gwmodels 0.post41.dev0+g794782a" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post36.dev0+g3a06853
+                0.post41.dev0+g794782a
               </div>
             
           
@@ -208,28 +208,55 @@
 <h1>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
-<p>The motivation for this project is bring together common scripts used in
-the development of the regional and inset MAP models to a single package.
-That way, if an input dataset from some other part of the MAP project is
-changed, the necessary edits to the processing script can be made once.
-If common scripts exist for each of the insets and the regional model, then
-those edits would have to be made for each of them, increasing the chance
-for error.</p>
+<p>The Mississippi Alluvial Plain (MAP) is one of the most import agricultural
+regions in the US, and <a class="reference external" href="https://ngwa.onlinelibrary.wiley.com/doi/abs/10.1111/gwat.12306">among the most depleted</a>
+in terms of its groundwater resource .
+Groundwater modeling with MODFLOW is being used to support future management decisions (e.g. Haugh et al. 2020).
+Given the size and heterogeneity of the MAP region, management decisions are best supported by local-scale
+models– inset within a larger regional hydrogeologic framework– that can be tuned to answer specific
+questions. Construction and management of multiple models presents a challenge to project resources, however,
+especially if incremental updates to the models are desired as new data become available.</p>
+<p>USGS-MAP-gwmodels provides a single code base for preprocessing
+input data to the
+<a class="reference external" href="https://www2.usgs.gov/water/lowermississippigulf/map/">USGS Mississippi Alluvial Plain (MAP) project</a> groundwater models.
+Input data are derived from other components within the MAP project and from
+external sources such as the National Water Information System (NWIS). Preprocessed
+data are output in clean formats that are independent of a particular model
+grid, and therefore allow the model discretization to be easily changed. By having
+a single code base that is well tested and documented, we avoid the potential errors and
+confusion that are inherent in ad-hoc scripting. This also facilitates reproducability
+in the modeling workflow, and incremental updating of the models as new data
+become available.</p>
 </div>
 <div class="section" id="what-usgs-map-gwmodels-does">
 <h2>What usgs-map-gwmodels does<a class="headerlink" href="#what-usgs-map-gwmodels-does" title="Permalink to this headline">¶</a></h2>
-<p>Functions in this package can be used to help develop preprocess data for
-MAP models.  The package can be used along with <em>modflow-setup</em> to develop
-models from the various data sources.  Post-processing scripts could also
-be put into this package, but they have not been added yet.</p>
-</div>
+<p>Input data from other components within the MAP project and from
+external sources such as the National Water Information System (NWIS) are preprocessed
+into clean formats that are readable by the <a class="reference external" href="https://github.com/aleaf/modflow-setup">modflow-setup</a>
+package, which assembles the actual input files to MODFLOW, and
+<a class="reference external" href="https://github.com/aleaf/modflow-obs">modflow-obs</a>, which creates observation input for the
+<a class="reference external" href="https://pesthomepage.org/pest-suite">PEST family of programs</a>.</p>
+<p>The original data, coming from different sources, is heterogenous and may cover large areas.
+The intial preprocessing step performed by USGS-MAP-gwmodels allows the often unwieldy source data to be
+kept separate from the model setup workflow. This way, the well-organized and minimal
+input data created by USGS-MAP-gwmodels can be included, along with the model input files and build script,
+in a self-contained git repository that has everything needed to regenerate a model at
+different spatial or temporal discretizations, or with other input modifications. An overview
+of the modeling workflow is shown below:</p>
+<iframe src="_static/modeling_flow_chart.html/modeling_flow_chart.html" height="450px" width="100%"></iframe></div>
 <div class="section" id="what-usgs-map-gwmodels-doesn-t-do">
 <h2>What usgs-map-gwmodels doesn’t do<a class="headerlink" href="#what-usgs-map-gwmodels-doesn-t-do" title="Permalink to this headline">¶</a></h2>
-<p>The most important limitation is that this package is not designed to
-provide set up functions that are specific to only one of the regional models.
-Model-specific functions or scripts should be part of the client code (python
-script or jupyter notebooks) that use <em>usgs-map-gwmodels</em> and <em>modflow-setup</em>
-or user maintained packages.</p>
+<p>USGS-MAP-gwmodels has been developed thus far to support groundwater modeling efforts for
+the <a class="reference external" href="https://www2.usgs.gov/water/lowermississippigulf/map/">Mississippi Alluvial Plain (MAP) project</a>.
+While many of the features may be transferable
+to other water availability modeling, USGS-MAP-gwmodels is not currently intended
+to be fully general or comprehensive in terms of the types of input data it supports. If
+you are interested in adapting USGS-MAP-gwmodels to your work and would like to see support
+added for another type of data, get ahold of us via
+<a class="reference external" href="https://github.com/aleaf/usgs-map-gwmodels/issues">the Issues tab on our GitHub page</a>.
+Finally, USGS-MAP-gwmodels does not write actual input MODFLOW or PEST. These tasks
+are delegated to <a class="reference external" href="https://github.com/aleaf/modflow-setup">modflow-setup</a> and
+<a class="reference external" href="https://github.com/aleaf/modflow-obs">modflow-obs</a>.</p>
 </div>
 </div>
 
@@ -244,7 +271,7 @@ or user maintained packages.</p>
         <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="usgs-map-gwmodels 0.post36.dev0+g3a06853" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="usgs-map-gwmodels 0.post41.dev0+g794782a" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -254,7 +281,7 @@ or user maintained packages.</p>
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 05, 2020.
+        Last updated on Oct 07, 2020.
       </span>
 
     </p>
