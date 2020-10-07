@@ -1,55 +1,85 @@
 import os
-from mapgwm import te_wateruse
+import numpy as np
+import pytest
+from mapgwm.te_wateruse import preprocess_te_wateruse, read_te_water_use_spreadsheet
 
 
-def test_preprocess_thermal(test_output_folder, test_data_path):
-   
-    # output
-    processed_csv = os.path.join(test_output_folder, 'processed_thermal.csv')
-    wu_shp = os.path.join(test_output_folder, 'TE_points.shp')
-    outcsv_2010 = os.path.join(test_output_folder, '2010_thermo_model_estimates.csv')
-    outcsv_2015 = os.path.join(test_output_folder, '2015_thermo_model_estimates.csv')
-    combined = os.path.join(test_output_folder, 'TE_combined.csv')
+@pytest.mark.parametrize(('xlsx_file,sheet_name,skiprows,date,'
+                          'x_coord_col,y_coord_col,q_col,site_no_col,'
+                          'site_name_col,source_name_col,source_code_col'),
+                         (('swuds/2010_Thermo_Model_Estimates.xlsx', 'Report_table_UPDATED', 2, '2010',
+                           'Longitude, decimal degrees',
+                           'Latitude, decimal degrees',
+                           'USGS-Estimated Annual Withdrawal (Mgal/d)',
+                           'PLANT CODE', 'PLANT NAME', 'NAME OF WATER SOURCE', 'USGS WATER SOURCE CODE'
+                           ),
+                          ('swuds/2015_TE_Model_Estimates_lat.long_COMIDs.xlsx', '2015_ANNUAL_WD_CU', 0, '2015',
+                            'LATITUDE', 'LONGITUDE', 'WITHDRAWAL', 'EIA_PLANT_ID', 'PLANT_NAME',
+                           'NAME_OF_WATER_SOURCE', 'WATER_SOURCE_CODE'
+                           )
+                          ))
+def test_read_te_water_use_spreadsheet(test_data_path, xlsx_file, sheet_name, skiprows,
+                                       date, x_coord_col, y_coord_col, q_col, site_no_col,
+                                       site_name_col, source_name_col, source_code_col):
+    xlsx_file = test_data_path / xlsx_file
+    df = read_te_water_use_spreadsheet(xlsx_file, date='2010', x_coord_col=x_coord_col,
+                                       y_coord_col=y_coord_col,
+                                       q_col=q_col, site_no_col=site_no_col,
+                                       site_name_col=site_name_col, source_name_col=source_name_col,
+                                       source_code_col=source_code_col,
+                                       sheet_name=sheet_name, skiprows=skiprows)
+    assert np.all(df.columns ==
+                  ['site_no', 'date', 'x', 'y', 'q', 'site_name', 'source_name'])
+    assert 'datetime64' in df.date.dtype.name
 
-    # required data
-    xlsx_2010 = os.path.join(test_data_path, 'swuds', '2010_Thermo_Model_Estimates.xlsx')
-    xlsx_2015 = os.path.join(test_data_path, 'swuds','2015_TE_Model_Estimates_lat.long_COMIDs.xlsx')
-    skiprows = [2, 0]
-    worksheets = ['Report_table_UPDATED', '2015_ANNUAL_WD_CU']
 
-    # input rasters and shapefile
-    mc_top = os.path.join(test_data_path, 'rasters', 'mcaq_surf.tif')
-    mc_bot = os.path.join(test_data_path, 'rasters', 'mccu_surf.tif')
-    meras_shp = os.path.join(test_data_path, 'extents', 'MERAS_Extent.shp')
+def test_preprocess_te_wateruse(test_data_path, test_output_folder):
 
-    # make a thermal object
-    te = te_wateruse.ThermalUse(xlsx=[xlsx_2010, xlsx_2015], 
-                    sheet=worksheets, 
-                    csvfile=[outcsv_2010, outcsv_2015], 
-                    cols=['2010', '2015'], 
-                    skiprows=skiprows, 
-                    newheaders=['2010', '2015'], 
-                    epsg=5070)
+    df2010 = read_te_water_use_spreadsheet(test_data_path / 'swuds/2010_Thermo_Model_Estimates.xlsx',
+                                       date='2010',
+                                       x_coord_col='Longitude, decimal degrees',
+                                       y_coord_col='Latitude, decimal degrees',
+                                       q_col='USGS-Estimated Annual Withdrawal (Mgal/d)',
+                                       site_no_col='PLANT CODE',
+                                       site_name_col='PLANT NAME',
+                                       source_name_col='NAME OF WATER SOURCE',
+                                       source_code_col='USGS WATER SOURCE CODE',
+                                       sheet_name='Report_table_UPDATED', skiprows=2)
 
-    # write the combined dataframe 
-    te.df_swuds.to_csv(combined)
+    df2015 = read_te_water_use_spreadsheet(test_data_path / 'swuds/2015_TE_Model_Estimates_lat.long_COMIDs.xlsx',
+                                       date='2015',
+                                       x_coord_col='LONGITUDE',
+                                       y_coord_col='LATITUDE',
+                                       q_col='WITHDRAWAL',
+                                       site_no_col='EIA_PLANT_ID',
+                                       site_name_col='PLANT_NAME',
+                                       source_name_col='NAME_OF_WATER_SOURCE',
+                                       source_code_col='WATER_SOURCE_CODE',
+                                       sheet_name='2015_ANNUAL_WD_CU', skiprows=0)
+    df = df2010.append(df2015)
 
-    # processing steps
-    te.sort_sites(primarysort='plant_code')
-    te.reproject(long='lon_dd', lat='lat_dd', key='plant_code')
+    outfile = test_output_folder / 'preprocessed_te_data.csv'
 
-    te.apply_footprint(meras_shp, outshp=wu_shp)
-    
-    mc = ['middle_claiborne', mc_top, mc_bot]
-    te.make_production_zones([mc], key='plant_code')
-    
-    te.assign_monthly_production(processed_csv, year_cols=['2010_q_mgd', '2015_q_mgd'])
+    estimated_production_zone_top = test_data_path / 'swuds/rasters/pz_MCAQP_top.tif'
+    estimated_production_zone_botm = test_data_path / 'swuds/rasters/pz_MCAQP_bot.tif'
 
-    #check if output are written
-    assert os.path.exists(outcsv_2010)
-    assert os.path.exists(outcsv_2015)
-    assert os.path.exists(combined)
-    assert os.path.exists(wu_shp)
-    assert os.path.exists(processed_csv)
-    
-    
+    results = preprocess_te_wateruse(df, #dem=dem, dem_units='feet',
+                           start_date='2008-01-01',
+                           end_date='2017-12-31',
+                           active_area=os.path.join(test_data_path, 'extents/ms_delta.shp'),
+                           estimated_production_zone_top=estimated_production_zone_top,
+                           estimated_production_zone_botm=estimated_production_zone_botm,
+                           estimated_production_surface_units='feet',
+                           source_crs=4269,
+                           dest_crs=5070,
+                           data_volume_units='mgal',
+                           model_length_units='meters',
+                           outfile=outfile)
+    assert np.all(results.screen_top > results.screen_botm)
+    assert np.all(results.columns[:8] ==
+                  ['site_no', 'date', 'x', 'y', 'screen_top', 'screen_botm', 'q', 'geometry'])
+    assert outfile.exists()
+    assert outfile.with_suffix('.shp').exists()
+    check_cols = ['q', 'screen_top', 'screen_botm', 'x', 'y', 'date', 'site_no']
+    for col in check_cols:
+        assert not results[col].isnull().any()
