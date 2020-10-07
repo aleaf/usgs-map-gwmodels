@@ -408,6 +408,7 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
     data_cols = ['site_no', 'datetime'] + flow_data_columns + ['category']
     df = df[data_cols]
 
+    md.index = md['site_no']
     # save out the results
     if outfile is not None:
         df2shp(md.drop(['x', 'y'], axis=1),

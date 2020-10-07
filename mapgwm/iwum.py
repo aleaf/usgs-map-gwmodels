@@ -133,8 +133,6 @@ def preprocess_iwum_pumping(ncfile,
         Raster surface for assigning screen tops
     estimated_production_zone_botm : file path
         Raster surface for assigning screen bottoms
-    default_layer : int
-        In lieu of specifying
     flux_variable : str
         Varible in ncfile for pumping fluxes. Fluxes are assumed to
         represent total volumes for each time period.
