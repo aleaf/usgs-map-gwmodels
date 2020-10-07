@@ -5,6 +5,7 @@
 
 usgs-map-gwmodels |version|
 ===============================================
+`Go to the GitHub site <https://github.com/aleaf/usgs-map-gwmodels>`_
 
 .. toctree::
    :maxdepth: 2

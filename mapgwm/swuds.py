@@ -673,6 +673,7 @@ def preprocess_swuds(swuds_input, worksheet, csv_input=None,
         production zone surface elevation units, keyed by an abbreviated name.
 
         Example::
+
             production_zones={'mrva': (test_data_path / 'swuds/rasters/pz_MCAQP_top.tif',
                                        test_data_path / 'swuds/rasters/pz_MCAQP_bot.tif',
                                     ),
@@ -706,13 +707,14 @@ def preprocess_swuds(swuds_input, worksheet, csv_input=None,
           - A :class:`pyproj.crs.CRS` class
 
         By default, epsg:4269
+
     dest_crs : obj
         Coordinate reference system of the model. Same input types
         as ``source_crs``.
         By default, epsg:5070
     data_length_units : str; 'meters', 'feet', etc.
-            Units of lengths in data (elevations, etc.)
-            by default, 'meters'
+        Units of lengths in data (elevations, etc.)
+        by default, 'meters'
     data_volume_units : str; 'mgd', 'ft3', etc
         Volumetric unit of pumping rates
         by default, 'mgd' (million gallons per day)
