@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post41.dev0+gf1bf764 documentation</title>
+  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post42.dev0+g8084ee9 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post41.dev0+gf1bf764
+                0.post42.dev0+g8084ee9
               </div>
             
           
@@ -506,7 +506,7 @@ div.rendered_html tbody tr:hover {
 </li>
 </ul>
 <p><a class="reference external" href="https://aleaf.github.io/usgs-map-gwmodels/references.html">Cited References</a></p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -520,6 +520,24 @@ div.rendered_html tbody tr:hover {
 <span class="kn">from</span> <span class="nn">mfsetup.grid</span> <span class="kn">import</span> <span class="n">MFsetupGrid</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+flopy is installed in /home/travis/miniconda/envs/test/lib/python3.7/site-packages/flopy
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/travis/miniconda/envs/test/lib/python3.7/site-packages/mfsetup/mfmodel.py:57: UserWarning: sfr: sfrmaker_options: add_outlet functionality requires sfrmaker &gt;= 0.6
+Please pip install --upgrade sfrmaker
+  warnings.warn(&#39;sfr: sfrmaker_options: add_outlet functionality requires sfrmaker &gt;= 0.6&#39;
+</pre></div></div>
 </div>
 <div class="section" id="Define-some-global-inputs">
 <h2>Define some global inputs<a class="headerlink" href="#Define-some-global-inputs" title="Permalink to this headline">¶</a></h2>
@@ -629,24 +647,24 @@ finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/ucaq_surf.tif...
 finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mccu_surf.tif...
-finished in 0.02s
-reading data from ../mapgwm/tests/data/rasters/mcaq_surf.tif...
 finished in 0.03s
-reading data from ../mapgwm/tests/data/rasters/lccu_surf.tif...
+reading data from ../mapgwm/tests/data/rasters/mcaq_surf.tif...
 finished in 0.02s
+reading data from ../mapgwm/tests/data/rasters/lccu_surf.tif...
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/lcaq_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mwaq_surf.tif...
 finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/lwaq_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mdwy_surf.tif...
 finished in 0.02s
 computing cell thicknesses...
-finished in 5.95s
+finished in 6.02s
 
 computing cell thicknesses...
-finished in 13.64s
+finished in 12.85s
 
 wrote output/botm_array/model_top.tif
 wrote output/botm_array/botm0.tif
@@ -998,6 +1016,7 @@ writing output/processed_inflows.csv
     <tr style="text-align: right;">
       <th></th>
       <th>site_no</th>
+      <th>line_id</th>
       <th>datetime</th>
       <th>predicted_total_flow</th>
       <th>predicted_bf</th>
@@ -1010,12 +1029,14 @@ writing output/processed_inflows.csv
       <th></th>
       <th></th>
       <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>2007-02-01</th>
       <td>none</td>
+      <td>19274790</td>
       <td>2007-02-01</td>
       <td>5.175779e+06</td>
       <td>4.458664e+06</td>
@@ -1024,6 +1045,7 @@ writing output/processed_inflows.csv
     <tr>
       <th>2007-03-01</th>
       <td>none</td>
+      <td>19274790</td>
       <td>2007-03-01</td>
       <td>2.497954e+06</td>
       <td>1.873441e+06</td>
@@ -1032,6 +1054,7 @@ writing output/processed_inflows.csv
     <tr>
       <th>2007-04-01</th>
       <td>none</td>
+      <td>19274790</td>
       <td>2007-04-01</td>
       <td>3.820059e+06</td>
       <td>2.017639e+06</td>
@@ -1040,6 +1063,7 @@ writing output/processed_inflows.csv
     <tr>
       <th>2007-05-01</th>
       <td>none</td>
+      <td>19274790</td>
       <td>2007-05-01</td>
       <td>2.154971e+06</td>
       <td>1.052037e+06</td>
@@ -1048,6 +1072,7 @@ writing output/processed_inflows.csv
     <tr>
       <th>2007-06-01</th>
       <td>none</td>
+      <td>19274790</td>
       <td>2007-06-01</td>
       <td>1.437397e+06</td>
       <td>5.956531e+05</td>
@@ -1202,7 +1227,7 @@ writing output/processed_inflows.csv
 
 reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
-Culling 7 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+Culling 7 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 
 reading ../mapgwm/tests/data/extents/MAP_generalized_regions.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
@@ -1244,6 +1269,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr style="text-align: right;">
       <th></th>
       <th>site_no</th>
+      <th>line_id</th>
       <th>datetime</th>
       <th>qtotal_m3d</th>
       <th>qbase_m3d</th>
@@ -1256,12 +1282,14 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <th></th>
       <th></th>
       <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>2007-02-01</th>
       <td>07288847</td>
+      <td>17929890</td>
       <td>2007-02-01</td>
       <td>659171.062935</td>
       <td>564867.808532</td>
@@ -1270,6 +1298,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>2007-03-01</th>
       <td>07288847</td>
+      <td>17929890</td>
       <td>2007-03-01</td>
       <td>316339.771464</td>
       <td>278767.710811</td>
@@ -1278,6 +1307,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>2007-04-01</th>
       <td>07288847</td>
+      <td>17929890</td>
       <td>2007-04-01</td>
       <td>328301.079306</td>
       <td>179244.687481</td>
@@ -1286,6 +1316,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>2007-05-01</th>
       <td>07288847</td>
+      <td>17929890</td>
       <td>2007-05-01</td>
       <td>632789.638827</td>
       <td>216849.532247</td>
@@ -1294,6 +1325,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>2007-06-01</th>
       <td>07288847</td>
+      <td>17929890</td>
       <td>2007-06-01</td>
       <td>250184.368712</td>
       <td>130957.604569</td>
@@ -1480,7 +1512,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
 
 reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
-Culling 40 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+Culling 40 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 
 reading ../mapgwm/tests/data/extents/MAP_generalized_regions.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
@@ -1841,6 +1873,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr style="text-align: right;">
       <th></th>
       <th>site_no</th>
+      <th>line_id</th>
       <th>datetime</th>
       <th>category</th>
       <th>est_qtotal_m3d</th>
@@ -1854,6 +1887,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>0</th>
       <td>07280400</td>
+      <td>NaN</td>
       <td>2008-01-01</td>
       <td>measured</td>
       <td>NaN</td>
@@ -1865,6 +1899,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>1</th>
       <td>07280400</td>
+      <td>NaN</td>
       <td>2008-02-01</td>
       <td>measured</td>
       <td>NaN</td>
@@ -1876,6 +1911,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>2</th>
       <td>07280400</td>
+      <td>NaN</td>
       <td>2008-03-01</td>
       <td>measured</td>
       <td>NaN</td>
@@ -1887,6 +1923,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>3</th>
       <td>07280400</td>
+      <td>NaN</td>
       <td>2008-04-01</td>
       <td>measured</td>
       <td>NaN</td>
@@ -1898,6 +1935,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
     <tr>
       <th>4</th>
       <td>07280400</td>
+      <td>NaN</td>
       <td>2008-05-01</td>
       <td>measured</td>
       <td>NaN</td>
@@ -2001,7 +2039,7 @@ culling 13 wells with only data prior to start date of 1998-04-01 00:00:00
 
 reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
-Culling 2 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+Culling 2 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 50% of wells (n=4) have incomplete open interval information. Filling screen bottoms with well bottoms where available, and estimating screen tops from median open interval length.
 12% of wells (n=1) still missing open interval information; assigned to category 4.
 
@@ -2366,13 +2404,13 @@ writing output/preprocessed_monthly_headobs.csv
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 reading data from ../mapgwm/tests/data/iwum/est_prod_zone_top.tif...
-finished in 0.14s
+finished in 0.15s
 reading data from ../mapgwm/tests/data/iwum/est_prod_zone_botm.tif...
-finished in 0.14s
+finished in 0.15s
 
 reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
-Culling 42258 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+Culling 42258 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 wrote output/iwum_m3.csv
 </pre></div></div>
 </div>
@@ -2573,7 +2611,7 @@ wrote output/iwum_m3.csv
 
 reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
-Culling 831 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+Culling 831 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 reading data from ../mapgwm/tests/data/rasters/dem_mean_elevs.tif...
 finished in 0.06s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
@@ -2794,9 +2832,9 @@ writing output/preprocessed_swuds_data.shp...
 
 reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
-Culling 405 wells outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+Culling 405 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
-finished in 0.12s
+finished in 0.13s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_bot.tif...
 finished in 0.13s
 wrote output/preprocessed_te_data.csv
@@ -2979,7 +3017,7 @@ Text(0, 0.5, &#39;Pumpage, in m$^3$/day&#39;)
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 07, 2020.
+        Last updated on Oct 20, 2020.
       </span>
 
     </p>

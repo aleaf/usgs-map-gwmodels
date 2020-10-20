@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.swflows &mdash; usgs-map-gwmodels 0.post41.dev0+gf1bf764 documentation</title>
+  <title>mapgwm.swflows &mdash; usgs-map-gwmodels 0.post42.dev0+g8084ee9 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post41.dev0+gf1bf764
+                0.post42.dev0+g8084ee9
               </div>
             
           
@@ -362,9 +362,9 @@
 <span class="sd">    source_time_units : str, &#39;s&#39;, &#39;seconds&#39;, &#39;days&#39;, etc.</span>
 <span class="sd">        Time units of the source data. By default, &#39;s&#39;</span>
 <span class="sd">    dest_volume_units : str, &#39;m3&#39;, &#39;cubic meters&#39;, &#39;ft3&#39;, etc.</span>
-<span class="sd">        Volume units of the output (model). By default, &#39;m&#39;</span>
+<span class="sd">        Volume units of the output (model). By default, &#39;m3&#39;</span>
 <span class="sd">    dest_time_units : str, &#39;s&#39;, &#39;seconds&#39;, &#39;days&#39;, etc.</span>
-<span class="sd">        Time units of the output (model). By default, &#39;m&#39;</span>
+<span class="sd">        Time units of the output (model). By default, &#39;d&#39;</span>
 <span class="sd">    geographic_groups : file, dict or list-like</span>
 <span class="sd">        Option to group observations by area(s) of interest. Can</span>
 <span class="sd">        be a shapefile, list of shapefiles, or dictionary of shapely polygons.</span>
@@ -499,7 +499,8 @@
         <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">md</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="n">by_site_no</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]))</span>
             <span class="n">md</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">by_site_no</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]]</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">col</span> <span class="o">!=</span> <span class="s1">&#39;line_id&#39;</span><span class="p">:</span>
+                <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># index the dataframe to times;</span>
     <span class="c1"># truncate data before start date</span>
@@ -529,9 +530,10 @@
         
     <span class="k">if</span> <span class="n">include_sites</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">md</span><span class="o">.</span><span class="n">site_no</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">include_sites</span><span class="p">)]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">site_no</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">include_sites</span><span class="p">)]</span>
     <span class="k">if</span> <span class="n">include_line_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">md</span> <span class="o">=</span> <span class="n">md</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">md</span><span class="o">.</span><span class="n">line_id</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">include_line_ids</span><span class="p">)]</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">site_no</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">md</span><span class="o">.</span><span class="n">site_no</span><span class="p">)]</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">line_id</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">include_line_ids</span><span class="p">)]</span>
     
     <span class="c1"># convert units</span>
     <span class="c1"># ensure that flow values are numeric (may be objects if taken directly from NWIS)</span>
@@ -579,7 +581,14 @@
                                      <span class="n">metadata_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
 
     <span class="c1"># data columns</span>
-    <span class="n">data_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">flow_data_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+    <span class="n">data_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;line_id&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">flow_data_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+    <span class="c1">#if &#39;line_id&#39; in md.columns and &#39;line_id&#39; not in df.columns:</span>
+    <span class="c1">#    # only map line_ids to data if there are more site numbers</span>
+    <span class="c1">#    # implying that no site number maps to more than one line_id</span>
+    <span class="c1">#    if len(set(df.site_no)) &gt;= len(set(df.line_id)):</span>
+    <span class="c1">#        ids = dict(zip(md[&#39;site_no&#39;], md[&#39;line_id&#39;]))</span>
+    <span class="c1">#    df[&#39;line_id&#39;] = [ids[sn] for sn in df[&#39;site_no&#39;]]</span>
+    <span class="n">data_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">data_cols</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">data_cols</span><span class="p">]</span>
 
     <span class="n">md</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">md</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span>
@@ -996,7 +1005,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 07, 2020.
+        Last updated on Oct 20, 2020.
       </span>
 
     </p>
