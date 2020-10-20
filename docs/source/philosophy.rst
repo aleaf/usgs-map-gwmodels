@@ -19,8 +19,8 @@ Input data are derived from other components within the MAP project and from
 external sources such as the National Water Information System (NWIS). Preprocessed
 data are output in clean formats that are independent of a particular model
 grid, allowing the model discretization to be easily changed without rerunning the preprocessing. By having
-a single code base that is well tested and documented, we avoid the potential errors and
-confusion that are inherent in ad-hoc scripting. This also facilitates reproducability
+a single code base that is well tested and documented, we avoid the many of the potential errors and
+confusion that are inherent in ad-hoc scripting. A single code base also facilitates reproducability
 in the modeling workflow, and incremental updating of the models as new data
 become available.
 
@@ -44,7 +44,7 @@ of the modeling workflow is shown below:
 
 .. raw:: html
 
-    <iframe src="_static/modeling_flow_chart.html/modeling_flow_chart.html" height="450px" width="100%"></iframe>
+    <iframe src="_static/modeling_flow_chart.html/modeling_flow_chart.html" height="550px" width="100%" frameBorder="0" scrolling="no" style="-webkit-transform:scale(1.0);-moz-transform-scale(1.0);"></iframe>
 
 
 

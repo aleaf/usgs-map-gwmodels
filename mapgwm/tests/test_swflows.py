@@ -181,7 +181,11 @@ def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_col
                                      )
     assert outfile.exists()
     assert Path(outfile.parent, outfile.stem + '_info.csv').exists()
-    expected_data_columns = ['site_no', 'datetime'] + flow_data_cols + ['category']
+    expected_data_columns = ['site_no']
+    # check that line IDs are included with time series if there is a line_id column
+    if line_id_col is not None:
+        expected_data_columns.append('line_id')
+    expected_data_columns += ['datetime'] + flow_data_cols + ['category']
     expected_data_columns = [column_renames.get(c, c) for c in expected_data_columns]
     assert np.all(data.columns == expected_data_columns)
     assert data.index.name == 'datetime'
@@ -206,7 +210,7 @@ def test_combine_measured_estimated_values(test_output_folder):
     results = combine_measured_estimated_values(nwis_timeseries_file, rf_timeseries_file,
                                                 measured_values_data_col='qbase_m3d', estimated_values_data_col='qbase_m3d',
                                                 resample_freq='MS')
-    expected_cols = ['site_no', 'datetime', 'category', 'est_qtotal_m3d', 'est_qbase_m3d',
+    expected_cols = ['site_no', 'line_id', 'datetime', 'category', 'est_qtotal_m3d', 'est_qbase_m3d',
                      'meas_qtotal_m3d', 'meas_qbase_m3d', 'obsval']
     assert np.all(results.columns == expected_cols)
     for col in ['site_no', 'datetime', 'category', 'obsval']:

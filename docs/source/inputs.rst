@@ -4,6 +4,8 @@ Additional description of input data
 
 Head Observation Input
 -----------------------
+See `here <https://code.usgs.gov/map/gw/infoGW2visGWDB/-/blob/master/input/GWcolumns/GWcolumns.pdf>`_
+for additional description of the fields below.
 Description of input fields for groundwater level times series:
 
     .. literalinclude:: ../../mapgwm/tests/data/headobs/GW_monthly_stats_test.txt

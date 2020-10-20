@@ -70,7 +70,7 @@ def cull_data_to_active_area(data, active_area, active_area_id_column,
         within = np.array([g.within(active_area_polygon) for g in df.geometry])
         df_within = within
     if not np.all(within):
-        print('Culling {} wells outside of the model area defined by {}.'
+        print('Culling {} sites outside of the model area defined by {}.'
               .format(np.sum(~within), active_area))
     df = df.loc[df_within]
     if metadata is not None:

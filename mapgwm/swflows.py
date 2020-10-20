@@ -188,9 +188,9 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
     source_time_units : str, 's', 'seconds', 'days', etc.
         Time units of the source data. By default, 's'
     dest_volume_units : str, 'm3', 'cubic meters', 'ft3', etc.
-        Volume units of the output (model). By default, 'm'
+        Volume units of the output (model). By default, 'm3'
     dest_time_units : str, 's', 'seconds', 'days', etc.
-        Time units of the output (model). By default, 'm'
+        Time units of the output (model). By default, 'd'
     geographic_groups : file, dict or list-like
         Option to group observations by area(s) of interest. Can
         be a shapefile, list of shapefiles, or dictionary of shapely polygons.
@@ -325,7 +325,8 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
         if col in df.columns and col not in md.columns:
             by_site_no = dict(zip(df['site_no'], df[col]))
             md[col] = [by_site_no[sn] for sn in md['site_no']]
-            df.drop(col, axis=1, inplace=True)
+            if col != 'line_id':
+                df.drop(col, axis=1, inplace=True)
 
     # index the dataframe to times;
     # truncate data before start date
@@ -355,9 +356,10 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
         
     if include_sites is not None:
         md = md.loc[md.site_no.isin(include_sites)]
+        df = df.loc[df.site_no.isin(include_sites)]
     if include_line_ids is not None:
         md = md.loc[md.line_id.isin(include_line_ids)]
-    df = df.loc[df.site_no.isin(md.site_no)]
+        df = df.loc[df.line_id.isin(include_line_ids)]
     
     # convert units
     # ensure that flow values are numeric (may be objects if taken directly from NWIS)
@@ -405,7 +407,14 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
                                      metadata_crs=dest_crs)
 
     # data columns
-    data_cols = ['site_no', 'datetime'] + flow_data_columns + ['category']
+    data_cols = ['site_no', 'line_id', 'datetime'] + flow_data_columns + ['category']
+    #if 'line_id' in md.columns and 'line_id' not in df.columns:
+    #    # only map line_ids to data if there are more site numbers
+    #    # implying that no site number maps to more than one line_id
+    #    if len(set(df.site_no)) >= len(set(df.line_id)):
+    #        ids = dict(zip(md['site_no'], md['line_id']))
+    #    df['line_id'] = [ids[sn] for sn in df['site_no']]
+    data_cols = [c for c in data_cols if c in df.columns]
     df = df[data_cols]
 
     md.index = md['site_no']
