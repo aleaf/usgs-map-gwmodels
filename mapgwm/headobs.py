@@ -448,6 +448,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     well_info['end_dt'] = groups.datetime.max()
     well_info.drop(labels=['year', 'month'], axis=1, inplace=True)
     well_info['site_no'] = well_info.index
+    well_info['n'] = groups.datetime.count()
 
     # project x, y to model crs
     x_pr, y_pr = project((well_info.lon.values, well_info.lat.values), source_crs, dest_crs)

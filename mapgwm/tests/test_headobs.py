@@ -38,6 +38,7 @@ def test_preprocess_headobs(test_output_folder, test_data_path):
     assert not any(set(data.obsprefix).difference(metadata.obsprefix))
     assert not any({'site_no', 'x', 'y', 'screen_botm', 'screen_top',
                     'category', 'group'}.difference(metadata.columns))
+    assert metadata['n'].dtype == np.integer
     # unit conversion was applied evenly
     assert np.allclose(data['head'].values, data.last_head.values, rtol=0.1)
     assert np.allclose(metadata['head'].values, metadata.last_head.values, rtol=0.1)
