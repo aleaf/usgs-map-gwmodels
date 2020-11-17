@@ -32,17 +32,14 @@ def assign_geographic_obsgroups(metadata, geographic_groups, geographic_groups_c
             if isinstance(geographic_groups, str) or isinstance(geographic_groups, Path):
                 geographic_groups = [geographic_groups]
             for item in reversed(geographic_groups):
-                try:
-                    group_info = shp2df(str(item), dest_crs=metadata_crs)
-                    groups = dict(zip(group_info[geographic_groups_col],
-                                      group_info['geometry']))
-                    geo_group_dict.update(groups)
-                except:
-                    pass
+                group_info = shp2df(str(item), dest_crs=metadata_crs)
+                groups = dict(zip(group_info[geographic_groups_col],
+                                  group_info['geometry']))
+                geo_group_dict.update(groups)
         for group_name, polygon in geo_group_dict.items():
             within = [g.within(polygon) for g in md.geometry]
-            md.loc[within, 'group'] = group_name
-    return metadata
+            md.loc[within, 'geo_group'] = group_name
+    return md
 
 
 def cull_data_to_active_area(data, active_area, active_area_id_column,

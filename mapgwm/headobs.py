@@ -418,13 +418,15 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     unit_conversion = convert_length_units(data_length_units, model_length_units)
 
     # outputs
-    outpath, filename = os.path.split(outfile)
-    makedirs(outpath)
-    outname, ext = os.path.splitext(outfile)
-    out_info_csvfile = outname + '_info.csv'
-    out_data_csvfile = outfile
-    out_plot = os.path.join(outpath, 'open_interval_lengths.pdf')
-    out_shapefile = outname + '_info.shp'
+    out_plot = None
+    if outfile is not None:
+        outpath, filename = os.path.split(outfile)
+        makedirs(outpath)
+        outname, ext = os.path.splitext(outfile)
+        out_info_csvfile = outname + '_info.csv'
+        out_data_csvfile = outfile
+        out_plot = os.path.join(outpath, 'open_interval_lengths.pdf')
+        out_shapefile = outname + '_info.shp'
 
     # set the starting and ending dates here
     stdate = pd.Timestamp(start_date)
@@ -538,12 +540,13 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
                                             metadata_crs=dest_crs)
 
     # save out the results
-    df2shp(well_info.drop(['x', 'y'], axis=1),
-           out_shapefile, index=False, crs=dest_crs)
-    print('writing {}'.format(out_info_csvfile))
-    well_info.drop('geometry', axis=1).to_csv(out_info_csvfile, index=False, float_format='%.2f')
-    print('writing {}'.format(out_data_csvfile))
-    df.to_csv(out_data_csvfile, index=False, float_format='%.2f')
+    if outfile is not None:
+        df2shp(well_info.drop(['x', 'y'], axis=1),
+               out_shapefile, index=False, crs=dest_crs)
+        print('writing {}'.format(out_info_csvfile))
+        well_info.drop('geometry', axis=1).to_csv(out_info_csvfile, index=False, float_format='%.2f')
+        print('writing {}'.format(out_data_csvfile))
+        df.to_csv(out_data_csvfile, index=False, float_format='%.2f')
     return df, well_info
 
 
@@ -617,16 +620,17 @@ def fill_well_open_intervals(well_info, out_plot='open_interval_lengths.pdf'):
     # these well_info only have well_depth values
     # make a histogram of open interval length
     open_interval_length = well_info['screen_top'] - well_info['screen_botm']
-    ax = open_interval_length.hist(bins=100)
-    ax.set_xlabel('Well open interval length, in feet')
-    ax.set_ylabel('Count')
-    ax.text(.3, .7, 'median: {:.0f}\nmean: {:.0f}\nmax: {:.0f}\nmin:  {:.0f}'.format(open_interval_length.median(),
-                                                                                     open_interval_length.mean(),
-                                                                                     open_interval_length.max(),
-                                                                                     open_interval_length.min()
-                                                                                     ), transform=ax.transAxes)
-    plt.savefig(out_plot)
-    plt.close()
+    if out_plot is not None:
+        ax = open_interval_length.hist(bins=100)
+        ax.set_xlabel('Well open interval length, in feet')
+        ax.set_ylabel('Count')
+        ax.text(.3, .7, 'median: {:.0f}\nmean: {:.0f}\nmax: {:.0f}\nmin:  {:.0f}'.format(open_interval_length.median(),
+                                                                                         open_interval_length.mean(),
+                                                                                         open_interval_length.max(),
+                                                                                         open_interval_length.min()
+                                                                                         ), transform=ax.transAxes)
+        plt.savefig(out_plot)
+        plt.close()
     median = open_interval_length.median()
     ind = well_info.category == 2
     well_info.loc[ind, 'top'] = well_info.loc[ind, 'well_botm'] + median
