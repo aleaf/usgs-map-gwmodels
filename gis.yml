@@ -1,0 +1,44 @@
+name: mapgwm
+channels:
+- conda-forge
+- defaults
+dependencies:
+- python
+- jupyter 
+- jupyterlab
+- notebook
+- pandas
+- geopandas 
+- numba
+- xarray
+- pyarrow
+- dask
+- xlrd
+- scipy
+- matplotlib 
+- gdal 
+- fiona 
+- shapely 
+- rasterio
+- rasterstats
+- pyproj>=2.0
+- cartopy 
+- descartes 
+- netcdf4 
+- rtree 
+- nose 
+- lxml
+- pyshp
+- pytest
+- nbstripout
+- pyyaml
+- pylint
+- rope  # for refactoring
+- pip
+- pip:
+  - pytest-dependency
+  - git+git://github.com/modflowpy/flopy@develop
+  - gis-utils
+  - git+git://github.com/modflowpy/modflow-export@develop
+  - git+git://github.com/modflowpy/sfrmaker@develop
+  - git+git://github.com/modflowpy/modflow-setup@develop
