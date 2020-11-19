@@ -12,10 +12,11 @@
    Authors should add a method for any datasets
    added to tests/data/
 """
-
-
+from pathlib import Path
+import numpy as np
 import pandas as pd
 import os
+from mapgwm.headobs import preprocess_headobs, get_data
 
 
 def get_header_length(sitefile, col0='SITE_BADGE'):
@@ -55,8 +56,7 @@ def compare_lists(list1, name1, list2, name2):
     return passed
 
 
-
-def check_headobs(new_data_file, new_meta_file, path_to_tests='.'):
+def check_headobs_header(new_data_file, new_meta_file, path_to_tests='.'):
     """headobs.py reads in data from Will Asquith as two csv files
        datafile - csv with observed monthly heads
        metadata - csv with site characteristics
@@ -100,11 +100,52 @@ def check_headobs(new_data_file, new_meta_file, path_to_tests='.'):
     
     return (pass1 and pass2)
 
+
+def check_preprocess_headobs_input(data_file, metadata_file, output_path='.'):
+    test_data_path = Path(__file__).parent / 'tests/data'
+    geographic_groups = [test_data_path / 'extents/CompositeHydrographArea.shp',
+                         test_data_path / 'extents/MAP_generalized_regions.shp'
+                         ]
+    output_path = Path(output_path)
+    outfile = output_path / 'preprocessed_monthly_output.csv'
+    data, metadata = get_data(data_file=data_file, metadata_files=metadata_file)
+    preproc_data, preproc_metadata = preprocess_headobs(data, metadata,
+                                        head_data_columns=['head', 'last_head'],
+                                        data_length_units='feet',
+                                        active_area=test_data_path / 'extents/ms_delta.shp',
+                                        source_crs=4269, dest_crs=5070,
+                                        start_date='1998-04-01',
+                                        geographic_groups=geographic_groups,
+                                        geographic_groups_col='obsgroup',
+                                        outfile=outfile)
+    assert outfile.exists()
+    assert Path(outfile.parent, outfile.stem + '_info.csv').exists()
+    assert Path(outfile.parent, outfile.stem + '_info.shp').exists()
+    assert np.all(preproc_data.columns ==
+                  ['site_no', 'datetime', 'head', 'last_head', 'head_std', 'n', 'obsprefix'])
+    assert not any(set(preproc_data.obsprefix).difference(preproc_metadata.obsprefix))
+    assert not any({'site_no', 'x', 'y', 'screen_botm', 'screen_top',
+                    'category', 'group'}.difference(preproc_metadata.columns))
+    assert preproc_metadata['n'].dtype == np.integer
+    # unit conversion was applied evenly
+    preproc_data['head_diffs'] = np.abs(preproc_data['head'].values - preproc_data.last_head.values)
+    preproc_data.sort_values(by='head_diffs', ascending=False, inplace=True)
+    print(preproc_data.head(10))
+    assert np.allclose(preproc_data['head'].values, preproc_data.last_head.values, atol=22)
+    preproc_metadata['head_diffs'] = np.abs(preproc_metadata['head'].values - preproc_metadata.last_head.values)
+    preproc_metadata.sort_values(by='head_diffs', ascending=False, inplace=True)
+    print(preproc_metadata.head(10))
+    assert np.allclose(preproc_metadata['head'].values, preproc_metadata.last_head.values, atol=22)
+
+    # no negative open intervals
+    assert not np.any((preproc_metadata.screen_top - preproc_metadata.screen_botm) < 0)
+
+
 if __name__ == '__main__':
     data_file = os.path.join('tests', 'data', 'headobs', 'GW_monthly_stats_test.txt')
     metadata_file = os.path.join('tests', 'data', 'headobs', 'GW_monthly_meta_test.txt')
 
-    check = check_headobs(data_file, metadata_file)
+    check = check_headobs_header(data_file, metadata_file)
     if check:
         print('PASSED')
     else:
