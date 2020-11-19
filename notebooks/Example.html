@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post43.dev0+g18fa969 documentation</title>
+  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post46.dev0+g47c7550 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post43.dev0+g18fa969
+                0.post46.dev0+g47c7550
               </div>
             
           
@@ -506,7 +506,7 @@ div.rendered_html tbody tr:hover {
 </li>
 </ul>
 <p><a class="reference external" href="https://aleaf.github.io/usgs-map-gwmodels/references.html">Cited References</a></p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -520,16 +520,6 @@ div.rendered_html tbody tr:hover {
 <span class="kn">from</span> <span class="nn">mfsetup.grid</span> <span class="kn">import</span> <span class="n">MFsetupGrid</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/travis/miniconda/envs/test/lib/python3.8/site-packages/mfsetup/mfmodel.py:57: UserWarning: sfr: sfrmaker_options: add_outlet functionality requires sfrmaker &gt;= 0.6
-Please pip install --upgrade sfrmaker
-  warnings.warn(&#39;sfr: sfrmaker_options: add_outlet functionality requires sfrmaker &gt;= 0.6&#39;
-</pre></div></div>
 </div>
 <div class="section" id="Define-some-global-inputs">
 <h2>Define some global inputs<a class="headerlink" href="#Define-some-global-inputs" title="Permalink to this headline">¶</a></h2>
@@ -653,10 +643,10 @@ finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mdwy_surf.tif...
 finished in 0.02s
 computing cell thicknesses...
-finished in 5.81s
+finished in 6.20s
 
 computing cell thicknesses...
-finished in 13.06s
+finished in 13.75s
 
 wrote output/botm_array/model_top.tif
 wrote output/botm_array/botm0.tif
@@ -790,7 +780,7 @@ wrote output/swb_monthly_means.nc
 took 0.13s
 
 checking compressed file
-finished in 0.14s
+finished in 0.15s
 
 </pre></div></div>
 </div>
@@ -1370,9 +1360,11 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <th>geometry</th>
       <th>obsprefix</th>
       <th>group</th>
+      <th>geo_group</th>
     </tr>
     <tr>
       <th>site_no</th>
+      <th></th>
       <th></th>
       <th></th>
       <th></th>
@@ -1400,6 +1392,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>POINT (496047.3635373298 1262247.29440906)</td>
       <td>07288000</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>07288280</th>
@@ -1414,6 +1407,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>POINT (489208.7293628419 1239410.03140523)</td>
       <td>07288280</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>07288555</th>
@@ -1428,6 +1422,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>POINT (509254.5295362755 1233597.934250077)</td>
       <td>07288555</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>07288650</th>
@@ -1442,6 +1437,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>POINT (472484.7746117859 1196943.873882911)</td>
       <td>07288650</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>07288700</th>
@@ -1456,6 +1452,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>POINT (492594.6611692713 1195806.16802324)</td>
       <td>07288700</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
   </tbody>
 </table>
@@ -1648,7 +1645,6 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <th>dec_coord_datum_cd</th>
       <th>district_cd</th>
       <th>...</th>
-      <th>qw_count_nu</th>
       <th>sv_begin_date</th>
       <th>sv_end_date</th>
       <th>sv_count_nu</th>
@@ -1658,6 +1654,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <th>n</th>
       <th>obsprefix</th>
       <th>group</th>
+      <th>geo_group</th>
     </tr>
     <tr>
       <th>site_no</th>
@@ -1698,7 +1695,6 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>NAD83</td>
       <td>28</td>
       <td>...</td>
-      <td>5.0</td>
       <td>1976-08-18</td>
       <td>2015-09-08</td>
       <td>132.0</td>
@@ -1708,6 +1704,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>612.0</td>
       <td>07280400</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>07288000</th>
@@ -1722,7 +1719,6 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>NAD83</td>
       <td>28</td>
       <td>...</td>
-      <td>347.0</td>
       <td>1995-05-18</td>
       <td>2020-08-11</td>
       <td>29.0</td>
@@ -1732,6 +1728,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>884.0</td>
       <td>07288000</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>07288280</th>
@@ -1746,7 +1743,6 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>NAD83</td>
       <td>28</td>
       <td>...</td>
-      <td>45.0</td>
       <td>1992-10-06</td>
       <td>2020-06-30</td>
       <td>266.0</td>
@@ -1756,6 +1752,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>4633.0</td>
       <td>07288280</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>07288650</th>
@@ -1770,7 +1767,6 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>NAD83</td>
       <td>28</td>
       <td>...</td>
-      <td>748.0</td>
       <td>1953-11-10</td>
       <td>2020-06-30</td>
       <td>233.0</td>
@@ -1780,6 +1776,7 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>4592.0</td>
       <td>07288650</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>07288700</th>
@@ -1794,7 +1791,6 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>NAD83</td>
       <td>28</td>
       <td>...</td>
-      <td>296.0</td>
       <td>1980-07-23</td>
       <td>2011-02-15</td>
       <td>35.0</td>
@@ -1804,10 +1800,11 @@ reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
       <td>NaN</td>
       <td>07288700</td>
       <td>fluxes</td>
+      <td>delta</td>
     </tr>
   </tbody>
 </table>
-<p>5 rows × 46 columns</p>
+<p>5 rows × 47 columns</p>
 </div></div>
 </div>
 </div>
@@ -2184,7 +2181,6 @@ writing output/preprocessed_monthly_headobs.csv
       <th>well_depth</th>
       <th>well_el</th>
       <th>...</th>
-      <th>site_no</th>
       <th>x</th>
       <th>y</th>
       <th>geometry</th>
@@ -2194,6 +2190,7 @@ writing output/preprocessed_monthly_headobs.csv
       <th>orig_sctop</th>
       <th>obsprefix</th>
       <th>group</th>
+      <th>geo_group</th>
     </tr>
     <tr>
       <th>site_no</th>
@@ -2234,7 +2231,6 @@ writing output/preprocessed_monthly_headobs.csv
       <td>115.0</td>
       <td>26.822400</td>
       <td>...</td>
-      <td>USGS:323340091085201</td>
       <td>452922.427646</td>
       <td>1.065894e+06</td>
       <td>POINT (452922.4276462687 1065893.772968342)</td>
@@ -2244,6 +2240,7 @@ writing output/preprocessed_monthly_headobs.csv
       <td>NaN</td>
       <td>USGS:323340091085201</td>
       <td>heads</td>
+      <td>boeuf</td>
     </tr>
     <tr>
       <th>USGS:325121091093801</th>
@@ -2258,7 +2255,6 @@ writing output/preprocessed_monthly_headobs.csv
       <td>90.0</td>
       <td>31.394400</td>
       <td>...</td>
-      <td>USGS:325121091093801</td>
       <td>450055.327781</td>
       <td>1.098664e+06</td>
       <td>POINT (450055.3277808698 1098664.367787851)</td>
@@ -2268,6 +2264,7 @@ writing output/preprocessed_monthly_headobs.csv
       <td>NaN</td>
       <td>USGS:325121091093801</td>
       <td>heads</td>
+      <td>boeuf</td>
     </tr>
     <tr>
       <th>USGS:332915091025901</th>
@@ -2282,7 +2279,6 @@ writing output/preprocessed_monthly_headobs.csv
       <td>108.0</td>
       <td>39.624000</td>
       <td>...</td>
-      <td>USGS:332915091025901</td>
       <td>456688.018145</td>
       <td>1.169617e+06</td>
       <td>POINT (456688.0181453624 1169616.855672613)</td>
@@ -2292,6 +2288,7 @@ writing output/preprocessed_monthly_headobs.csv
       <td>15.24</td>
       <td>USGS:332915091025901</td>
       <td>heads</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>USGS:333411090482201</th>
@@ -2306,7 +2303,6 @@ writing output/preprocessed_monthly_headobs.csv
       <td>120.0</td>
       <td>38.737032</td>
       <td>...</td>
-      <td>USGS:333411090482201</td>
       <td>478637.876037</td>
       <td>1.179983e+06</td>
       <td>POINT (478637.8760365412 1179983.321431023)</td>
@@ -2316,6 +2312,7 @@ writing output/preprocessed_monthly_headobs.csv
       <td>NaN</td>
       <td>USGS:333411090482201</td>
       <td>heads</td>
+      <td>delta</td>
     </tr>
     <tr>
       <th>USGS:333633090230701</th>
@@ -2330,7 +2327,6 @@ writing output/preprocessed_monthly_headobs.csv
       <td>115.0</td>
       <td>38.100000</td>
       <td>...</td>
-      <td>USGS:333633090230701</td>
       <td>517102.401121</td>
       <td>1.186603e+06</td>
       <td>POINT (517102.4011205511 1186603.416371753)</td>
@@ -2340,10 +2336,11 @@ writing output/preprocessed_monthly_headobs.csv
       <td>15.24</td>
       <td>USGS:333633090230701</td>
       <td>heads</td>
+      <td>delta_cha</td>
     </tr>
   </tbody>
 </table>
-<p>5 rows × 24 columns</p>
+<p>5 rows × 25 columns</p>
 </div></div>
 </div>
 </div>
@@ -2563,8 +2560,8 @@ wrote output/iwum_m3.csv
 
 <span class="c1"># raster defining the tops and bottoms of non-agricultural public supply production intervals</span>
 <span class="c1"># from Knierem</span>
-<span class="n">production_zones</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mrva&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MCAQP_top.tif&#39;</span><span class="p">,</span>
-                             <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MCAQP_bot.tif&#39;</span><span class="p">,</span>
+<span class="n">production_zones</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;mrva&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MRVA_top.tif&#39;</span><span class="p">,</span>
+                             <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MRVA_bot.tif&#39;</span><span class="p">,</span>
                              <span class="p">),</span>
                     <span class="s1">&#39;mcaq&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MCAQP_top.tif&#39;</span><span class="p">,</span>
                              <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;swuds/rasters/pz_MCAQP_bot.tif&#39;</span><span class="p">,</span>
@@ -2606,9 +2603,9 @@ reading ../mapgwm/tests/data/extents/ms_delta.shp...
 Culling 831 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 reading data from ../mapgwm/tests/data/rasters/dem_mean_elevs.tif...
 finished in 0.06s
-reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
+reading data from ../mapgwm/tests/data/swuds/rasters/pz_MRVA_top.tif...
 finished in 0.00s
-reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_bot.tif...
+reading data from ../mapgwm/tests/data/swuds/rasters/pz_MRVA_bot.tif...
 finished in 0.00s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
 finished in 0.00s
@@ -2826,9 +2823,9 @@ reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
 Culling 405 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
-finished in 0.12s
+finished in 0.13s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_bot.tif...
-finished in 0.12s
+finished in 0.14s
 wrote output/preprocessed_te_data.csv
 writing output/preprocessed_te_data.shp...
 </pre></div></div>
@@ -2873,8 +2870,8 @@ writing output/preprocessed_te_data.shp...
       <th>screen_botm</th>
       <th>q</th>
       <th>geometry</th>
-      <th>site_name</th>
       <th>source_name</th>
+      <th>site_name</th>
     </tr>
   </thead>
   <tbody>
@@ -2888,8 +2885,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>L L Wilkins</td>
       <td>Wells</td>
+      <td>L L Wilkins</td>
     </tr>
     <tr>
       <th>2008-02-01</th>
@@ -2901,8 +2898,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>L L Wilkins</td>
       <td>Wells</td>
+      <td>L L Wilkins</td>
     </tr>
     <tr>
       <th>2008-03-01</th>
@@ -2914,8 +2911,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>L L Wilkins</td>
       <td>Wells</td>
+      <td>L L Wilkins</td>
     </tr>
     <tr>
       <th>2008-04-01</th>
@@ -2927,8 +2924,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>L L Wilkins</td>
       <td>Wells</td>
+      <td>L L Wilkins</td>
     </tr>
     <tr>
       <th>2008-05-01</th>
@@ -2940,8 +2937,8 @@ writing output/preprocessed_te_data.shp...
       <td>-162.649514</td>
       <td>0.0</td>
       <td>POINT (497139.1508711056 1249816.468462982)</td>
-      <td>L L Wilkins</td>
       <td>Wells</td>
+      <td>L L Wilkins</td>
     </tr>
   </tbody>
 </table>
@@ -3009,7 +3006,7 @@ Text(0, 0.5, &#39;Pumpage, in m$^3$/day&#39;)
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Oct 20, 2020.
+        Last updated on Nov 19, 2020.
       </span>
 
     </p>

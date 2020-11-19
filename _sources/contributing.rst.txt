@@ -1,4 +1,4 @@
-Contributing to usgs-map-gwmodels
+Contributing to USGS-MAP-gwmodels
 ================================================================================================
 
 (Note: much of this page was cribbed from the `geopandas <https://geopandas.org/>`_ project,
