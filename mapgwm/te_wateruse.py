@@ -270,6 +270,9 @@ def preprocess_te_wateruse(data,
         outfile = Path(outfile)
         df_monthly.to_csv(outfile, index=False, float_format='%g')
         print('wrote {}'.format(outfile))
+
+        # write only unique pumping values to shapefile
+        to_shapefile = df_monthly.groupby(['site_no', 'q']).first().reset_index()
         shapefile = outfile.with_suffix('.shp')
-        df2shp(df_monthly, shapefile, crs=dest_crs)
+        df2shp(to_shapefile, shapefile, crs=dest_crs)
     return df_monthly

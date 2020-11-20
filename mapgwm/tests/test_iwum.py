@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 import pytest
 from mapgwm.iwum import preprocess_iwum_pumping, plot_iwum_output
@@ -25,6 +26,15 @@ def test_preprocess_iwum_pumping(test_data_path, test_output_folder, ncfile):
                                       estimated_production_surface_units='meters',
                                       model_length_units='meters',
                                       outfile=outfile)
+    assert np.all(results.screen_top >= results.screen_botm)
+    assert np.all(results.columns ==
+                  ['site_no', 'x', 'y', 'screen_top', 'screen_botm', 'start_datetime',
+                   'end_datetime', 'q'])
+    assert outfile.exists()
+    check_cols = ['q', 'x', 'y', 'start_datetime', 'end_datetime',
+                  'screen_top', 'screen_botm', 'site_no']
+    for col in check_cols:
+        assert not results[col].isnull().any()
 
 
 def test_plot_iwum_output(ncfile, test_output_folder):

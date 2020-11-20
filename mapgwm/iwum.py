@@ -169,14 +169,14 @@ def preprocess_iwum_pumping(ncfile,
         Columns:
 
         ============== ================================================
-        iwum_loc       index position of pumping rate in ncfile grid
+        site_no        index position of pumping rate in ncfile grid
         x              x-coordinate in `dest_crs`
         y              y-coordinate in `dest_crs`
         start_datetime start date of pumping period
         end_datetime   end date of pumping period
         screen_top     screen top elevation, in `model_length_units`
         screen_botm    screen bottom elevation, in `model_length_units`
-        flux_m3d       pumping rate, in model units
+        q              pumping rate, in model units
         geometry       shapely Point object representing location
         ============== ================================================
 
@@ -195,7 +195,7 @@ def preprocess_iwum_pumping(ncfile,
     length_conversion = convert_volume_units(nc_length_units,
                                              model_length_units) ** 3
     unit_suffix = vol_suffix[model_length_units] + 'd'
-    flux_col = 'flux_{}'.format(unit_suffix)  # output field name for fluxes
+    flux_col = 'q'  # 'flux_{}'.format(unit_suffix)  # output field name for fluxes
 
     # get top/botm elevations
     est_screen_top = None
@@ -211,6 +211,15 @@ def preprocess_iwum_pumping(ncfile,
                                                  points_crs=nc_crs)
         est_screen_botm *= surf_unit_conversion
 
+        # in any places where screen top is less than the screen botm,
+        # set both at the mean
+        loc = est_screen_top < est_screen_botm
+        means = np.mean([est_screen_top, est_screen_botm], axis=0)
+        est_screen_top[loc] = means[loc]
+        est_screen_botm[loc] = means[loc]
+        print(f'Reset screen top and bottom to mean elevation at {loc.ravel().sum()} '
+              f'locations where screen top was < screen bottom')
+
     dfs = []
     times = pd.DatetimeIndex(ds[time_variable].loc[start_date:end_date].values)
     for n, period_start_date in enumerate(times):
@@ -225,7 +234,7 @@ def preprocess_iwum_pumping(ncfile,
             arr *= -1
 
         # set up a dataframe
-        data = {'iwum_loc': np.arange(ds_x.size),
+        data = {'site_no': np.arange(ds_x.size),
                 'x': ds_x.ravel(),
                 'y': ds_y.ravel(),
                  }
@@ -266,18 +275,25 @@ def preprocess_iwum_pumping(ncfile,
     df = pd.concat(dfs)
 
     # project the data to a destination crs, if provided
-    x_pr, y_pr = project((df.x.values, df.y.values), nc_crs, dest_crs)
-    df['x'], df['y'] = x_pr, y_pr
-    df['geometry'] = [Point(x, y) for x, y in zip(x_pr, y_pr)]
+    # make a separate metadata dataframe with 1 row per location
+    # to avoid redundant operations
+    metadata = df.groupby('site_no').first().reset_index()[['site_no', 'x', 'y']]
+    metadata.index = metadata['site_no']
+    x_pr, y_pr = project((metadata.x.values, metadata.y.values), nc_crs, dest_crs)
+    metadata['x'], metadata['y'] = x_pr, y_pr
+    metadata['geometry'] = [Point(x, y) for x, y in zip(x_pr, y_pr)]
 
     # cull the data to the model area, if provided
     if active_area is not None:
-        df = cull_data_to_active_area(df, active_area,
+        df, metadata = cull_data_to_active_area(df, active_area,
                                       active_area_id_column,
                                       active_area_feature_id,
-                                      data_crs=dest_crs)
+                                      data_crs=dest_crs, metadata=metadata)
 
+    # update data with x,y values projected in metadata
+    df['x'] = metadata.loc[df.site_no.values, 'x']
+    df['y'] = metadata.loc[df.site_no.values, 'y']
     if outfile is not None:
-        df.drop('geometry', axis=1).to_csv(outfile, index=False, float_format='%g')
+        df.to_csv(outfile, index=False, float_format='%g')
     print('wrote {}'.format(outfile))
     return df

@@ -120,18 +120,18 @@ class Swuds:
             default screen length in meters
         locations: dict
             dictionary of x,y locations keyed by SITE_NO, added in reproject method
-        depths_m: dict
+        depths: dict
             dictionary of depth keyed by SITE_NO
-        well_elevations_m: dict
+        well_elevations: dict
             dictionary of well elevations keyed by SITE_NO
-        prod_zone_top_m: defaultdict(dict)
+        prod_zone_top: defaultdict(dict)
             defaultdict with production zone top (in meters) for each well
             First key is the production zone name, and second is the SITE_NO
-            For example  self.prod_zone_top_m['lower_claiborne']['WEL001'] = top_elev
-        prod_zone_bot_m: defaultdict(dict)
+            For example  self.prod_zone_top['lower_claiborne']['WEL001'] = top_elev
+        prod_zone_bot: defaultdict(dict)
             defaultdict with production zone bottom (in meters) for each well
             First key is the production zone name, and second is the SITE_NO
-            For example  self.prod_zone_bot_m['lower_claiborne']['WEL001'] = bot_elev
+            For example  self.prod_zone_bot['lower_claiborne']['WEL001'] = bot_elev
         
         """
 
@@ -149,8 +149,8 @@ class Swuds:
         self.data_length_units = data_length_units
         self.data_volume_units = data_volume_units
         self.model_length_units = model_length_units
-        self.prod_zone_top_m = defaultdict(dict)
-        self.prod_zone_bot_m = defaultdict(dict)
+        self.prod_zone_top = defaultdict(dict)
+        self.prod_zone_bot = defaultdict(dict)
         self.locations = dict()
         self.site_no_col = site_no_col
 
@@ -192,8 +192,8 @@ class Swuds:
 
         # make dictionaries
         length_conversion = convert_length_units(data_length_units, model_length_units)
-        self.depths_m = dict(list(zip(self.df['SITE_NO'], self.df['SCREEN_BOT'] * length_conversion)))
-        self.well_elevations_m = dict(zip(self.df['SITE_NO'], self.df['FROM_ALT_VA'] * length_conversion))
+        self.depths = dict(list(zip(self.df['SITE_NO'], self.df['SCREEN_BOT'] * length_conversion)))
+        self.well_elevations = dict(zip(self.df['SITE_NO'], self.df['FROM_ALT_VA'] * length_conversion))
 
         self.sort_sites(primarysort=site_no_col)
         # Best to reproject on init so that we know the points are in the dest_crs
@@ -290,7 +290,7 @@ class Swuds:
         elevs *= convert_length_units(dem_units, self.model_length_units)
         self.df.loc[no_elev, 'FROM_ALT_VA'] = elevs
         assert not self.df['FROM_ALT_VA'].isnull().any()
-        self.well_elevations_m = dict(zip(self.df['SITE_NO'], self.df['FROM_ALT_VA']))
+        self.well_elevations = dict(zip(self.df['SITE_NO'], self.df['FROM_ALT_VA']))
 
     def make_production_zones(self, production_zones, default_elevation_units='feet'):
         """ Make dictionary attributes for production zones.
@@ -328,10 +328,10 @@ class Swuds:
             length_unit_conversion = convert_length_units(units, self.model_length_units)
             top_elevations = raster.get_values_at_points(top_raster,
                                                  x=x, y=y) * length_unit_conversion
-            self.prod_zone_top_m[name] = dict(zip(self.df[key], top_elevations))
+            self.prod_zone_top[name] = dict(zip(self.df[key], top_elevations))
             botm_elevations = raster.get_values_at_points(botm_raster,
                                                           x=x, y=y) * length_unit_conversion
-            self.prod_zone_bot_m[name] = dict(zip(self.df[key], botm_elevations))
+            self.prod_zone_bot[name] = dict(zip(self.df[key], botm_elevations))
             self.df['{}_top'.format(name)] = top_elevations
             self.df['{}_botm'.format(name)] = botm_elevations
 
@@ -424,9 +424,9 @@ class Swuds:
                                                            self.model_length_units)
 
             group['site_no'] = site_no
-            group['well_elev_m'] = self.well_elevations_m[site_no]
-            group['depth_m'] = self.depths_m[site_no]
-            well_botm_depth = self.well_elevations_m[site_no] - self.depths_m[site_no]
+            group['well_elev'] = self.well_elevations[site_no]
+            group['depth'] = self.depths[site_no]
+            well_botm_depth = self.well_elevations[site_no] - self.depths[site_no]
             group['x'] = np.nanmin(group['x'])
             group['y'] = np.nanmin(group['y'])
 
@@ -434,42 +434,44 @@ class Swuds:
             # well does not fall in a zone, or if the dictionary is empty; then
             # the production zone is assigned 'unnamed'
             production_zone = 'unnamed'
-            for prod_name in self.prod_zone_top_m.keys():
-                prod_zone_top = self.prod_zone_top_m[prod_name][site_no]
-                prod_zone_bot = self.prod_zone_bot_m[prod_name][site_no]
+            for prod_name in self.prod_zone_top.keys():
+                prod_zone_top = self.prod_zone_top[prod_name][site_no]
+                prod_zone_bot = self.prod_zone_bot[prod_name][site_no]
                 if np.isnan(prod_zone_top) or np.isnan(prod_zone_bot):  # missing zone
-                    group['screen_bot_m'] = self.well_elevations_m[site_no] - self.depths_m[site_no]
-                    group['screen_top_m'] = self.well_elevations_m[site_no] - self.depths_m[site_no] + self.default_screen_len
+                    group['screen_bot'] = self.well_elevations[site_no] - self.depths[site_no]
+                    group['screen_top'] = self.well_elevations[site_no] - self.depths[site_no] + self.default_screen_len
                     group['open_int_method'] = 'well depth'
                 else:
                     if well_botm_depth < prod_zone_top and well_botm_depth > prod_zone_bot:
                         production_zone = prod_name
-                        group['screen_bot_m'] = prod_zone_bot
-                        group['screen_top_m'] = prod_zone_top
+                        group['screen_bot'] = prod_zone_bot
+                        group['screen_top'] = prod_zone_top
                         group['open_int_method'] = 'production zone'
                     else:
-                        group['screen_bot_m'] = self.well_elevations_m[site_no] - self.depths_m[site_no]
-                        group['screen_top_m'] = self.well_elevations_m[site_no] - self.depths_m[site_no] + self.default_screen_len
+                        group['screen_bot'] = self.well_elevations[site_no] - self.depths[site_no]
+                        group['screen_top'] = self.well_elevations[site_no] - self.depths[site_no] + self.default_screen_len
                         group['open_int_method'] = 'well depth'
             group['production_zone'] = production_zone
 
             # add aquifer name
             group['aquifer_name'] = self.aquifer_names.get(group["FROM_AQFR_CD"].values[0], 'unnamed')
 
-            cols = ['site_no', 'q', 'q_monthly', 'month', 'well_elev_m', 'depth_m',
-                    'screen_bot_m', 'screen_top_m', 'x', 'y']
+            cols = ['site_no', 'q', 'q_monthly', 'month', 'well_elev', 'depth',
+                    'screen_bot', 'screen_top', 'x', 'y']
             all_groups.append(group[cols])
 
         self.df = pd.concat(all_groups)
-        self.df['datetime'] = self.df.index
+        self.df['start_datetime'] = self.df.index  # start date of each pumping period
         if outfile is not None:
             outfile = Path(outfile)
             self.df.to_csv(outfile, index=False)
             print('processed SWUDS data written to {0} and in dataframe attribute'.format(outfile))
             self.df['geometry'] = [Point(x, y) for x, y in zip(self.df.x,
                                                                self.df.y)]
+            # write only unique pumping values to shapefile
+            to_shapefile = self.df.groupby(['site_no', 'q']).first().reset_index()
             shapefile = outfile.with_suffix('.shp')
-            df2shp(self.df, shapefile, crs=self.dest_crs)
+            df2shp(to_shapefile, shapefile, crs=self.dest_crs)
 
     @classmethod
     def from_yaml(cls, yamlfile):

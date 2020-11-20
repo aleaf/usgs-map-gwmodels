@@ -41,7 +41,6 @@ def test_preprocess_swuds(test_data_path, test_output_folder):
                                             results.model_length_units), 3785.4, atol=0.02)
     assert outfile.exists()
     assert outfile.with_suffix('.shp').exists()
-    check_cols = ['q', 'screen_top_m', 'screen_bot_m', 'x', 'y', 'datetime', 'site_no']
+    check_cols = ['q', 'screen_top', 'screen_bot', 'x', 'y', 'start_datetime', 'site_no']
     for col in check_cols:
         assert not results.df[col].isnull().any()
-    j=2
