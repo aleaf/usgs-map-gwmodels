@@ -61,7 +61,7 @@ def get_layer(botm_array, i, j, elev):
 def plot_slice(layer_elevations, property_data=None,
                row=0, column=slice(None),
                voxel_start_layer=0, voxel_zones=None, cmap='copper',
-               voxel_cmap='viridis', unit_labels=None):
+               voxel_cmap='viridis', unit_labels=None, add_surfaces=None):
     """Plot a single cross section slice
 
     Parameters
@@ -176,12 +176,20 @@ def plot_slice(layer_elevations, property_data=None,
             data = np.ma.masked_array(data, mask=data_mask)
             pcm2 = ax.pcolormesh(x, z, voxel_data, alpha=0.5, cmap=voxel_cmap,
                                  vmin=voxel_vmin, vmax=voxel_vmax)
+            # add separate axis for colorbar to control position
             fig.colorbar(pcm2, label='Resistivity facies class (in order of increasing resistivity)',
-                         pad=0.1, shrink=0.5, orientation='horizontal',
+                         pad=0.1, shrink=0.3,
+                         orientation='horizontal',
                          ticks=voxel_zones[::2].astype(int),
                          )
         pcm = ax.pcolormesh(x, z, data, alpha=0.5, cmap='copper',
                             vmin=vmin, vmax=vmax)
+
+    if add_surfaces is not None:
+        for label, array2D in add_surfaces.items():
+            ax.plot(array2D[row, column], c='k', label=label)
+        surfaces_lg = ax.legend(loc='lower right', bbox_to_anchor=(1, 0))
+        ax.add_artist(surfaces_lg)
 
     # plot the layer bottom elevations
     plot_layer = np.any(thicknesses > 0, axis=1)
@@ -203,11 +211,11 @@ def plot_slice(layer_elevations, property_data=None,
 
         if property_data is not None:
             # make a discrete colors legend
-            title = "MERAS 2.0\nFramework Units"
+            legend_title = "MERAS 2.0\nFramework Units"
             lg = add_discrete_colors_legend(ax, data, unit_labels=unit_labels,
                                             cmap=cmap, vmin=vmin, vmax=vmax, alpha=0.5,
-                                            bbox_to_anchor=(0.78, -0.45), loc='lower left',
-                                            title=title, handleheight=2)
+                                            bbox_to_anchor=(1, -0.1), loc='upper right',
+                                            title=legend_title, handleheight=2)
         plt.tight_layout()
     return ax
 
@@ -269,7 +277,10 @@ def add_discrete_colors_legend(ax, data, unit_labels=None,
 
 def plot_cross_sections(layers, out_pdf, property_data=None,
                         voxel_start_layer=0,  voxel_zones=None, cmap='copper',
-                        voxel_cmap='viridis', unit_labels=None):
+                        voxel_cmap='viridis', unit_labels=None,
+                        add_raster_surfaces=None,
+                        modelgrid=None
+                        ):
     """Generate a multi-page PDF of the layer cross sections.
 
     Parameters
@@ -295,6 +306,17 @@ def plot_cross_sections(layers, out_pdf, property_data=None,
         Dictionary mapping non-voxel zone numbers to hydrogeologic units, 
         by default None
     """
+    raster_arrays = None
+    if add_raster_surfaces:
+        if modelgrid is None:
+            raise ValueError("add_raster_surfaces option requires a modelgrid")
+        raster_arrays = {}
+        _, nrow, ncol = modelgrid.shape
+        x = modelgrid.xcellcenters.ravel()
+        y = modelgrid.ycellcenters.ravel()
+        for label, raster in add_raster_surfaces.items():
+            values = get_values_at_points(raster, x, y, points_crs=modelgrid.crs)
+            raster_arrays[label] = np.reshape(values, (nrow, ncol))
 
     with PdfPages(out_pdf) as pdf:
         nlay, nrow, ncol = layers.shape
@@ -303,7 +325,8 @@ def plot_cross_sections(layers, out_pdf, property_data=None,
                        row=row, column=slice(None, None),
                        voxel_start_layer=voxel_start_layer,
                        voxel_zones=voxel_zones, cmap=cmap,
-                       voxel_cmap=voxel_cmap, unit_labels=unit_labels)
+                       voxel_cmap=voxel_cmap, unit_labels=unit_labels,
+                       add_surfaces=raster_arrays)
             pdf.savefig()
             plt.close()
         for column in range(0, ncol, 50):
@@ -311,7 +334,8 @@ def plot_cross_sections(layers, out_pdf, property_data=None,
                        row=slice(None, None), column=column,
                        voxel_start_layer=voxel_start_layer,
                        voxel_zones=voxel_zones, cmap=cmap,
-                       voxel_cmap=voxel_cmap, unit_labels=unit_labels)
+                       voxel_cmap=voxel_cmap, unit_labels=unit_labels,
+                       add_surfaces=raster_arrays)
             pdf.savefig()
             plt.close()
 

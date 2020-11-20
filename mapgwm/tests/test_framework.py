@@ -64,11 +64,35 @@ def test_setup_model_layers(model_layers_zones, test_output_folder):
                 assert os.path.getsize(fullpath) > 0
 
 
-def test_plot_cross_sections(model_layers_zones, test_output_folder):
+def test_plot_cross_sections(model_layers_zones, test_output_folder,
+                             test_data_path, delta_inset_model_grid):
+    framework_unit_names = [
+        'Undifferentiated sediments\nabove the Vicksburg',
+        'Vicksburg-Jackson Group',
+        'Upper Claiborne aquifer',
+        'Middle Claiborne confining unit',
+        'Middle Claiborne aquifer',
+        'Lower Claiborne confining unit',
+        'Lower Claiborne aquifer',
+        'Middle Wilcox aquifer',
+        'Lower Wilcox aquifer'
+    ]
     layers, zone_array = model_layers_zones
+    voxel_zones = np.unique(zone_array.ravel().astype(int))[:-len(framework_unit_names)]
+    framework_zone_numbers = np.unique(zone_array.ravel().astype(int))[-len(framework_unit_names):]
+    framework_unit_labels = dict(zip(framework_zone_numbers.astype(int), framework_unit_names))
+
     out_pdf = os.path.join(test_output_folder, 'framework', 'figures', 'x_sections.pdf')
+    production_zone_top_raster = test_data_path / 'iwum/est_prod_zone_top.tif'
+    production_zone_botm_raster = test_data_path / 'iwum/est_prod_zone_botm.tif'
     plot_cross_sections(layers, out_pdf, property_data=zone_array,
-                        voxel_start_layer=0)
+                        voxel_start_layer=0, voxel_zones=voxel_zones,
+                        cmap='copper',
+                        voxel_cmap='viridis', unit_labels=framework_unit_labels,
+                        add_raster_surfaces={'est. production zone top': production_zone_top_raster,
+                                             'est. production zone bottom': production_zone_botm_raster
+                                             },
+                        modelgrid=delta_inset_model_grid)
 
 
 def test_plot_zone_maps(model_layers_zones, test_output_folder):
