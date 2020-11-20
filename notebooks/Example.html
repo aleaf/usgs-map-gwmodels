@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post46+g47c7550 documentation</title>
+  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post48.dev0+g8eb8ddb documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.post46+g47c7550
+                0.post48.dev0+g8eb8ddb
               </div>
             
           
@@ -623,11 +623,11 @@ div.rendered_html tbody tr:hover {
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 reading data from ../mapgwm/tests/data/rasters/dem_mean_elevs_1000.tif...
-finished in 0.07s
+finished in 0.05s
 reading data from ../mapgwm/tests/data/rasters/vkbg_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/ucaq_surf.tif...
-finished in 0.03s
+finished in 0.02s
 reading data from ../mapgwm/tests/data/rasters/mccu_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mcaq_surf.tif...
@@ -637,16 +637,16 @@ finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/lcaq_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mwaq_surf.tif...
-finished in 0.04s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/lwaq_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mdwy_surf.tif...
 finished in 0.03s
 computing cell thicknesses...
-finished in 6.34s
+finished in 5.76s
 
 computing cell thicknesses...
-finished in 14.10s
+finished in 13.81s
 
 wrote output/botm_array/model_top.tif
 wrote output/botm_array/botm0.tif
@@ -773,15 +773,14 @@ wrote output/zones/rasters/res_fac23.tif
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-using dask...
 opening ../mapgwm/tests/data/swb/delta_swb_summer2018.nc...
 culling to bounding box: (434955.0, 1040285.0, 569955.0, 1342785.0)
 Aggregating to monthly values...
 wrote output/swb_monthly_means.nc
-took 0.19s
+took 0.14s
 
 checking compressed file
-finished in 0.25s
+finished in 0.15s
 
 </pre></div></div>
 </div>
@@ -961,7 +960,7 @@ finished in 0.25s
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-writing output/processed_inflows_info.shp... Done
+writing output/processed_inflows_info.shp...
 writing output/processed_inflows_info.csv
 writing output/processed_inflows.csv
 </pre></div></div>
@@ -2038,7 +2037,7 @@ reading ../mapgwm/tests/data/extents/MAP_generalized_regions.shp...
 
 reading ../mapgwm/tests/data/extents/CompositeHydrographArea.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
-writing output/preprocessed_monthly_headobs_info.shp... Done
+writing output/preprocessed_monthly_headobs_info.shp...
 writing output/preprocessed_monthly_headobs_info.csv
 writing output/preprocessed_monthly_headobs.csv
 </pre></div></div>
@@ -2394,13 +2393,14 @@ writing output/preprocessed_monthly_headobs.csv
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 reading data from ../mapgwm/tests/data/iwum/est_prod_zone_top.tif...
-finished in 0.19s
+finished in 0.15s
 reading data from ../mapgwm/tests/data/iwum/est_prod_zone_botm.tif...
-finished in 0.19s
+finished in 0.15s
+Reset screen top and bottom to mean elevation at 9 locations where screen top was &lt; screen bottom
 
 reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
-Culling 42258 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
+Culling 14086 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 wrote output/iwum_m3.csv
 </pre></div></div>
 </div>
@@ -2436,15 +2436,14 @@ wrote output/iwum_m3.csv
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>iwum_loc</th>
+      <th>site_no</th>
       <th>x</th>
       <th>y</th>
       <th>screen_top</th>
       <th>screen_botm</th>
       <th>start_datetime</th>
       <th>end_datetime</th>
-      <th>flux_m3d</th>
-      <th>geometry</th>
+      <th>q</th>
     </tr>
   </thead>
   <tbody>
@@ -2453,60 +2452,55 @@ wrote output/iwum_m3.csv
       <td>179</td>
       <td>477955.0</td>
       <td>1041285.0</td>
-      <td>46.24</td>
-      <td>22.32</td>
+      <td>14.444472</td>
+      <td>7.388352</td>
       <td>2017-06-01</td>
       <td>2017-06-30</td>
       <td>-2043.222778</td>
-      <td>POINT (477955 1041285)</td>
     </tr>
     <tr>
       <th>314</th>
       <td>314</td>
       <td>476955.0</td>
       <td>1042285.0</td>
-      <td>43.85</td>
-      <td>20.30</td>
+      <td>13.722096</td>
+      <td>6.352032</td>
       <td>2017-06-01</td>
       <td>2017-06-30</td>
       <td>-2093.868652</td>
-      <td>POINT (476955 1042285)</td>
     </tr>
     <tr>
       <th>315</th>
       <td>315</td>
       <td>477955.0</td>
       <td>1042285.0</td>
-      <td>45.02</td>
-      <td>20.84</td>
+      <td>14.182344</td>
+      <td>7.059168</td>
       <td>2017-06-01</td>
       <td>2017-06-30</td>
       <td>-1526.927734</td>
-      <td>POINT (477955 1042285)</td>
     </tr>
     <tr>
       <th>443</th>
       <td>443</td>
       <td>469955.0</td>
       <td>1043285.0</td>
-      <td>36.24</td>
-      <td>10.55</td>
+      <td>11.094720</td>
+      <td>3.331464</td>
       <td>2017-06-01</td>
       <td>2017-06-30</td>
       <td>-1283.890991</td>
-      <td>POINT (469955 1043285)</td>
     </tr>
     <tr>
       <th>444</th>
       <td>444</td>
       <td>470955.0</td>
       <td>1043285.0</td>
-      <td>36.40</td>
-      <td>10.93</td>
+      <td>11.436096</td>
+      <td>3.541776</td>
       <td>2017-06-01</td>
       <td>2017-06-30</td>
       <td>-1245.565308</td>
-      <td>POINT (470955 1043285)</td>
     </tr>
   </tbody>
 </table>
@@ -2519,9 +2513,9 @@ wrote output/iwum_m3.csv
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">site_means</span> <span class="o">=</span> <span class="n">ag_wu</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;iwum_loc&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">site_means</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;scatter&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;flux_m3d&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis_r&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">site_means</span><span class="o">.</span><span class="n">flux_m3d</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
+<span></span><span class="n">site_means</span> <span class="o">=</span> <span class="n">ag_wu</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">site_means</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;scatter&#39;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                     <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis_r&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">site_means</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.1</span><span class="p">))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2603,21 +2597,21 @@ reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
 Culling 831 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 reading data from ../mapgwm/tests/data/rasters/dem_mean_elevs.tif...
-finished in 0.28s
+finished in 0.05s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MRVA_top.tif...
-finished in 0.01s
+finished in 0.00s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MRVA_bot.tif...
-finished in 0.01s
+finished in 0.00s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
-finished in 0.01s
+finished in 0.00s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_bot.tif...
-finished in 0.01s
+finished in 0.00s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_LCAQP_top.tif...
-finished in 0.01s
+finished in 0.00s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_LCAQP_bot.tif...
-finished in 0.01s
+finished in 0.00s
 processed SWUDS data written to output/preprocessed_swuds_data.csv and in dataframe attribute
-writing output/preprocessed_swuds_data.shp... Done
+writing output/preprocessed_swuds_data.shp...
 </pre></div></div>
 </div>
 <p>A <code class="docutils literal notranslate"><span class="pre">mapgwm.swuds.Swuds</span></code> object is returned, which has a dataframe attribute:</p>
@@ -2657,13 +2651,13 @@ writing output/preprocessed_swuds_data.shp... Done
       <th>q</th>
       <th>q_monthly</th>
       <th>month</th>
-      <th>well_elev_m</th>
-      <th>depth_m</th>
-      <th>screen_bot_m</th>
-      <th>screen_top_m</th>
+      <th>well_elev</th>
+      <th>depth</th>
+      <th>screen_bot</th>
+      <th>screen_top</th>
       <th>x</th>
       <th>y</th>
-      <th>datetime</th>
+      <th>start_datetime</th>
       <th>geometry</th>
     </tr>
   </thead>
@@ -2824,11 +2818,11 @@ reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
 Culling 405 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
-finished in 0.21s
+finished in 0.12s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_bot.tif...
-finished in 0.18s
+finished in 0.12s
 wrote output/preprocessed_te_data.csv
-writing output/preprocessed_te_data.shp... Done
+writing output/preprocessed_te_data.shp...
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -3007,7 +3001,7 @@ Text(0, 0.5, &#39;Pumpage, in m$^3$/day&#39;)
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Nov 19, 2020.
+        Last updated on Nov 20, 2020.
       </span>
 
     </p>

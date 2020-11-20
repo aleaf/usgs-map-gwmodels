@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.framework &mdash; usgs-map-gwmodels 0.post46+g47c7550 documentation</title>
+  <title>mapgwm.framework &mdash; usgs-map-gwmodels 0.post48.dev0+g8eb8ddb documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post46+g47c7550
+                0.post48.dev0+g8eb8ddb
               </div>
             
           
@@ -235,7 +235,7 @@
 <div class="viewcode-block" id="plot_slice"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.plot_slice">[docs]</a><span class="k">def</span> <span class="nf">plot_slice</span><span class="p">(</span><span class="n">layer_elevations</span><span class="p">,</span> <span class="n">property_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
                <span class="n">voxel_start_layer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">voxel_zones</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
-               <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+               <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_surfaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Plot a single cross section slice</span>
 
 <span class="sd">    Parameters</span>
@@ -350,12 +350,20 @@
             <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">)</span>
             <span class="n">pcm2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">voxel_data</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span>
                                  <span class="n">vmin</span><span class="o">=</span><span class="n">voxel_vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">voxel_vmax</span><span class="p">)</span>
+            <span class="c1"># add separate axis for colorbar to control position</span>
             <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">pcm2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resistivity facies class (in order of increasing resistivity)&#39;</span><span class="p">,</span>
-                         <span class="n">pad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+                         <span class="n">pad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                         <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
                          <span class="n">ticks</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
                          <span class="p">)</span>
         <span class="n">pcm</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
                             <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">add_surfaces</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">array2D</span> <span class="ow">in</span> <span class="n">add_surfaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">array2D</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">surfaces_lg</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">surfaces_lg</span><span class="p">)</span>
 
     <span class="c1"># plot the layer bottom elevations</span>
     <span class="n">plot_layer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">thicknesses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -377,11 +385,11 @@
 
         <span class="k">if</span> <span class="n">property_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># make a discrete colors legend</span>
-            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;MERAS 2.0</span><span class="se">\n</span><span class="s2">Framework Units&quot;</span>
+            <span class="n">legend_title</span> <span class="o">=</span> <span class="s2">&quot;MERAS 2.0</span><span class="se">\n</span><span class="s2">Framework Units&quot;</span>
             <span class="n">lg</span> <span class="o">=</span> <span class="n">add_discrete_colors_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">,</span>
                                             <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                                            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">0.78</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.45</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower left&#39;</span><span class="p">,</span>
-                                            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">handleheight</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                                            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">,</span>
+                                            <span class="n">title</span><span class="o">=</span><span class="n">legend_title</span><span class="p">,</span> <span class="n">handleheight</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ax</span></div>
 
@@ -443,7 +451,10 @@
 
 <div class="viewcode-block" id="plot_cross_sections"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.plot_cross_sections">[docs]</a><span class="k">def</span> <span class="nf">plot_cross_sections</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">out_pdf</span><span class="p">,</span> <span class="n">property_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">voxel_start_layer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="n">voxel_zones</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
-                        <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                        <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">add_raster_surfaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">modelgrid</span><span class="o">=</span><span class="kc">None</span>
+                        <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Generate a multi-page PDF of the layer cross sections.</span>
 
 <span class="sd">    Parameters</span>
@@ -469,6 +480,17 @@
 <span class="sd">        Dictionary mapping non-voxel zone numbers to hydrogeologic units, </span>
 <span class="sd">        by default None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raster_arrays</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">add_raster_surfaces</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">modelgrid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;add_raster_surfaces option requires a modelgrid&quot;</span><span class="p">)</span>
+        <span class="n">raster_arrays</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">modelgrid</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">modelgrid</span><span class="o">.</span><span class="n">xcellcenters</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">modelgrid</span><span class="o">.</span><span class="n">ycellcenters</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">raster</span> <span class="ow">in</span> <span class="n">add_raster_surfaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">get_values_at_points</span><span class="p">(</span><span class="n">raster</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">points_crs</span><span class="o">=</span><span class="n">modelgrid</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+            <span class="n">raster_arrays</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">))</span>
 
     <span class="k">with</span> <span class="n">PdfPages</span><span class="p">(</span><span class="n">out_pdf</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdf</span><span class="p">:</span>
         <span class="n">nlay</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">shape</span>
@@ -477,7 +499,8 @@
                        <span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                        <span class="n">voxel_start_layer</span><span class="o">=</span><span class="n">voxel_start_layer</span><span class="p">,</span>
                        <span class="n">voxel_zones</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
-                       <span class="n">voxel_cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">)</span>
+                       <span class="n">voxel_cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">,</span>
+                       <span class="n">add_surfaces</span><span class="o">=</span><span class="n">raster_arrays</span><span class="p">)</span>
             <span class="n">pdf</span><span class="o">.</span><span class="n">savefig</span><span class="p">()</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ncol</span><span class="p">,</span> <span class="mi">50</span><span class="p">):</span>
@@ -485,7 +508,8 @@
                        <span class="n">row</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">column</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
                        <span class="n">voxel_start_layer</span><span class="o">=</span><span class="n">voxel_start_layer</span><span class="p">,</span>
                        <span class="n">voxel_zones</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
-                       <span class="n">voxel_cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">)</span>
+                       <span class="n">voxel_cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">,</span>
+                       <span class="n">add_surfaces</span><span class="o">=</span><span class="n">raster_arrays</span><span class="p">)</span>
             <span class="n">pdf</span><span class="o">.</span><span class="n">savefig</span><span class="p">()</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
@@ -873,7 +897,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Nov 19, 2020.
+        Last updated on Nov 20, 2020.
       </span>
 
     </p>

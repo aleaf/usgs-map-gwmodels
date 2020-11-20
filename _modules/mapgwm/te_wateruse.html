@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.te_wateruse &mdash; usgs-map-gwmodels 0.post46+g47c7550 documentation</title>
+  <title>mapgwm.te_wateruse &mdash; usgs-map-gwmodels 0.post48.dev0+g8eb8ddb documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post46+g47c7550
+                0.post48.dev0+g8eb8ddb
               </div>
             
           
@@ -444,8 +444,11 @@
         <span class="n">outfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
         <span class="n">df_monthly</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%g</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;wrote </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
+
+        <span class="c1"># write only unique pumping values to shapefile</span>
+        <span class="n">to_shapefile</span> <span class="o">=</span> <span class="n">df_monthly</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
         <span class="n">shapefile</span> <span class="o">=</span> <span class="n">outfile</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.shp&#39;</span><span class="p">)</span>
-        <span class="n">df2shp</span><span class="p">(</span><span class="n">df_monthly</span><span class="p">,</span> <span class="n">shapefile</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+        <span class="n">df2shp</span><span class="p">(</span><span class="n">to_shapefile</span><span class="p">,</span> <span class="n">shapefile</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">df_monthly</span></div>
 </pre></div>
 
@@ -460,7 +463,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Nov 19, 2020.
+        Last updated on Nov 20, 2020.
       </span>
 
     </p>
