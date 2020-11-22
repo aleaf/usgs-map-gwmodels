@@ -268,7 +268,7 @@ def preprocess_te_wateruse(data,
     # write the output
     if outfile is not None:
         outfile = Path(outfile)
-        df_monthly.to_csv(outfile, index=False, float_format='%g')
+        df_monthly.drop('geometry', axis=1).to_csv(outfile, index=False, float_format='%g')
         print('wrote {}'.format(outfile))
 
         # write only unique pumping values to shapefile
