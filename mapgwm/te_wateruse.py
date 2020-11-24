@@ -79,8 +79,8 @@ def read_te_water_use_spreadsheet(xlsx_file, date='2010', site_no_col='site_no',
         criteria = criteria | (df['source_name'].str.contains('well'))
     df = df.loc[criteria]
 
-    df['date'] = pd.to_datetime(date)
-    columns = ['site_no', 'date', 'x', 'y', 'q', 'site_name', 'source_name']
+    df['start_datetime'] = pd.to_datetime(date)
+    columns = ['site_no', 'start_datetime', 'x', 'y', 'q', 'site_name', 'source_name']
     columns = [c for c in columns if c in df.columns]
     return df[columns]
 
@@ -123,13 +123,13 @@ def preprocess_te_wateruse(data,
         Thermoelectric water use data in the following format
         (similar to that output by :func:`mapgwm.te_wateruse.read_te_water_use_spreadsheet`):
 
-        ======= ====================================================
-        site_no power plant identifier (plant code)
-        date    pandas datetime representative of flux (e.g. '2010')
-        x       x-coordinate of withdrawl, in `source_crs`
-        y       y-coordinate of withdrawl, in `source_crs`
-        q       withdrawl flux, in `data_volume_units` per days
-        ======= ====================================================
+        =============== =======================================================
+        site_no         power plant identifier (plant code)
+        start_datetime  pandas datetime representative of flux (e.g. '2010')
+        x               x-coordinate of withdrawl, in `source_crs`
+        y               y-coordinate of withdrawl, in `source_crs`
+        q               withdrawl flux, in `data_volume_units` per days
+        =============== =======================================================
 
     start_date : str
         Start date for pumping rates. If earlier than the dates in `data`,
@@ -232,9 +232,9 @@ def preprocess_te_wateruse(data,
     # distribute fluxes to monthly values
     # set start and end dates if not already set
     if start_date is None:
-        start_date = df.date.min()
+        start_date = df.start_datetime.min()
     if end_date is None:
-        end_date = df.date.mmax()
+        end_date = df.start_datetime.mmax()
     groups = df.groupby('site_no')
     all_groups = []
     for site_no, group in groups:
@@ -243,7 +243,7 @@ def preprocess_te_wateruse(data,
         # create a continuous monthly time index
         # labeled at the month start
         all_dates = pd.date_range(start_date, end_date, freq='MS')
-        dfg.index = dfg['date']
+        dfg.index = dfg['start_datetime']
         dfg = dfg.reindex(all_dates)
 
         # interpolate the discharge values;
@@ -252,8 +252,8 @@ def preprocess_te_wateruse(data,
         dfg['q'] *= convert_volume_units(data_volume_units, model_length_units)
 
         # fill remaining columns
-        dfg['date'] = dfg.index
-        fill_columns = set(dfg.columns).difference({'q', 'date'})
+        dfg['start_datetime'] = dfg.index
+        fill_columns = set(dfg.columns).difference({'q', 'start_datetime'})
         fill_values = group.iloc[0].to_dict()
         for c in fill_columns:
             dfg[c] = fill_values[c]
@@ -261,7 +261,7 @@ def preprocess_te_wateruse(data,
     df_monthly = pd.concat(all_groups)
 
     # clean up the columns
-    cols = ['site_no', 'date', 'x', 'y', 'screen_top', 'screen_botm', 'q', 'geometry']
+    cols = ['site_no', 'start_datetime', 'x', 'y', 'screen_top', 'screen_botm', 'q', 'geometry']
     cols += list(set(df_monthly.columns).difference(cols))
     df_monthly = df_monthly[cols]
 

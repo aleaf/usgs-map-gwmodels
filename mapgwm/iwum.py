@@ -274,6 +274,9 @@ def preprocess_iwum_pumping(ncfile,
         dfs.append(df)
     df = pd.concat(dfs)
 
+    # site number column (that would be unique from other integers from other data sources)
+    df['site_no'] = [f'iwum_{node}' for node in df.site_no]
+
     # project the data to a destination crs, if provided
     # make a separate metadata dataframe with 1 row per location
     # to avoid redundant operations
@@ -291,8 +294,10 @@ def preprocess_iwum_pumping(ncfile,
                                       data_crs=dest_crs, metadata=metadata)
 
     # update data with x,y values projected in metadata
-    df['x'] = metadata.loc[df.site_no.values, 'x']
-    df['y'] = metadata.loc[df.site_no.values, 'y']
+    x = dict(zip(metadata.site_no, metadata.x))
+    y = dict(zip(metadata.site_no, metadata.y))
+    df['x'] = [x[sn] for sn in df.site_no]
+    df['y'] = [y[sn] for sn in df.site_no]
     if outfile is not None:
         df.to_csv(outfile, index=False, float_format='%g')
     print('wrote {}'.format(outfile))
