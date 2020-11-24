@@ -29,8 +29,8 @@ def test_read_te_water_use_spreadsheet(test_data_path, xlsx_file, sheet_name, sk
                                        source_code_col=source_code_col,
                                        sheet_name=sheet_name, skiprows=skiprows)
     assert np.all(df.columns ==
-                  ['site_no', 'date', 'x', 'y', 'q', 'site_name', 'source_name'])
-    assert 'datetime64' in df.date.dtype.name
+                  ['site_no', 'start_datetime', 'x', 'y', 'q', 'site_name', 'source_name'])
+    assert 'datetime64' in df.start_datetime.dtype.name
 
 
 def test_preprocess_te_wateruse(test_data_path, test_output_folder):
@@ -77,9 +77,9 @@ def test_preprocess_te_wateruse(test_data_path, test_output_folder):
                            outfile=outfile)
     assert np.all(results.screen_top > results.screen_botm)
     assert np.all(results.columns[:8] ==
-                  ['site_no', 'date', 'x', 'y', 'screen_top', 'screen_botm', 'q', 'geometry'])
+                  ['site_no', 'start_datetime', 'x', 'y', 'screen_top', 'screen_botm', 'q', 'geometry'])
     assert outfile.exists()
     assert outfile.with_suffix('.shp').exists()
-    check_cols = ['q', 'screen_top', 'screen_botm', 'x', 'y', 'date', 'site_no']
+    check_cols = ['q', 'screen_top', 'screen_botm', 'x', 'y', 'start_datetime', 'site_no']
     for col in check_cols:
         assert not results[col].isnull().any()
