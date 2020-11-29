@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.te_wateruse &mdash; usgs-map-gwmodels 0.post50+g92f5892 documentation</title>
+  <title>mapgwm.te_wateruse &mdash; usgs-map-gwmodels 0.post50.dev0+g660e155 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post50+g92f5892
+                0.post50.dev0+g660e155
               </div>
             
           
@@ -431,8 +431,16 @@
         <span class="n">fill_values</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">fill_columns</span><span class="p">:</span>
             <span class="n">dfg</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_values</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+
+        <span class="c1"># add &#39;te&#39; prefix to site number</span>
+        <span class="n">dfg</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;te_</span><span class="si">{</span><span class="n">site_no</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="n">all_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dfg</span><span class="p">)</span>
     <span class="n">df_monthly</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
+
+    <span class="c1"># assume most values represent abstraction</span>
+    <span class="c1"># if sum is positive, invert so that output values are negative</span>
+    <span class="k">if</span> <span class="n">df_monthly</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">df_monthly</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="c1"># clean up the columns</span>
     <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;start_datetime&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_top&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_botm&#39;</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]</span>
@@ -463,7 +471,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Nov 24, 2020.
+        Last updated on Nov 29, 2020.
       </span>
 
     </p>

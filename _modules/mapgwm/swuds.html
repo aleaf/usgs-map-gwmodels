@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.swuds &mdash; usgs-map-gwmodels 0.post50+g92f5892 documentation</title>
+  <title>mapgwm.swuds &mdash; usgs-map-gwmodels 0.post50.dev0+g660e155 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post50+g92f5892
+                0.post50.dev0+g660e155
               </div>
             
           
@@ -591,13 +591,17 @@
                 <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">q_monthly</span><span class="p">):</span>
                     <span class="n">q_monthly</span> <span class="o">=</span> <span class="n">q_mean</span>
                 <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">q_monthly</span><span class="p">)</span>
-            
+
+            <span class="c1"># assume most values represent abstraction</span>
+            <span class="c1"># if sum is positive, invert so that output values are negative</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">q</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">q</span>
             <span class="c1">#group[&#39;q&#39;] = group[&#39;q&#39;] * 3785.4  # convert from mgd to cubic m per d</span>
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">group</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">convert_volume_units</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_volume_units</span><span class="p">,</span>
                                                            <span class="bp">self</span><span class="o">.</span><span class="n">model_length_units</span><span class="p">)</span>
 
-            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">site_no</span>
+            <span class="n">group</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;swuds_</span><span class="si">{</span><span class="n">site_no</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;well_elev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span>
             <span class="n">group</span><span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">depths</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span>
             <span class="n">well_botm_depth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">depths</span><span class="p">[</span><span class="n">site_no</span><span class="p">]</span>
@@ -986,7 +990,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Nov 24, 2020.
+        Last updated on Nov 29, 2020.
       </span>
 
     </p>
