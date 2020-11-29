@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 from gisutils import project
 from gisutils.raster import get_values_at_points
 from mfsetup.units import convert_length_units, convert_volume_units
+from mapgwm.plot import format_xtick_labels
 from mapgwm.utils import cull_data_to_active_area
 
 
@@ -299,6 +300,78 @@ def preprocess_iwum_pumping(ncfile,
     df['x'] = [x[sn] for sn in df.site_no]
     df['y'] = [y[sn] for sn in df.site_no]
     if outfile is not None:
+        outfile = Path(outfile)
         df.to_csv(outfile, index=False, float_format='%g')
-    print('wrote {}'.format(outfile))
+        print('wrote {}'.format(outfile))
+
+        # Make a plot of iwum output in mgal/day
+        out_pdf_path = outfile.parent / 'plots'
+        out_pdf_path.mkdir(exist_ok=True)
+        plot_iwum_output(ncfile, flux_variable=flux_variable, outpath=out_pdf_path)
+
     return df
+
+
+def plot_iwum_output(ncfile, flux_variable='value', outpath='.'):
+    """Make a plot of iwum output in mgal/day
+    for comparison with subsequent datasets.
+    """
+
+    ds = xr.open_dataset(ncfile)
+    time_variable = [k for k in ds.coords.keys() if k.lower() not in {'x', 'y'}][0]
+    xydims = tuple([i for i, len in enumerate(ds[flux_variable].shape)
+                    if len != ds[time_variable].shape[0]])
+    ts = ds[flux_variable][:, :, :].sum(axis=xydims).to_pandas()
+    if ts.index.dtype == np.object:
+        ts.index = pd.to_datetime(ts.index)
+
+    ndays = pd.to_timedelta(np.diff(ts.index)).days.tolist()
+    ndays.append(ndays[-1])  # pad the last time period
+    df = pd.DataFrame(ts, columns=['m3'])
+    df['m3d'] = df['m3'] / ndays # convert volumes to daily rate
+
+    fig, ax = plt.subplots(figsize=(11, 8.5))
+    ax = df['m3d'].plot.bar(ax=ax)
+    ax.set_ylabel('Cubic meters per day')
+    ymin, ymax = ax.get_ylim()
+    ax2 = ax.twinx()
+    to_mg = convert_volume_units('m3', 'mgal')
+    ax2.set_ylim(ymin * to_mg, ymax * to_mg)
+    ax2.set_ylabel('Million gallons per day')
+
+    # can't use .mean(),
+    # because periods with 0 pumping may not be included
+    mean_mgd = df['m3'].sum() * to_mg / np.sum(ndays)
+    ax2.axhline(mean_mgd, c='r')
+    ax2.text(0.75, 0.9, 'Mean: {:,.0f} mgal/day'.format(mean_mgd),
+             transform=ax.transAxes)
+
+    # format the tick labels
+    format_xtick_labels(df, ax, maxlabels=30, date_format='%Y-%m-%d')
+    #maxlabels = 30
+    #xticklabels = df.index.strftime('%Y-%m-%d').tolist()
+    #stride = max(int(np.floor(len(xticklabels) / maxlabels)), 1)
+    #formatted_labels = []
+    #for label in xticklabels[::stride]:
+    #    formatted_labels += [label] + [''] * (stride - 1)
+    #formatted_labels = formatted_labels[:len(xticklabels)]
+    #junk = ax.set_xticklabels(formatted_labels)
+
+    # record the file name and last modified date
+    ftime = pd.Timestamp(os.path.getmtime(ncfile), unit='s')
+    ax2.text(0.02, 0.98, '{}\n{}'.format(ncfile,
+                                         ftime.strftime('%Y-%m-%d')),
+             va='top', fontsize=8,
+             transform=ax.transAxes)
+
+    # annotate the bars with the values
+    for i, p in enumerate(ax.patches):
+        value = '{:,.0f}'.format(to_mg * p.get_height())
+        ax.annotate(value, (p.get_x() * 1.01, p.get_height() * 1.01),
+                    ha='center', fontsize=8)
+    ncfile = Path(ncfile)
+    ftime = pd.Timestamp(ncfile.stat().st_mtime, unit='s')
+    outfile = Path(outpath, f'{ncfile.name}_{ftime:%Y-%m-%d}.pdf')
+    plt.savefig(outfile)
+    print('wrote {}'.format(outfile))
+    plt.close()

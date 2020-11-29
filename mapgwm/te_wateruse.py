@@ -257,8 +257,16 @@ def preprocess_te_wateruse(data,
         fill_values = group.iloc[0].to_dict()
         for c in fill_columns:
             dfg[c] = fill_values[c]
+
+        # add 'te' prefix to site number
+        dfg['site_no'] = f'te_{site_no}'
         all_groups.append(dfg)
     df_monthly = pd.concat(all_groups)
+
+    # assume most values represent abstraction
+    # if sum is positive, invert so that output values are negative
+    if df_monthly['q'].sum() > 0:
+        df_monthly['q'] *= -1
 
     # clean up the columns
     cols = ['site_no', 'start_datetime', 'x', 'y', 'screen_top', 'screen_botm', 'q', 'geometry']

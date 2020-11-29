@@ -417,13 +417,17 @@ class Swuds:
                 if np.isnan(q_monthly):
                     q_monthly = q_mean
                 q.append(q_monthly)
-            
+
+            # assume most values represent abstraction
+            # if sum is positive, invert so that output values are negative
+            if np.sum(q) > 0:
+                q = -np.array(q)
             group['q'] = q
             #group['q'] = group['q'] * 3785.4  # convert from mgd to cubic m per d
             group['q'] = group['q'] * convert_volume_units(self.data_volume_units,
                                                            self.model_length_units)
 
-            group['site_no'] = site_no
+            group['site_no'] = f'swuds_{site_no}'
             group['well_elev'] = self.well_elevations[site_no]
             group['depth'] = self.depths[site_no]
             well_botm_depth = self.well_elevations[site_no] - self.depths[site_no]

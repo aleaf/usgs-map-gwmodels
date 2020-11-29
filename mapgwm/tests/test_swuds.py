@@ -1,10 +1,12 @@
 import os
 import numpy as np
+import pytest
 from mfsetup.units import convert_length_units, convert_volume_units
 from mapgwm.swuds import Swuds, preprocess_swuds
 
 
-def test_preprocess_swuds(test_data_path, test_output_folder):
+@pytest.fixture(scope='function')
+def preprocessed_swuds_data(test_data_path, test_output_folder):
 
     swuds_input = os.path.join(test_data_path, 'swuds', 'withdrawals_test_dataset.xlsx')
     worksheet = 'LMG-withdrawals-2000-2018'
@@ -34,6 +36,13 @@ def test_preprocess_swuds(test_data_path, test_output_folder):
                                data_volume_units='mgal',
                                model_length_units='meters',
                                outfile=outfile)
+    return results
+
+
+def test_preprocess_swuds(preprocessed_swuds_data, test_data_path, test_output_folder):
+
+    outfile = test_output_folder / 'preprocessed_swuds_data.csv'
+    results = preprocessed_swuds_data
     assert results.data_length_units == 'feet'
     assert np.allclose(convert_length_units(results.data_length_units,
                                             results.model_length_units), 0.3048)
@@ -42,5 +51,7 @@ def test_preprocess_swuds(test_data_path, test_output_folder):
     assert outfile.exists()
     assert outfile.with_suffix('.shp').exists()
     check_cols = ['q', 'screen_top', 'screen_bot', 'x', 'y', 'start_datetime', 'site_no']
+    # discharges must be negative!
+    assert results.df['q'].sum() < 0
     for col in check_cols:
         assert not results.df[col].isnull().any()

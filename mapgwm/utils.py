@@ -42,9 +42,9 @@ def assign_geographic_obsgroups(metadata, geographic_groups, geographic_groups_c
     return md
 
 
-def cull_data_to_active_area(data, active_area, active_area_id_column,
-                             active_area_feature_id,
-                             data_crs, metadata=None):
+def cull_data_to_active_area(data, active_area, active_area_id_column=None,
+                             active_area_feature_id=None,
+                             data_crs=None, metadata=None):
     df = data.copy()
     if metadata is not None:
         md = metadata.copy()
