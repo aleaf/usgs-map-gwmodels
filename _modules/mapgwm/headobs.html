@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mapgwm.headobs &mdash; usgs-map-gwmodels 0.post50+g660e155 documentation</title>
+  <title>mapgwm.headobs &mdash; usgs-map-gwmodels 0.post50+g8500de4 documentation</title>
   
 
   
@@ -63,7 +63,7 @@
             
             
               <div class="version">
-                0.post50+g660e155
+                0.post50+g8500de4
               </div>
             
           
@@ -609,12 +609,17 @@
     <span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
 
     <span class="c1"># trim to the time range</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;starting with </span><span class="si">{}</span><span class="s1"> unique wells&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">site_no</span><span class="p">))))</span>
+    <span class="n">n_measurements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">n_sites</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">site_no</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;starting with </span><span class="si">{</span><span class="n">n_measurements</span><span class="si">:</span><span class="s1">,d</span><span class="si">}</span><span class="s1"> measurements at </span><span class="si">{</span><span class="n">n_sites</span><span class="si">:</span><span class="s1">,d</span><span class="si">}</span><span class="s1"> unique wells&#39;</span><span class="p">)</span>
     <span class="n">no_data_in_period</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&lt;</span> <span class="n">stdate</span>
+
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">no_data_in_period</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">((</span><span class="s1">&#39;culling </span><span class="si">{}</span><span class="s1"> wells with only data prior to start date of </span><span class="si">{}</span><span class="s1">&#39;</span>
-               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&lt;</span> <span class="n">stdate</span><span class="p">),</span> <span class="n">stdate</span><span class="p">)))</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&gt;=</span> <span class="n">stdate</span><span class="p">)]</span>
+        <span class="n">in_period</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&gt;=</span> <span class="n">stdate</span>
+        <span class="n">n_sites_before</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">no_data_in_period</span><span class="p">,</span> <span class="s1">&#39;site_no&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">in_period</span><span class="p">,</span> <span class="s1">&#39;site_no&#39;</span><span class="p">])))</span>
+        <span class="nb">print</span><span class="p">((</span><span class="sa">f</span><span class="s1">&#39;culling </span><span class="si">{</span><span class="n">in_period</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s1">,d</span><span class="si">}</span><span class="s1"> measurements from </span><span class="si">{</span><span class="n">n_sites_before</span><span class="si">:</span><span class="s1">,d</span><span class="si">}</span><span class="s1"> &#39;</span>
+              <span class="sa">f</span><span class="s1">&#39;sites that are prior to start date of </span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">in_period</span><span class="p">]</span>
 
     <span class="c1"># collapse dataset to mean values at each site</span>
     <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span>
@@ -850,7 +855,7 @@
   <div role="contentinfo">
     <p>
       <span class="lastupdated">
-        Last updated on Nov 29, 2020.
+        Last updated on Dec 11, 2020.
       </span>
 
     </p>
