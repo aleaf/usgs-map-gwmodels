@@ -43,10 +43,14 @@ regional_aquifer:
   112LOSS: mrva
   112ORVA: mrva
   112TRRC: mrva
+  112ALVL: mrva  # Alluvial Aquifers, Undifferentiated, but most of these observations plot within the MRVA footprint
+  112VLTR: mrva  # Valley Trains, Pleistocene
   123FRHL: vicksburg  # Forest Hills Sands (Kathy classifies this as Vicksburg)
+  124JCKS: vicksburg  #	Jackson Group
   124CCKF: upper claiborne  # Cockfield Formation of Claiborne Group
   124CKFJ: upper claiborne  # Cockfield Through Jackson Formations
   124CCKFJ: upper claiborne  # Cockfield Through Jackson Formations, undivided
+  124CKMN: middle clairborne  # Cook Mountain Formation
   12405MP: middle clairborne
   124BGFD: middle clairborne
   124LRDO: middle clairborne
@@ -71,11 +75,16 @@ regional_aquifer:
   124MRDN: lower claiborne  # Meridian Sand Member of Tallahatta Formation
   124MUWX: lower claiborne  # Meridian-Upper Wilcox Aquifer
   124WLCX: lower claiborne  # Wilcox Group
+  124WLCXG: lower claiborne  # Wilcox Group
   124TLLT: lower claiborne  # Tallahatta Formation
+  124NSHB: lower claiborne  # Neshoba Sand Member of Tallahatta Formation
   124BSCC: lower claiborne  # Basic City Shale Member of Tallahatta Formation
+  124CRVR: lower claiborne  # Cane River Formation (Lower Claiborne Confining Unit)
   124CRWL: lower claiborne  # Carrizo-Wilcox Aquifer
+  124WLCXU: lower claiborne  # Upper Wilcox (should this be split out)?
   124WLCXM: middle wilcox
   # lower wilcox units
+  124TSCM: lower wilcox  # 	Tuscahoma Formation
   124FRPL: lower wilcox  # Fort Pillow Sand of Wilcox Group
   12414MP: lower wilcox  # 1400-foot Sand of Memphis Area (local name for Fort Pillow)
   124WLCXL: lower wilcox  # Lower Wilcox Aquifer

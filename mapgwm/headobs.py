@@ -435,12 +435,17 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     df['datetime'] = pd.to_datetime(df.datetime).dt.normalize()
 
     # trim to the time range
-    print('starting with {} unique wells'.format(len(set(data.site_no))))
+    n_measurements = len(data)
+    n_sites = len(set(data.site_no))
+    print(f'starting with {n_measurements:,d} measurements at {n_sites:,d} unique wells')
     no_data_in_period = df.datetime < stdate
+
     if np.any(no_data_in_period):
-        print(('culling {} wells with only data prior to start date of {}'
-               .format(np.sum(df.datetime < stdate), stdate)))
-        df = df.loc[(df.datetime >= stdate)]
+        in_period = df.datetime >= stdate
+        n_sites_before = len(set(df.loc[no_data_in_period, 'site_no']).difference(set(df.loc[in_period, 'site_no'])))
+        print((f'culling {in_period.sum():,d} measurements from {n_sites_before:,d} '
+              f'sites that are prior to start date of {start_date}'))
+        df = df.loc[in_period]
 
     # collapse dataset to mean values at each site
     groups = df.groupby('site_no')
