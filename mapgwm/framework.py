@@ -701,11 +701,11 @@ def setup_model_layers(dem_means_raster, facies_classes_netcdf, framework_raster
     # write out zone arrays (in GeoTiff and text format)
     voxel_start_layer = 0
     voxel_end_layer = voxel_start_layer + voxel_array.shape[0]
-    for i in range(voxel_start_layer, voxel_end_layer):
+    for i, zones2d in enumerate(zone_array):
         np.savetxt(os.path.join(zones_folder, 'res_fac{}.dat'.format(i)),
-                   voxel_array[i], fmt='%.0f')
+                   zones2d, fmt='%.0f')
         write_raster(os.path.join(zones_folder, 'rasters/res_fac{}.tif'.format(i)),
-                     voxel_array[i], xul=grid.xul, yul=grid.yul,
+                     zones2d, xul=grid.xul, yul=grid.yul,
                      dx=grid.delc[0], dy=-grid.delr[0],
                      rotation=0., crs=grid.crs,
                      nodata=-9999, fieldname='elevation')
