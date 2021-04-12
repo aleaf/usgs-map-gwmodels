@@ -2,7 +2,7 @@ usgs-map-gwmodels
 =================
 
 ### Version 0
-[![Build Status](https://travis-ci.com/aleaf/usgs-map-gwmodels.svg?branch=master)](https://travis-ci.com/aleaf/usgs-map-gwmodels)
+![Tests](https://github.com/aleaf/usgs-map-gwmodels/workflows/Tests/badge.svg)
 [![codecov](https://codecov.io/gh/aleaf/usgs-map-gwmodels/branch/master/graph/badge.svg)](https://codecov.io/gh/aleaf/usgs-map-gwmodels)
 
 
@@ -10,11 +10,11 @@ Python code for pre- and post-processing of groundwater models for the USGS Miss
 
 Documentation
 ----------------------------------------------- 
-See the [Online Documentation](https://aleaf.github.io/usgs-map-gwmodels/index.html)
+See the [Online Documentation](https://aleaf.github.io/usgs-map-gwmodels/latest/index.html)
 
 Contributing
 ----------------------------------------------- 
-See the [Contributing Page](https://aleaf.github.io/usgs-map-gwmodels/contributing.html)
+See the [Contributing Page](https://aleaf.github.io/usgs-map-gwmodels/latest/contributing.html)
 
 
 Disclaimer
