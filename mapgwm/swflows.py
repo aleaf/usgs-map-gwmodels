@@ -48,6 +48,7 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
                      name_col='name',
                      flow_qualifier_column=None,
                      default_qualifier='measured',
+                     obstype='flow',
                      include_sites=None,
                      include_line_ids=None,
                      source_volume_units='ft3',
@@ -177,6 +178,11 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
     default_qualifier : str, optional
         Default qualifier to populate flow_qualifier_column if it
         is None. By default, "measured"
+    obstype : str, optional
+        Modflow-6 observation type (e.g. 'downstream-flow' or 'stage'). 
+        The last part of the name (after the last hyphen) is used as a suffix in the output 
+        ``obsprefix`` column. E.g. 07275000-flow for downstream or upstream-flow at site 07275000.
+        By default, 'flow'
     include_sites : list-like, optional
         Exclude output to these sites.
         by default, None (include all sites)
@@ -295,6 +301,10 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
         df['site_no'] = format_site_ids(df['site_no'], add_leading_zeros_to_sw_site_nos)
     else:
         df['site_no'] = df[line_id_col]
+    
+    # make obsprefix names with site and observation type
+    df['obsprefix'] = [f"{site_no}-{obstype.split('-')[-1]}" 
+                       for site_no in df['site_no']]
 
     # read the source data
     if metadata is not None:
@@ -396,6 +406,7 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
             assert name not in unique_obsnames
         else:
             name = sn
+        name = name + f"-{obstype.split('-')[-1]}"
         unique_obsnames.add(name)
         obsnames.append(name)
     md['obsprefix'] = obsnames
@@ -407,7 +418,7 @@ def preprocess_flows(data, metadata=None, flow_data_columns=['flow'],
                                      metadata_crs=dest_crs)
 
     # data columns
-    data_cols = ['site_no', 'line_id', 'datetime'] + flow_data_columns + ['category']
+    data_cols = ['site_no', 'line_id', 'datetime', 'obsprefix'] + flow_data_columns + ['category']
     #if 'line_id' in md.columns and 'line_id' not in df.columns:
     #    # only map line_ids to data if there are more site numbers
     #    # implying that no site number maps to more than one line_id
