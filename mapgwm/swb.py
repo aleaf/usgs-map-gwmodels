@@ -6,8 +6,14 @@ import os
 from mfsetup import load_modelgrid
 
 
-def get_monthly_means(ncfile, outfile, filter=None,
+def get_monthly_means(ncfile, outfile, filter=None, 
                       check_results=True):
+    get_monthly_values(ncfile, outfile, filter=filter, 
+                      check_results=check_results, stat='mean')
+
+
+def get_monthly_values(ncfile, outfile, filter=None, 
+                       check_results=True, stat='mean', variable='net_infiltration'):
     """Get monthly mean values for a netcdf file
     with a time variable 'time' and write them to another netcdf file.
     Use dask if it is installed to limit memory required and
@@ -25,6 +31,11 @@ def get_monthly_means(ncfile, outfile, filter=None,
         By default, none (entire area is retained in output file).
     check_results : bool, optional
         Check that the monthly values written to the output file match those in memory.
+    variable : str
+        Variable of interest in NetCDF file (e.g. 'net_infiltration')
+    stat : str
+        How the monthly values should be aggregated. Can use any of the pandas/xarray
+        methods (e.g. 'mean' for ds.resample(time='MS').mean())
     """
 
     t0 = time.time()
@@ -44,9 +55,13 @@ def get_monthly_means(ncfile, outfile, filter=None,
         print('Aggregating to monthly values...')
         # average the data by month;
         # resampled data has start of each month as the timestamp
-        monthly = ds.resample(time='MS').mean()
+        monthly = getattr(ds.resample(time='MS'), stat)()
+        if 'crs' in ds.variables:
+            monthly['crs'] = ds['crs']
+        monthly.attrs = ds.attrs
+        monthly[variable].attrs = ds[variable].attrs
         monthly.to_netcdf(outfile, format='netcdf4', engine='netcdf4',  # engine='h5netcdf',
-                          encoding={'net_infiltration': {'zlib': True, 'complevel': 4,
+                          encoding={variable: {'zlib': True, 'complevel': 4,
                                                          'dtype': 'float32',  # 'scale_factor': 0.01,
                                                          '_FillValue': -9999,
                                                          # 'least_significant_digit': 8
@@ -61,6 +76,6 @@ def get_monthly_means(ncfile, outfile, filter=None,
             print("checking compressed file")
             with xr.open_dataset(outfile) as written:
                 for i in range(0, len(monthly.time)):
-                    np.testing.assert_equal(monthly.net_infiltration[i, :].values,
-                                            written.net_infiltration[i, :].values)
+                    np.testing.assert_equal(monthly[variable][i, :].values,
+                                            written[variable][i, :].values)
     print("finished in {:.2f}s\n".format(time.time() - t0))
