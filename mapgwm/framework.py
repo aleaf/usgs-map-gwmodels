@@ -525,9 +525,10 @@ def layers_to_zones(botm_array, model_cell_z_centers):
 
 
 def setup_model_layers(dem_means_raster, facies_classes_netcdf, framework_rasters, modelgrid,
-                       facies_class_variable='fac_a',
+                       facies_class_variable='facies-class', facies_zedge_variable='z-edges',
                        dem_elevation_units='meters', framework_raster_elevation_units='meters',
                        model_length_units='meters', output_folder='.',
+                       frac_valid_cells_thresh=0.50,
                        framework_unit_names=None):
     """Generate model layering and property zones from voxel-based zone numbers at uniform depths
     and raster surfaces that represent hydrogeologic contacts. The voxel-based zone numbers may
@@ -557,7 +558,11 @@ def setup_model_layers(dem_means_raster, facies_classes_netcdf, framework_raster
     modelgrid : mfsetup.MFsetupGrid instance
         Modflow-setup grid instance describing the model grid
     facies_class_variable : str, optional
-        Variable in facies_classes_netcdf containing the zone information, by default 'fac_a'
+        Variable in facies_classes_netcdf containing the zone information, 
+        by default 'facies-class'
+    facies_zedge_variable : str, optional
+        Variable in facies_classes_netcdf containing the vertical depth edge information.
+        by default 'z-edges'
     dem_elevation_units : str, optional
         Elevation units of dem_means_raster, by default 'meters'
     framework_raster_elevation_units : str, optional
@@ -566,6 +571,9 @@ def setup_model_layers(dem_means_raster, facies_classes_netcdf, framework_raster
         Length units used in the model, by default 'meters'
     output_folder : str, optional
         Location where results will be saved, by default '.'
+    frac_valid_cells_thresh : float between 0 and 1, optional
+        Layers within facies_classes_netcdf must have at least this fraction
+        of valid (not Nan) cells to be included.
     framework_unit_names : list, optional
         Unit names for the framework_rasters, by default None
 
@@ -613,12 +621,16 @@ def setup_model_layers(dem_means_raster, facies_classes_netcdf, framework_raster
 
     # flopy model grid
     grid = modelgrid
+    _, nrow, ncol = modelgrid.shape
 
     # read in the facies classes and resisitivity values
     # from framework team
     # and verify that the grid is aligned with the nhg
     ds = xr.load_dataset(facies_classes_netcdf)
-    assert point_is_on_nhg(ds.x, ds.y, offset='center')
+    # check that cell corners are aligned with NHG
+    x_edges = ds.x[:-1] - 0.5 * np.diff(ds.x)
+    y_edges = ds.y[:-1] - 0.5 * np.diff(ds.y)
+    assert point_is_on_nhg(x_edges, y_edges)
 
     # read in the dem and framework rasters and fill locations of no data
     # with the next valid elevation above
@@ -632,13 +644,62 @@ def setup_model_layers(dem_means_raster, facies_classes_netcdf, framework_raster
 
     # make AEM framework z edge elevations by subtracting off depths from model top
     voxel_z_edges = []
-    for depth in ds.zb.values:
-        voxel_z_edges.append(dem_means - depth)
-    # get the elevations of the voxel centers as well
-    voxel_z_centers = []
-    for depth in ds.z.values:
-        voxel_z_centers.append(dem_means - depth)
-    voxel_z_centers = np.array(voxel_z_centers)
+    # 1D vector of uniform depths
+    if len(ds[facies_zedge_variable].values.shape) == 1:
+        for depth in ds[facies_zedge_variable].values:
+            voxel_z_edges.append(dem_means - depth)
+            
+        # elevations of the voxel cell centers
+        voxel_z_centers = voxel_z_edges[:-1] + \
+            0.5 * np.diff(voxel_z_edges, axis=0)
+        nlay = len(depth_centers)
+        #depth_centers_3d = np.ones((nlay, nrow, ncol)) * \
+        #    np.reshape(depth_centers, (nlay, 1, 1))
+
+    # 3D array of depths (edges) by cell
+    else:
+        depth_edges = ds[facies_zedge_variable].interp(x=grid.xcellcenters[0],
+                                        y=grid.ycellcenters[:, 0], 
+                                        method='linear')
+        voxel_z_edges = dem_means - depth_edges
+        
+        # elevations of the voxel cell centers
+        voxel_z_centers = voxel_z_edges.values[:-1] + \
+            0.5 * np.diff(voxel_z_edges.values, axis=0)
+        
+        # get the fraction of nan values in each layer
+        frac_nan = voxel_z_edges.isnull().sum(axis=(1, 2))/(voxel_z_edges[0].size)
+        nan_thresh = 1 - frac_valid_cells_thresh
+        voxel_z_edges = voxel_z_edges.loc[frac_nan < nan_thresh, :, :] 
+        
+        # fill NaN values to the east and west with last value in those directions
+        voxel_z_edges_filled = voxel_z_edges.ffill(dim='x')
+        voxel_z_edges_filled = voxel_z_edges_filled.bfill(dim='x')
+        # convert to numpy array so we can use boolean indexing
+        voxel_z_edges_filled = voxel_z_edges_filled.values
+        min_thickness = 2
+        # create a 3D boolean array indicated whether each cell
+        # is at least the minimum thickness
+        valid = np.vstack((np.ones((1, *voxel_z_edges_filled.shape[1:])).astype(bool),
+                           np.diff(voxel_z_edges_filled, axis=0) > min_thickness))
+        # set bottom edges of cells below the minimum thickness to Nans
+        voxel_z_edges_filled[~valid] = np.nan
+        
+        
+    #pdf_xs = PdfPages('STM_res_depth_grad_mrvacut_v1_xsections.pdf')
+    #for row in np.arange(voxel_z_edges_filled.shape[1])[::50]:
+    #    z = voxel_z_edges_filled[:, row, :]
+    #    x = grid.xcellcenters[row, :]
+    #    x = np.tile(x, (z.shape[0], 1))
+    #    fig, ax = plt.subplots()
+    #    ax.plot(x.T, z.T)
+    #    ax.invert_yaxis()
+    #    ax.set_title(f'Row {row}')
+    #    pdf_xs.savefig()
+    #    plt.close()
+    #pdf_xs.close()
+
+
 
     # get the resistivity facies for each model cell (nearest neighbor)
     voxel_array = ds[facies_class_variable].sel(x=grid.xcellcenters[0],
@@ -664,7 +725,8 @@ def setup_model_layers(dem_means_raster, facies_classes_netcdf, framework_raster
     framework_layers = list(range(voxel_array.shape[0], nlay))
     first_framework_zone = framework_zones.min()
     n_framwork_zones = framework_layer_botms_filled.shape[0]
-    framework_zone_numbers = np.arange(first_framework_zone, first_framework_zone + n_framwork_zones)
+    framework_zone_numbers = np.arange(first_framework_zone, 
+                                       first_framework_zone + n_framwork_zones)
 
     # assume that the last len(framework_layers) are sequential
     framework_zones_below = []

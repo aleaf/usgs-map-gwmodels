@@ -26,7 +26,7 @@ def kernel_name():
     specs = M.find_kernel_specs()
 
     # try using the first one of these kernels that is found
-    try_kernel_names = ['test', 'sfrmaker', 'gis']
+    try_kernel_names = ['test', 'sfrmaker', 'gis', 'mapgwm_ci']
     for name in try_kernel_names:
         if name in specs:
             return name
