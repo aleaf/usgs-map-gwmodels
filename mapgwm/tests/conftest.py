@@ -28,13 +28,12 @@ def test_data_path(project_root_path):
 def test_output_folder(project_root_path):
     """(Re)make an output folder for the tests
     at the begining of each test session."""
-    folder = os.path.join(project_root_path, 'mapgwm', 'tests', 'output')
+    folder = project_root_path / 'mapgwm/tests/output'
     reset = True
-    if reset:
-        if os.path.isdir(folder):
-            shutil.rmtree(folder)
-        os.makedirs(folder)
-    return Path(folder)
+    if reset and folder.exists():
+        shutil.rmtree(folder)
+    folder.mkdir(exist_ok=True, parents=True)
+    return folder
 
 
 @pytest.fixture(scope='module')

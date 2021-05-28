@@ -652,7 +652,7 @@ def setup_model_layers(dem_means_raster, facies_classes_netcdf, framework_raster
         # elevations of the voxel cell centers
         voxel_z_centers = voxel_z_edges[:-1] + \
             0.5 * np.diff(voxel_z_edges, axis=0)
-        nlay = len(depth_centers)
+        nlay = len(voxel_z_centers)
         #depth_centers_3d = np.ones((nlay, nrow, ncol)) * \
         #    np.reshape(depth_centers, (nlay, 1, 1))
 

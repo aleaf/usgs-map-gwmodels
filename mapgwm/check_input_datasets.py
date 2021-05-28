@@ -20,6 +20,8 @@ from mapgwm.headobs import preprocess_headobs, get_data
 
 
 def get_header_length(sitefile, col0='SITE_BADGE'):
+    print(os.getcwd())
+    print(sitefile)
     with open(sitefile) as src:
         for i, line in enumerate(src):
             if '#' not in str(line) and col0 in str(line):
@@ -56,7 +58,7 @@ def compare_lists(list1, name1, list2, name2):
     return passed
 
 
-def check_headobs_header(new_data_file, new_meta_file, path_to_tests='.'):
+def check_headobs_header(new_data_file, new_meta_file, test_data_path='.'):
     """headobs.py reads in data from Will Asquith as two csv files
        datafile - csv with observed monthly heads
        metadata - csv with site characteristics
@@ -78,7 +80,7 @@ def check_headobs_header(new_data_file, new_meta_file, path_to_tests='.'):
        (pass1 and pass2):  Boolean, False if files do not match
     """
        
-    path = os.path.join(path_to_tests, 'tests', 'data', 'headobs')
+    path = os.path.join(test_data_path, 'headobs')
     data_file = os.path.join(path, 'GW_monthly_stats_test.txt')
     metadata_file = os.path.join(path, 'GW_monthly_meta_test.txt')
 

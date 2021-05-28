@@ -3,6 +3,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
+from mapgwm.obs import preprocess_obs
 from mapgwm.swflows import aggregrate_values_to_stress_periods, preprocess_flows, combine_measured_estimated_values
 
 
@@ -139,7 +140,7 @@ def test_aggregrate_values_to_stress_periods(obsdata, times, category_col, keep_
                            'dec_long_va', 'dec_lat_va', None, None, None, 4269,
                            'preprocessed_flows_nwis.csv'))
                          )
-def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_cols, site_no_col,
+def test_preprocess_obs(test_data_path, datafile, metadata_file, flow_data_cols, site_no_col,
                           x_coord_col, y_coord_col, flow_qualifier_column,
                           line_id_col, include_sites, source_crs,
                           test_output_folder, outfile):
@@ -156,9 +157,9 @@ def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_col
                       'qbase_cfs': 'qbase_m3d',
                       'q_cfs': 'qtotal_m3d',
                       'station_nm': 'name'}
-    data, metadata = preprocess_flows(datafile,
+    data, metadata = preprocess_obs(datafile,
                                       metadata_file,
-                                      flow_data_columns=flow_data_cols,
+                                      data_columns=flow_data_cols,
                                       start_date='2008-01-01',
                                       active_area=os.path.join(test_data_path, 'extents/ms_delta.shp'),
                                       datetime_col='datetime',
@@ -166,13 +167,13 @@ def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_col
                                       line_id_col=line_id_col,
                                       x_coord_col=x_coord_col,
                                       y_coord_col=y_coord_col,
-                                      flow_qualifier_column=flow_qualifier_column,
+                                      qualifier_column=flow_qualifier_column,
                                       include_sites=None,
                                       include_line_ids=None,
                                       source_crs=source_crs,
-                                      source_volume_units='ft3',
+                                      source_length_units='ft3',
                                       source_time_units='s',
-                                      dest_volume_units='m3',
+                                      dest_length_units='m3',
                                       dest_time_units='d',
                                       geographic_groups=geographic_groups,
                                       geographic_groups_col='obsgroup',
@@ -185,7 +186,7 @@ def test_preprocess_flows(test_data_path, datafile, metadata_file, flow_data_col
     # check that line IDs are included with time series if there is a line_id column
     if line_id_col is not None:
         expected_data_columns.append('line_id')
-    expected_data_columns += ['datetime'] + flow_data_cols + ['category']
+    expected_data_columns += ['datetime', 'obsprefix'] + flow_data_cols + ['category']
     expected_data_columns = [column_renames.get(c, c) for c in expected_data_columns]
     assert np.all(data.columns == expected_data_columns)
     assert data.index.name == 'datetime'
@@ -210,7 +211,8 @@ def test_combine_measured_estimated_values(test_output_folder):
     results = combine_measured_estimated_values(nwis_timeseries_file, rf_timeseries_file,
                                                 measured_values_data_col='qbase_m3d', estimated_values_data_col='qbase_m3d',
                                                 resample_freq='MS')
-    expected_cols = ['site_no', 'line_id', 'datetime', 'category', 'est_qtotal_m3d', 'est_qbase_m3d',
+    expected_cols = ['site_no', 'line_id', 'datetime', 'obsprefix', 'category', 
+                     'est_qtotal_m3d', 'est_qbase_m3d',
                      'meas_qtotal_m3d', 'meas_qbase_m3d', 'obsval']
     assert np.all(results.columns == expected_cols)
     for col in ['site_no', 'datetime', 'category', 'obsval']:

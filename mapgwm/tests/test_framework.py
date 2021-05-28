@@ -47,6 +47,7 @@ def model_layers_zones(test_data_path, test_output_folder, delta_inset_model_gri
                                             framework_rasters,
                                             delta_inset_model_grid,
                                             facies_class_variable='fac_a',
+                                            facies_zedge_variable='zb',
                                             dem_elevation_units='feet',
                                             framework_raster_elevation_units='feet',
                                             model_length_units='meters', output_folder=output_folder,

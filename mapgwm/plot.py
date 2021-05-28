@@ -124,6 +124,7 @@ def plot_wateruse(wel_files, perioddata, add_data=None,
         Path(outfile).parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(outfile)
         plt.close()
+        print(f'wrote {outfile}')
     else:
         return ax
 
