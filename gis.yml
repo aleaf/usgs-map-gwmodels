@@ -8,6 +8,7 @@ dependencies:
 - jupyterlab
 - notebook
 - pandas
+- openpyxl
 - geopandas 
 - numba
 - xarray

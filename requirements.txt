@@ -4,6 +4,7 @@ numpy
 scipy
 xarray
 pandas
+openpyxl
 gdal
 fiona
 rasterio

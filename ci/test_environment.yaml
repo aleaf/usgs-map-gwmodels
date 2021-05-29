@@ -16,6 +16,7 @@ dependencies:
 - xarray
 - netcdf4
 - pandas
+- openpyxl
 - gdal
 - fiona
 - rasterio

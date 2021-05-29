@@ -185,7 +185,7 @@ If you are on the USGS network, using Windows, and you get this error message:
     An HTTP error occurred when trying to retrieve this URL.
     HTTP errors are often intermittent, and a simple retry will get you on your way.
 
-Adding the following line to ``environment.yml`` should work:
+Adding the following line to ``requirements.yml`` should work:
 
 .. code-block:: yaml
 
