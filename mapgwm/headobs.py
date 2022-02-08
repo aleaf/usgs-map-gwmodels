@@ -1,7 +1,7 @@
 """
 Code for preprocessing head observation data.
 """
-import collections
+from collections.abc import Mapping
 import os
 from pathlib import Path
 import warnings
@@ -90,7 +90,7 @@ def read_metadata(metadata_files, column_renames=None,
     # update the default column renames
     # with any supplied via column_renames parameter
     col_renames = gwlevels_col_renames.copy()
-    if isinstance(column_renames, collections.Mapping):
+    if isinstance(column_renames, Mapping):
         col_renames.update(column_renames)
 
     # read in the metadata
@@ -121,7 +121,7 @@ def read_metadata(metadata_files, column_renames=None,
 
     # create aquifer column in metadata
     regional_aquifer_codes = aq_codes_dict['regional_aquifer'].copy()
-    if isinstance(aquifer_names, collections.Mapping):
+    if isinstance(aquifer_names, Mapping):
         regional_aquifer_codes.update(aquifer_names)
     metadata['local_aquifer'] = [aq_codes_dict['aquifer_code_names'].get(cd, 'unspecified')
                                  for cd in metadata.aqfr_cd]
@@ -230,7 +230,7 @@ def get_data(data_file, metadata_files, aquifer_names=None,
     # update the default column renames
     # with any supplied via column_renames parameter
     col_renames = gwlevels_col_renames.copy()
-    if isinstance(column_renames, collections.Mapping):
+    if isinstance(column_renames, Mapping):
         col_renames.update(column_renames)
 
     data_skiprows = get_header_length(data_file)
@@ -258,6 +258,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
                        active_area_id_column=None,
                        active_area_feature_id=None,
                        source_crs=4269, dest_crs=5070,
+                       default_open_interval_length=None,
                        data_length_units='meters',
                        model_length_units='meters',
                        geographic_groups=None,
@@ -289,8 +290,8 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
 
         ========= ================================================================
         site_no   site identifier
-        lat       lattitude
-        lon       longitude
+        lat or y  latitude or y-coorindate in `source_crs`
+        lon or x  longitude or x-coordinate in `source_crs`
         datetime  measurement dates in pandas datetime format
         head      average head for the period represented by the datetime
         last_head last head measurement for the period represented by the datetime
@@ -300,6 +301,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
         Notes:
 
         * lat and lon columns can alternatively be in the metadata table
+        * 'x' and 'y' columns can be supplied in
         * `last_head` and `head_std` only need to be included if they are in
           `head_data_columns`
 
@@ -364,6 +366,12 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
         Coordinate reference system of the model. Same input types
         as ``source_crs``.
         By default, epsg:5070
+    default_open_interval_length : float, optional
+        Option to specify a default open interval length 
+        for wells that don't have screen top information.
+        By default None, in which case the median length is used,
+        or zero open interval length, if no wells in the dataset 
+        have screen top information.
     data_length_units : str; 'meters', 'feet', etc.
         Length units of head observations.
     model_length_units : str; 'meters', 'feet', etc.
@@ -443,23 +451,35 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     if np.any(no_data_in_period):
         in_period = df.datetime >= stdate
         n_sites_before = len(set(df.loc[no_data_in_period, 'site_no']).difference(set(df.loc[in_period, 'site_no'])))
-        print((f'culling {in_period.sum():,d} measurements from {n_sites_before:,d} '
+        print((f'culling {no_data_in_period.sum():,d} measurements from {n_sites_before:,d} '
               f'sites that are prior to start date of {start_date}'))
         df = df.loc[in_period]
 
     # collapse dataset to mean values at each site
-    groups = df.groupby('site_no')
-    well_info = groups.mean().copy()
+    if 'site_no' in metadata.columns:
+        metadata.index = metadata['site_no']
+    if df.index.name == 'site_no':
+        groups = df.groupby(df.index)
+    else:
+        groups = df.groupby('site_no')
+    well_info = groups.first().copy()
     well_info = well_info.join(metadata, rsuffix='_meta')
+    for c in head_data_columns:
+        well_info[c] = groups[c].mean()
     well_info['start_dt'] = groups.datetime.min()
     well_info['end_dt'] = groups.datetime.max()
-    well_info.drop(labels=['year', 'month'], axis=1, inplace=True)
+    well_info.drop(labels=['year', 'month'], axis=1, inplace=True, errors='ignore')
     well_info['site_no'] = well_info.index
     well_info['n'] = groups.datetime.count()
 
     # project x, y to model crs
-    x_pr, y_pr = project((well_info.lon.values, well_info.lat.values), source_crs, dest_crs)
-    well_info.drop(['lon', 'lat'], axis=1, inplace=True)
+    x_col = 'lon'
+    y_col = 'lat'
+    if 'lon' not in well_info.columns and 'lat' not in well_info.columns:
+        x_col = 'x'
+        y_col = 'y'
+    x_pr, y_pr = project((well_info[x_col].values, well_info[y_col].values), source_crs, dest_crs)
+    well_info.drop(['lon', 'lat'], axis=1, inplace=True, errors='ignore')
     well_info['x'], well_info['y'] = x_pr, y_pr
     well_info['geometry'] = [Point(x, y) for x, y in zip(x_pr, y_pr)]
 
@@ -481,6 +501,8 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     for col in length_columns:
         if col in well_info.columns:
             well_info[col] *= unit_conversion
+    if default_open_interval_length is not None:
+        default_open_interval_length *= unit_conversion
 
     well_info['well_botm'] = well_info['well_el'] - well_info['well_depth']
     well_info['screen_top'] = well_info['well_el'] - well_info['screen_top']
@@ -498,7 +520,7 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     # #### trim down to only well_info with both estimated water levels and standard deviation
     # monthly measured levels may not have standard deviation
     # (as opposed to monthly statistical estimates)
-    criteria = pd.notnull(well_info['head'])
+    criteria = pd.notnull(well_info[head_data_columns[0]])
     #if 'head_std' in df.columns:
     #    criteria = criteria & pd.notnull(well_info['head_std'])
     well_info = well_info[criteria]
@@ -508,7 +530,9 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
 
     # categorize wells based on quality of open interval information
     # estimate missing open intervals where possible
-    well_info = fill_well_open_intervals(well_info, out_plot=out_plot)
+    well_info = fill_well_open_intervals(well_info, 
+                                         default_open_interval_length=default_open_interval_length,
+                                         out_plot=out_plot)
 
     # drop well_info with negative reported open interval
     #well_info = well_info.loc[open_interval_length > 0]
@@ -555,7 +579,9 @@ def preprocess_headobs(data, metadata, head_data_columns=['head', 'last_head', '
     return df, well_info
 
 
-def fill_well_open_intervals(well_info, out_plot='open_interval_lengths.pdf'):
+def fill_well_open_intervals(well_info, 
+                             default_open_interval_length=None,
+                             out_plot='open_interval_lengths.pdf'):
     """Many or most of the well_info output from `visGWDB <https://doi.org/10.5066/P9W004O6>`
     may not have complete open interval information. A much greater proportion may have
     depth information. Use reported well depths and a computed median open interval
@@ -578,6 +604,12 @@ def fill_well_open_intervals(well_info, out_plot='open_interval_lengths.pdf'):
         screen_botm  open interval bottom elevation
         well_botm    well bottom elevation
         ===========  ====================================
+    default_open_interval_length : float, optional
+        Option to specify a default open interval length 
+        for wells that don't have screen top information.
+        By default None, in which case the median length is used,
+        or zero open interval length, if no wells in the dataset 
+        have screen top information.
 
     Returns
     -------
@@ -636,9 +668,14 @@ def fill_well_open_intervals(well_info, out_plot='open_interval_lengths.pdf'):
                                                                                          ), transform=ax.transAxes)
         plt.savefig(out_plot)
         plt.close()
-    median = open_interval_length.median()
+    if default_open_interval_length is None:
+        default_open_interval_length = open_interval_length.median()
+        # in cases where there is no screen top information in the dataset
+        # median will be nan; assign default open inv. length of 0
+        if np.isnan(default_open_interval_length):
+            default_open_interval_length = 0
     ind = well_info.category == 2
-    well_info.loc[ind, 'top'] = well_info.loc[ind, 'well_botm'] + median
+    well_info.loc[ind, 'top'] = well_info.loc[ind, 'well_botm'] + default_open_interval_length
     well_info.loc[ind, 'botm'] = well_info.loc[ind, 'well_botm']
 
     # verify that the assigned top and bottom depths are consistent with
@@ -665,6 +702,119 @@ def fill_well_open_intervals(well_info, out_plot='open_interval_lengths.pdf'):
           'assigned to category 4.'.format(is_incomplete.sum()/len(well_info),
                                            is_incomplete.sum()))
     # any wells still missing information should be in the fourth category
-    assert set(well_info.loc[is_incomplete, 'category']).union({4}) == {4} == {4}
+    assert set(well_info.loc[is_incomplete, 'category']).union({4}) == {4}
 
     return well_info
+
+
+def get_spinup_obs(field_measurements, field_measurement_inventory,
+                   perioddata, dem, source_crs, active_area=None,
+                   start_date=None, geographic_groups=None,
+                   default_open_interval_ft=50,
+                   **kwargs):
+    """Compute head observations that are the observed equivalents of
+    simulated heads on the last timestep of multiyear or multi-decadal stress periods.
+    Observed equivalents should ideally be free of seasonal bias, and representative
+    of average conditions near the end of the stress period. For example, if
+    the stress period was 1900-1950, we would want an average head value
+    for the late 1940s (for comparison with the simulated value on the last timestep).
+
+    Parameters
+    ----------
+    field_measurements : DataFrame
+        DataFrame of head measurements. Must have the following columns:
+
+        ========= ================================================================
+        site_no   site identifier
+        datetime  measurement dates in pandas datetime format
+        head      average head for the period represented by the datetime
+        last_head last head measurement for the period represented by the datetime
+        head_std  standard deviation of measured heads within the datetime period
+        ========= ================================================================
+    
+    field_measurement_inventory : DataFrame
+        DataFrame of head observation site information. Must have the following columns:
+        
+        ========= ================================================================
+        site_no   site identifier
+        datetime  measurement dates in pandas datetime format
+        head      average head for the period represented by the datetime
+        last_head last head measurement for the period represented by the datetime
+        head_std  standard deviation of measured heads within the datetime period
+        ========= ================================================================
+    
+    perioddata : DataFrame
+        DataFrame with start/end dates for stress periods or timesteps. 
+        Must have the following columns:
+        
+        =================== =============================================================
+        time                modflow simulation time, in days
+        start_datetime      start date for each stress period or timestep
+        end_datetime        end date for each stress period or timestep
+        =================== =============================================================
+    dem : [type]
+        [description]
+    source_crs : [type]
+        [description]
+    active_area : str
+        Shapefile with polygon to cull observations to. Automatically reprojected
+        to dest_crs if the shapefile includes a .prj file.
+        by default, None.
+    start_date : None
+        Start date for truncating observations.
+    default_open_interval_ft : int, optional
+        [description], by default 50
+    """
+
+    fm = field_measurements
+    if 'datetime' not in fm.index.dtype.name and 'datetime' in fm.columns:
+      fm.index = pd.to_datetime(fm['datetime'])
+    fm_inv = field_measurement_inventory
+    # Assign stress periods to the measured values
+    fm['per'] = -9999
+    for per, start, end in zip(perioddata['per'], perioddata['start_datetime'], perioddata['end_datetime']):
+        fm.loc[start:end, 'per'] = per
+
+    # group the measured values by period, retaining the last n values within 2 years
+    groups = fm.groupby('per')
+
+    # aggreate the measured values to the mean of the last two years in each period
+    # only retaining sites with at least two measurements in those two years
+    retain_last_nyears = 2
+    nmin = 2  # min number of measurements
+    means_dfs = []
+    for per in range(1, 7):
+        df = groups.get_group(per)
+        end = pd.Timestamp(perioddata.loc[per, 'end_datetime'])
+        start = end - pd.Timedelta(365.25*retain_last_nyears, unit='days')
+        culled = df.loc[start.strftime('%Y-%m-%d'):end.strftime('%Y-%m-%d'), :]
+        grouped = culled.groupby('site_no')
+        means = grouped.mean()
+        means['n'] = grouped.count()['per']
+        means['site_no'] = grouped['site_no'].first()
+        means = means[means['n'] >= nmin]
+        means['per'] = means['per'].astype(int)
+        means['datetime'] = perioddata.loc[per, 'end_datetime']
+        means_dfs.append(means)
+
+    spinup_obs = pd.concat(means_dfs)
+    
+    # Now format the spinup obs to match the other obs 'data' dataframe above
+    # Remove any duplicates
+    # Group all obs prior to 4/2007 (in the multi-year stress periods) as spinup
+    if 'sl_lev_va' in spinup_obs.columns and 'last_head' not in spinup_obs.columns:
+      spinup_obs['last_head'] = spinup_obs['sl_lev_va']
+    spinup_data, spinup_meta = preprocess_headobs(spinup_obs,
+                                        fm_inv,
+                                        head_data_columns=['last_head'],
+                                        data_length_units='meters',
+                                        active_area=active_area,
+                                        source_crs=source_crs,
+                                        dest_crs=5070,
+                                        start_date=start_date,
+                                        geographic_groups=geographic_groups,
+                                        geographic_groups_col='obsgroup',
+                                        default_open_interval_length=default_open_interval_ft,
+                                        dem=dem,
+                                        outfile=None, **kwargs)
+    return spinup_data, spinup_meta
