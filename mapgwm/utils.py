@@ -7,7 +7,7 @@ from pathlib import Path
 import gisutils
 import numpy as np
 from scipy import interpolate
-from shapely.geometry import MultiPolygon
+from shapely.geometry import MultiPolygon, Polygon
 import pandas as pd
 from gisutils import shp2df
 
@@ -22,13 +22,23 @@ def makedirs(path):
 
 def assign_geographic_obsgroups(metadata, geographic_groups, geographic_groups_col,
                                 metadata_crs):
-
+    print('grouping observations by geographic regions...')
     md = metadata.copy()
     if geographic_groups is not None:
+        # get the group name from a dictionary
+        geo_group_dict = {}
         if isinstance(geographic_groups, dict):
-            pass
+            for group_name, polygon in geographic_groups.items():
+                # in the case of a shapefile, apply all shapes to that group name
+                if isinstance(polygon, str) or isinstance(polygon, Path):
+                    group_info = shp2df(str(polygon), dest_crs=metadata_crs)
+                    # convert to polygons if needed
+                    geoms = [Polygon(g) for g in group_info.geometry]
+                    geo_group_dict[group_name] = MultiPolygon(geoms)
+                else:
+                    geo_group_dict[group_name] = polygon
         else:
-            geo_group_dict = {}
+            # option to supply shapefile with multiple groups/polygons
             if isinstance(geographic_groups, str) or isinstance(geographic_groups, Path):
                 geographic_groups = [geographic_groups]
             for item in reversed(geographic_groups):
@@ -37,8 +47,9 @@ def assign_geographic_obsgroups(metadata, geographic_groups, geographic_groups_c
                                   group_info['geometry']))
                 geo_group_dict.update(groups)
         for group_name, polygon in geo_group_dict.items():
-            within = [g.within(polygon) for g in md.geometry]
+            within = [g.intersects(polygon) for g in md.geometry]
             md.loc[within, 'geo_group'] = group_name
+            print(f'{group_name}: {np.sum(within)} obs ({np.sum(within)/len(within):.1%})')
     return md
 
 
