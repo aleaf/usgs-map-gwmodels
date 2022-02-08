@@ -153,7 +153,7 @@ def plot_slice(layer_elevations, property_data=None,
         #x = np.squeeze(x[loc])  # + [x[-1] + 1]
         #x = np.ma.masked_array(x, mask=~loc)
         zstart = voxel_start_layer
-        zend = voxel_start_layer + property_data.shape[0] + 1
+        zend = voxel_start_layer + property_data.shape[0] #+ 1
         z = np.squeeze(z[zstart:zend, :])
 
         #if not np.any(z):
@@ -174,6 +174,9 @@ def plot_slice(layer_elevations, property_data=None,
             data_mask = (thicknesses <= 0) | is_voxel
             voxel_data = np.ma.masked_array(data, mask=voxel_mask)
             data = np.ma.masked_array(data, mask=data_mask)
+            # note: 'auto' shading is default, where location of pixels
+            # is based on whether dimensions of x and z are same as voxel_data
+            # or one bigger
             pcm2 = ax.pcolormesh(x, z, voxel_data, alpha=0.5, cmap=voxel_cmap,
                                  vmin=voxel_vmin, vmax=voxel_vmax)
             # add separate axis for colorbar to control position
@@ -193,7 +196,7 @@ def plot_slice(layer_elevations, property_data=None,
 
     # plot the layer bottom elevations
     plot_layer = np.any(thicknesses > 0, axis=1)
-    plot_layer = np.append(plot_layer, True)
+    #plot_layer = np.append(plot_layer, True)
     plot_ij = np.any(thicknesses > 0, axis=0)
     z[z == z_nodata] = np.nan
     if np.any(plot_ij):

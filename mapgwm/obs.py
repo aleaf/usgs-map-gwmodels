@@ -1,6 +1,6 @@
 """General functions for working with observations.
 """
-import collections
+from collections.abc import Mapping
 import os
 from shapely.geometry import Point
 import pandas as pd
@@ -287,7 +287,7 @@ def preprocess_obs(data, metadata=None, data_columns=['flow'],
                     }
     # update the default column renames
     # with any supplied via column_renames parameter
-    if isinstance(column_renames, collections.Mapping):
+    if isinstance(column_renames, Mapping):
         dest_columns.update(column_renames)
     df.rename(columns=dest_columns, inplace=True)
     data_columns = [c if c not in dest_columns else dest_columns[c]
