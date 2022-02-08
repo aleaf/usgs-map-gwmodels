@@ -12,13 +12,15 @@ def plot_wateruse(wel_files, perioddata, add_data=None,
                   wel_flux_col='q',
                   model_volume_units='$m^3$', model_time_units='day',
                   plot_volume_units='mgal', plot_time_units='day',
+                  annual_means=False,
+                  start_date=None, end_date=None,
                   outfile=None):
     """
 
     Parameters
     ----------
     wel_files :
-        A head line with column names is assumed. For example:
+        A header line with column names is assumed. For example:
         #k,i,j,q,boundname
 
     perioddata :
@@ -90,11 +92,17 @@ def plot_wateruse(wel_files, perioddata, add_data=None,
     # forward fill nan WEL values values
     # (where other times may have been inserted)
     period_sums['WEL package input'] = period_sums['WEL package input'].ffill()
+    for col in add_data.keys():
+        period_sums[col] = period_sums[col].interpolate(limit_area='inside')
+    #for col in 'WEL package input', '1900-2007_avg_pumping_from_meras22_m3.csv':
+    #    period_sums[col] = period_sums[col].ffill()
     #period_sums = period_sums.resample('M').mean() #.ffill()
 
     # make a plot
     fig, ax = plt.subplots(figsize=(11, 8.5))
-    ax = period_sums.plot(ax=ax)
+    if annual_means:
+        period_sums = period_sums.groupby(period_sums.index.year).mean()
+    ax = period_sums.loc[slice(start_date, end_date)].plot(ax=ax)
     units_text = f'{model_volume_units}/{model_time_units}'
     ax.set_ylabel(f'Pumpage, in {units_text}')
     ax.set_xlabel('')
@@ -116,19 +124,33 @@ def plot_wateruse(wel_files, perioddata, add_data=None,
     for label in l:
         new_label = label
         if label in means:
-            new_label += f' (mean: {means[label]:g} {plot_units_text})'
+            new_label += f' (mean: {means[label]:,g} {plot_units_text})'
         labels_with_means.append(new_label)
     ax.legend(h, labels_with_means)
 
     if outfile is not None:
-        Path(outfile).parent.mkdir(parents=True, exist_ok=True)
+        outfile = Path(outfile)
+        outfile_name = f"{outfile.stem}"
+        if start_date is None:
+            start_date = period_sums.index[0]
+            if isinstance(period_sums.index[0], pd.Timestamp):
+                start_date = start_date.strftime('%Y-%m-%d')
+        outfile_name += f"_{start_date}"
+        if end_date is None:
+            end_date = period_sums.index[-1]
+            if isinstance(period_sums.index[0], pd.Timestamp):
+                end_date = end_date.strftime('%Y-%m-%d')
+            outfile_name += f"_to_{end_date}"
+        outfile_name = outfile_name + ".pdf"
+        outfile = outfile.parent / outfile_name
+        outfile.parent.mkdir(parents=True, exist_ok=True)
         plt.savefig(outfile)
         plt.close()
         print(f'wrote {outfile}')
     else:
         return ax
 
-
+    
 def format_xtick_labels(df, ax, maxlabels=30, date_format='%Y-%m-%d'):
     """Clean up the xtick labels on a time axis.
     Cap the number of labels to maxlabels, and format
