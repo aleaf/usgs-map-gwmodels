@@ -206,10 +206,12 @@ def preprocess_iwum_pumping(ncfile,
         surf_unit_conversion = convert_length_units(estimated_production_surface_units,
                                                     model_length_units)
         est_screen_top = get_values_at_points(estimated_production_zone_top, ds_x, ds_y,
-                                                points_crs=nc_crs)
+                                              xarray_variable='ScrTopAlt_Mos',
+                                              points_crs=nc_crs)
         est_screen_top *= surf_unit_conversion
         est_screen_botm = get_values_at_points(estimated_production_zone_botm, ds_x, ds_y,
-                                                 points_crs=nc_crs)
+                                               xarray_variable='ScrBotEst_Mos',
+                                               points_crs=nc_crs)
         est_screen_botm *= surf_unit_conversion
 
         # in any places where screen top is less than the screen botm,
