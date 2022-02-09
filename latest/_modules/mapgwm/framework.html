@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mapgwm.framework &mdash; usgs-map-gwmodels 0.post72.dev0+g3e0095e documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> usgs-map-gwmodels
+          </a>
+              <div class="version">
+                0.post72.dev0+g3e0095e
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html"> Demo of USGS-MAP-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html"> Code reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html"> Input Data Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html"> References cited</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">usgs-map-gwmodels</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>mapgwm.framework</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mapgwm.framework</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for preprocessing products from the MAP Framework Team</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_pdf</span> <span class="kn">import</span> <span class="n">PdfPages</span>
+<span class="kn">from</span> <span class="nn">gisutils.raster</span> <span class="kn">import</span> <span class="n">get_values_at_points</span><span class="p">,</span> <span class="n">write_raster</span>
+<span class="kn">from</span> <span class="nn">mfsetup</span> <span class="kn">import</span> <span class="n">load_modelgrid</span>
+<span class="kn">from</span> <span class="nn">mfsetup.discretization</span> <span class="kn">import</span> <span class="n">voxels_to_layers</span><span class="p">,</span> <span class="n">fill_cells_vertically</span>
+<span class="kn">from</span> <span class="nn">mfsetup.testing</span> <span class="kn">import</span> <span class="n">point_is_on_nhg</span>
+<span class="kn">from</span> <span class="nn">mfsetup.units</span> <span class="kn">import</span> <span class="n">convert_length_units</span>
+
+
+<div class="viewcode-block" id="get_layer"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.get_layer">[docs]</a><span class="k">def</span> <span class="nf">get_layer</span><span class="p">(</span><span class="n">botm_array</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">elev</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the botm_array for elevations at i, j locations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    botm_array : 3D numpy array</span>
+<span class="sd">        layer bottom elevations</span>
+<span class="sd">    i : scaler or sequence</span>
+<span class="sd">        row index (zero-based)</span>
+<span class="sd">    j : scaler or sequence</span>
+<span class="sd">        column index</span>
+<span class="sd">    elev : scaler or sequence</span>
+<span class="sd">        elevation (in same units as model)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    k : np.ndarray (1-D) or scalar</span>
+<span class="sd">        zero-based layer index</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">to_array</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">arg</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">arg</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+    <span class="n">nlay</span> <span class="o">=</span> <span class="n">botm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">elev</span> <span class="o">=</span> <span class="n">to_array</span><span class="p">(</span><span class="n">elev</span><span class="p">)</span>
+    <span class="n">botms</span> <span class="o">=</span> <span class="n">botm_array</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>  <span class="c1"># .tolist()</span>
+    <span class="c1"># identify layer botms that are above and below the elevations</span>
+    <span class="n">differences</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">botms</span> <span class="o">-</span> <span class="n">elev</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">isabove</span> <span class="o">=</span> <span class="n">differences</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+    <span class="c1"># layer is the number of botm_array that are above</span>
+    <span class="n">layers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">isabove</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># force elevations below model bottom into bottom layer</span>
+    <span class="n">layers</span><span class="p">[</span><span class="n">layers</span> <span class="o">&gt;</span> <span class="n">nlay</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nlay</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">layers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">layers</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">layers</span> <span class="o">=</span> <span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">layers</span></div>
+
+
+<div class="viewcode-block" id="plot_slice"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.plot_slice">[docs]</a><span class="k">def</span> <span class="nf">plot_slice</span><span class="p">(</span><span class="n">layer_elevations</span><span class="p">,</span> <span class="n">property_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+               <span class="n">voxel_start_layer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">voxel_zones</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
+               <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">add_surfaces</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Plot a single cross section slice</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layer_elevations : 3D numpy array</span>
+<span class="sd">        Array of layer elevations, starting with the model top. </span>
+<span class="sd">        (Length equal to the number of botm_array + 1)</span>
+<span class="sd">    property_data : 3D numpy array </span>
+<span class="sd">        Array of zone numbers generated by setup_model_layers.</span>
+<span class="sd">    row : int or slice instance</span>
+<span class="sd">        If a cross section along a row is desired, row should be a integer,</span>
+<span class="sd">        and column should be a slice instance indicating the range of columns to include.</span>
+<span class="sd">        by default, 0.</span>
+<span class="sd">    column : int or slice instance</span>
+<span class="sd">        If a cross section along a column is desired, column should be a integer,</span>
+<span class="sd">        and row should be a slice instance indicating the range of rows to include.</span>
+<span class="sd">        by default, slice(None), which includes all columns.</span>
+<span class="sd">    voxel_start_layer : int, optional</span>
+<span class="sd">        First layer with voxel data, by default 0</span>
+<span class="sd">    voxel_zones : sequence, optional</span>
+<span class="sd">        Zone numbers within property_data that are voxel-based, </span>
+<span class="sd">        by default None</span>
+<span class="sd">    cmap : str, optional</span>
+<span class="sd">        Matplotlib colormap for non-voxel zone numbers, by default &#39;copper&#39;,</span>
+<span class="sd">        to contrast with colormap for voxel-based zone numbers.</span>
+<span class="sd">    voxel_cmap : str, optional</span>
+<span class="sd">        Matplotlib colormap for voxel-based zone numbers, by default &#39;viridis&#39;.</span>
+<span class="sd">    unit_labels : dict, optional</span>
+<span class="sd">        Dictionary mapping non-voxel zone numbers to hydrogeologic units, </span>
+<span class="sd">        by default None</span>
+<span class="sd">        </span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : matplotlib AxesSubplot instance for figure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># cross section code</span>
+    <span class="n">nlay</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">layer_elevations</span><span class="o">.</span><span class="n">shape</span>
+    <span class="c1"># create meshgrid for rows or columns</span>
+    <span class="c1"># along a row</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+        <span class="c1"># x, z = np.meshgrid(range(ncol), np.array(z_edges))</span>
+        <span class="c1"># x = grid.xcellcenters[row, column]</span>
+        <span class="n">ncells</span> <span class="o">=</span> <span class="n">ncol</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Row </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">xlabel</span> <span class="o">=</span> <span class="s1">&#39;Column in model&#39;</span>
+    <span class="c1"># along a column</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># x, z = np.meshgrid(range(nrow), np.array(z_edges))</span>
+        <span class="c1"># x = grid.ycellcenters[row, column]</span>
+        <span class="n">ncells</span> <span class="o">=</span> <span class="n">nrow</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Column </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+        <span class="n">xlabel</span> <span class="o">=</span> <span class="s1">&#39;Row in model&#39;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ncells</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">layer_elevations</span><span class="p">[:,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># since z is used to define cell edges in the pcolormesh (below)</span>
+    <span class="c1"># z cannot be masked or have nan values</span>
+    <span class="c1"># set missing data values (outside of the model footprint) in z</span>
+    <span class="c1"># to -9999</span>
+    <span class="c1"># pcolormesh will still skip these cells, as they are defined</span>
+    <span class="c1"># as no data by the mask for the property array</span>
+    <span class="n">z_nodata</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+    <span class="n">z</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">z</span><span class="p">)]</span> <span class="o">=</span> <span class="n">z_nodata</span>
+    <span class="c1"># zero values will result in pcolormesh edges that dip to zero</span>
+    <span class="c1"># on the edge of nodata areas</span>
+    <span class="c1"># fill these with previous value in either direction</span>
+    <span class="c1"># first drop any indices along the edges</span>
+    <span class="k">for</span> <span class="n">side</span> <span class="ow">in</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">k</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">z</span> <span class="o">==</span> <span class="n">z_nodata</span><span class="p">)</span>
+        <span class="n">interior_zeros</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">j</span><span class="p">[</span><span class="n">interior_zeros</span><span class="p">]</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="n">interior_zeros</span><span class="p">]</span>
+        <span class="c1"># then reassign the zero elevations</span>
+        <span class="n">z</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">j</span><span class="o">+</span><span class="n">side</span><span class="p">]</span>
+
+    <span class="c1">#z = np.ma.masked_where(np.isnan(z), z)</span>
+    <span class="n">thicknesses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">thicknesses</span><span class="p">[</span><span class="n">thicknesses</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">))</span>
+
+    <span class="c1"># optionally plot a property such as resistivity facies</span>
+    <span class="k">if</span> <span class="n">property_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># drop na values</span>
+        <span class="c1"># (areas with no voxel data at any depth)</span>
+        <span class="c1">#loc = ~np.all(z.mask, axis=0)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">property_data</span><span class="p">[:,</span> <span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">property_data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">property_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="c1">#x = np.squeeze(x[loc])  # + [x[-1] + 1]</span>
+        <span class="c1">#x = np.ma.masked_array(x, mask=~loc)</span>
+        <span class="n">zstart</span> <span class="o">=</span> <span class="n">voxel_start_layer</span>
+        <span class="n">zend</span> <span class="o">=</span> <span class="n">voxel_start_layer</span> <span class="o">+</span> <span class="n">property_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#+ 1</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">zstart</span><span class="p">:</span><span class="n">zend</span><span class="p">,</span> <span class="p">:])</span>
+
+        <span class="c1">#if not np.any(z):</span>
+        <span class="c1">#    return</span>
+        <span class="c1">#data = np.squeeze(data[:, loc])</span>
+        <span class="c1">#thicknesses = np.squeeze(thicknesses[:, loc])</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="ow">and</span> <span class="n">voxel_zones</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># get the min max values for the existing framework</span>
+            <span class="c1"># and voxel-based property data</span>
+            <span class="n">is_voxel_3D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">property_data</span><span class="p">,</span> <span class="n">voxel_zones</span><span class="p">)</span>
+            <span class="n">vmin</span> <span class="o">=</span> <span class="n">property_data</span><span class="p">[</span><span class="o">~</span><span class="n">is_voxel_3D</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="n">vmax</span> <span class="o">=</span> <span class="n">property_data</span><span class="p">[</span><span class="o">~</span><span class="n">is_voxel_3D</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="n">voxel_vmin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">voxel_zones</span><span class="p">)</span>
+            <span class="n">voxel_vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">voxel_zones</span><span class="p">)</span>
+
+            <span class="n">is_voxel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">voxel_zones</span><span class="p">)</span>
+            <span class="n">voxel_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">thicknesses</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="o">~</span><span class="n">is_voxel</span>
+            <span class="n">data_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">thicknesses</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">is_voxel</span>
+            <span class="n">voxel_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">voxel_mask</span><span class="p">)</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">)</span>
+            <span class="c1"># note: &#39;auto&#39; shading is default, where location of pixels</span>
+            <span class="c1"># is based on whether dimensions of x and z are same as voxel_data</span>
+            <span class="c1"># or one bigger</span>
+            <span class="n">pcm2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">voxel_data</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span>
+                                 <span class="n">vmin</span><span class="o">=</span><span class="n">voxel_vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">voxel_vmax</span><span class="p">)</span>
+            <span class="c1"># add separate axis for colorbar to control position</span>
+            <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">pcm2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resistivity facies class (in order of increasing resistivity)&#39;</span><span class="p">,</span>
+                         <span class="n">pad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                         <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+                         <span class="n">ticks</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+                         <span class="p">)</span>
+        <span class="n">pcm</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
+                            <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">add_surfaces</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">array2D</span> <span class="ow">in</span> <span class="n">add_surfaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">array2D</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">surfaces_lg</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower right&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span><span class="n">surfaces_lg</span><span class="p">)</span>
+
+    <span class="c1"># plot the layer bottom elevations</span>
+    <span class="n">plot_layer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">thicknesses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">#plot_layer = np.append(plot_layer, True)</span>
+    <span class="n">plot_ij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">thicknesses</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">z</span><span class="p">[</span><span class="n">z</span> <span class="o">==</span> <span class="n">z_nodata</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">plot_ij</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">layer_edge</span> <span class="ow">in</span> <span class="n">z</span><span class="p">[</span><span class="n">plot_layer</span><span class="p">,</span> <span class="p">:]:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">layer_edge</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="n">xmin</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">plot_ij</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">xmax</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">plot_ij</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">ymin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmin</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">plot_layer</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="n">ymax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">plot_layer</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xmin</span><span class="p">,</span> <span class="n">xmax</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymin</span><span class="p">,</span> <span class="n">ymax</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">xlabel</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Elevation, in meters&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">property_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># make a discrete colors legend</span>
+            <span class="n">legend_title</span> <span class="o">=</span> <span class="s2">&quot;MERAS 2.0</span><span class="se">\n</span><span class="s2">Framework Units&quot;</span>
+            <span class="n">lg</span> <span class="o">=</span> <span class="n">add_discrete_colors_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">,</span>
+                                            <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+                                            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">,</span>
+                                            <span class="n">title</span><span class="o">=</span><span class="n">legend_title</span><span class="p">,</span> <span class="n">handleheight</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ax</span></div>
+
+
+<div class="viewcode-block" id="add_discrete_colors_legend"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.add_discrete_colors_legend">[docs]</a><span class="k">def</span> <span class="nf">add_discrete_colors_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add a legend with a colored rectangle and label for each</span>
+<span class="sd">    discrete value in data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ax : matplotlib axes object</span>
+<span class="sd">        An axes of the current figure.</span>
+<span class="sd">    data : np.array or list-like</span>
+<span class="sd">        Discrete data represented by legend.</span>
+<span class="sd">    unit_labels : dict, optional</span>
+<span class="sd">        Dictionary of unit labels keyed by integer value in data, </span>
+<span class="sd">        by default None, in which case all values in data</span>
+<span class="sd">        are included with the integer value as the label.</span>
+<span class="sd">    cmap : str, optional</span>
+<span class="sd">        Matplotlib colormap, by default &#39;copper&#39;</span>
+<span class="sd">    vmin : float, optional</span>
+<span class="sd">        Minimum value of colormap range, </span>
+<span class="sd">        by default None</span>
+<span class="sd">    vmax : float, optional</span>
+<span class="sd">        Maximum value of colormap range, , by default None</span>
+<span class="sd">    **kwargs : keyword arguments to :func:`matplotlib.pyplot.legend`</span>
+<span class="sd">    </span>
+<span class="sd">    Return</span>
+<span class="sd">    lg : :func:`matplotlib.pyplot.legend` handle</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># make a discrete colors legend</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">Normalize</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">):</span>
+        <span class="n">unique_zones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">compressed</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">unique_zones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">unit_labels</span><span class="p">:</span>
+        <span class="n">unit_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">unique_zones</span><span class="p">,</span> <span class="n">unique_zones</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">unit_labels</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">unit_labels</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">unique_zones</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="n">cmap_obj</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="n">cmap</span><span class="p">)</span>
+
+    <span class="c1"># now get corresponding colormap value and label for each category and make legend</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">)</span>  <span class="c1"># normalize to range of 0-1</span>
+    <span class="n">handles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">labels_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">unit_labels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">fc</span> <span class="o">=</span> <span class="n">cmap_obj</span><span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="n">handles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="n">fc</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">))</span>
+        <span class="n">labels_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">label</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">handles</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">lg</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">,</span> <span class="n">labels_list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lg</span></div>
+
+
+<div class="viewcode-block" id="plot_cross_sections"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.plot_cross_sections">[docs]</a><span class="k">def</span> <span class="nf">plot_cross_sections</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">out_pdf</span><span class="p">,</span> <span class="n">property_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">voxel_start_layer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>  <span class="n">voxel_zones</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
+                        <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">add_raster_surfaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">modelgrid</span><span class="o">=</span><span class="kc">None</span>
+                        <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a multi-page PDF of the layer cross sections.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layers : 3D numpy array </span>
+<span class="sd">        Array of layer elevations, starting with the model top. </span>
+<span class="sd">        (Length equal to the number of botm_array + 1)</span>
+<span class="sd">    property_data : 3D numpy array </span>
+<span class="sd">        Array of zone numbers generated by setup_model_layers.</span>
+<span class="sd">    out_pdf : str (filepath)</span>
+<span class="sd">        Filename of multi-page PDF.</span>
+<span class="sd">    voxel_start_layer : int, optional</span>
+<span class="sd">        First layer with voxel data, by default 0</span>
+<span class="sd">    voxel_zones : sequence, optional</span>
+<span class="sd">        Zone numbers within property_data that are voxel-based, </span>
+<span class="sd">        by default None</span>
+<span class="sd">    cmap : str, optional</span>
+<span class="sd">        Matplotlib colormap for non-voxel zone numbers, by default &#39;copper&#39;,</span>
+<span class="sd">        to contrast with colormap for voxel-based zone numbers.</span>
+<span class="sd">    voxel_cmap : str, optional</span>
+<span class="sd">        Matplotlib colormap for voxel-based zone numbers, by default &#39;viridis&#39;.</span>
+<span class="sd">    unit_labels : dict, optional</span>
+<span class="sd">        Dictionary mapping non-voxel zone numbers to hydrogeologic units, </span>
+<span class="sd">        by default None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raster_arrays</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">add_raster_surfaces</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">modelgrid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;add_raster_surfaces option requires a modelgrid&quot;</span><span class="p">)</span>
+        <span class="n">raster_arrays</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">modelgrid</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">modelgrid</span><span class="o">.</span><span class="n">xcellcenters</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">modelgrid</span><span class="o">.</span><span class="n">ycellcenters</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">raster</span> <span class="ow">in</span> <span class="n">add_raster_surfaces</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">get_values_at_points</span><span class="p">(</span><span class="n">raster</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">points_crs</span><span class="o">=</span><span class="n">modelgrid</span><span class="o">.</span><span class="n">crs</span><span class="p">)</span>
+            <span class="n">raster_arrays</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="n">PdfPages</span><span class="p">(</span><span class="n">out_pdf</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdf</span><span class="p">:</span>
+        <span class="n">nlay</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="mi">50</span><span class="p">):</span>
+            <span class="n">plot_slice</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span>
+                       <span class="n">row</span><span class="o">=</span><span class="n">row</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                       <span class="n">voxel_start_layer</span><span class="o">=</span><span class="n">voxel_start_layer</span><span class="p">,</span>
+                       <span class="n">voxel_zones</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+                       <span class="n">voxel_cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">,</span>
+                       <span class="n">add_surfaces</span><span class="o">=</span><span class="n">raster_arrays</span><span class="p">)</span>
+            <span class="n">pdf</span><span class="o">.</span><span class="n">savefig</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ncol</span><span class="p">,</span> <span class="mi">50</span><span class="p">):</span>
+            <span class="n">plot_slice</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">property_data</span><span class="p">,</span>
+                       <span class="n">row</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">column</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                       <span class="n">voxel_start_layer</span><span class="o">=</span><span class="n">voxel_start_layer</span><span class="p">,</span>
+                       <span class="n">voxel_zones</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+                       <span class="n">voxel_cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">,</span>
+                       <span class="n">add_surfaces</span><span class="o">=</span><span class="n">raster_arrays</span><span class="p">)</span>
+            <span class="n">pdf</span><span class="o">.</span><span class="n">savefig</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_zone_maps"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.plot_zone_maps">[docs]</a><span class="k">def</span> <span class="nf">plot_zone_maps</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">out_pdf</span><span class="p">,</span> <span class="n">zones</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">zones_cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
+                   <span class="n">voxel_zones</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate a multi-page PDF of the zones in each layer in plan view.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    layers : 3D numpy array </span>
+<span class="sd">        Array of layer elevations, starting with the model top. </span>
+<span class="sd">        (Length equal to the number of botm_array + 1)</span>
+<span class="sd">    zones : 3D numpy array </span>
+<span class="sd">        Array of zone numbers generated by setup_model_layers.</span>
+<span class="sd">    out_pdf : str (filepath)</span>
+<span class="sd">        Filename of multi-page PDF.</span>
+<span class="sd">    voxel_zones : sequence, optional</span>
+<span class="sd">        Zone numbers within property_data that are voxel-based, </span>
+<span class="sd">        by default None</span>
+<span class="sd">    unit_labels : str, optional</span>
+<span class="sd">        Matplotlib colormap for non-voxel zone numbers, by default &#39;copper&#39;,</span>
+<span class="sd">        to contrast with colormap for voxel-based zone numbers.</span>
+<span class="sd">    voxel_cmap : str, optional</span>
+<span class="sd">        Matplotlib colormap for voxel-based zone numbers, by default &#39;viridis&#39;.</span>
+<span class="sd">    unit_labels : dict, optional</span>
+<span class="sd">        Dictionary mapping non-voxel zone numbers to hydrogeologic units, </span>
+<span class="sd">        by default None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">thickness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">thickness</span><span class="p">[</span><span class="n">thickness</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="c1"># split up arrays into voxel-based data (AEM)</span>
+    <span class="c1"># and layer-based (existing framework)</span>
+    <span class="n">voxel_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">voxel_zones</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">is_voxel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">zones</span><span class="p">,</span> <span class="n">voxel_zones</span><span class="p">)</span>
+        <span class="n">voxel_data_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">thickness</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="o">~</span><span class="n">is_voxel</span>
+
+        <span class="c1"># everything that isn&#39;t voxel is in the previous framework</span>
+        <span class="n">existing_framework_mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">thickness</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">is_voxel</span>
+
+        <span class="n">voxel_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">zones</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">voxel_data_mask</span><span class="p">)</span>
+        <span class="n">voxel_vmin</span><span class="p">,</span> <span class="n">voxel_vmax</span> <span class="o">=</span> <span class="n">voxel_data</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">voxel_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">zones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_array</span><span class="p">(</span><span class="n">zones</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">existing_framework_mask</span><span class="p">)</span>
+
+    <span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span> <span class="o">=</span> <span class="n">zones</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">zones</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zones</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">zones</span> <span class="o">=</span> <span class="p">[</span><span class="n">zones</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">PdfPages</span><span class="p">(</span><span class="n">out_pdf</span><span class="p">)</span> <span class="k">as</span> <span class="n">pdf</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">zones</span><span class="p">):</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">))</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;layer </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+            <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">zones_cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">voxel_zones</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">im2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">voxel_data</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">voxel_cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">voxel_vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">voxel_vmax</span><span class="p">)</span>
+
+            <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Resistivity facies class (in order of increasing resistivity)&#39;</span><span class="p">,</span>
+                         <span class="n">pad</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span>
+                         <span class="n">ticks</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
+                         <span class="p">)</span>
+
+            <span class="c1"># make a discrete colors legend</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;MERAS 2.0</span><span class="se">\n</span><span class="s2">Framework Units&quot;</span>
+            <span class="n">lg</span> <span class="o">=</span> <span class="n">add_discrete_colors_legend</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">unit_labels</span><span class="p">,</span>
+                                            <span class="n">cmap</span><span class="o">=</span><span class="n">zones_cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+                                            <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower left&#39;</span><span class="p">,</span>
+                                            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">handleheight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+            <span class="n">pdf</span><span class="o">.</span><span class="n">savefig</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="rasters_to_grid"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.rasters_to_grid">[docs]</a><span class="k">def</span> <span class="nf">rasters_to_grid</span><span class="p">(</span><span class="n">modelgrid</span><span class="p">,</span> <span class="n">dem</span><span class="p">,</span> <span class="n">rasters</span><span class="p">,</span>
+                    <span class="n">dem_elevation_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span> <span class="n">raster_elevation_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                    <span class="n">dest_elevation_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sample a sequence of rasters onto the i, j locations of a modelgrid,</span>
+<span class="sd">    returning a 3D numpy array of the sampled elevations. Fill places with nodata</span>
+<span class="sd">    using the next valid surface above.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    modelgrid : Modflow-setup :class:`~mfsetup.grid.MFsetupGrid` instance</span>
+<span class="sd">        Modflow-setup grid instance describing the model grid</span>
+<span class="sd">    dem : str (filepath)</span>
+<span class="sd">        Raster representing the land surface, at the highest resolution being contemplated for the model.</span>
+<span class="sd">        Usually this is derived by sampling a higher resolution DEM using zonal statistics, taking</span>
+<span class="sd">        the mean DEM value for each model cell.</span>
+<span class="sd">    rasters : list of strings (filepaths)</span>
+<span class="sd">        Raster surfaces describing hydrogelogic contacts surrounding the voxel data.</span>
+<span class="sd">    dem_elevation_units : str, optional</span>
+<span class="sd">        Elevation units of dem_means_raster, by default &#39;meters&#39;</span>
+<span class="sd">    framework_raster_elevation_units : str, optional</span>
+<span class="sd">        Elevation units of the framework_rasters, by default &#39;meters&#39;</span>
+<span class="sd">    model_length_units : str, optional</span>
+<span class="sd">        Length units used in the model, by default &#39;meters&#39;</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    See the documentation for the :func:`fill_cells_vertically &lt;mfsetup.discretization.fill_cells_vertically&gt;`</span>
+<span class="sd">    function in Modflow-setup for an explanation of the filling process.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">modelgrid</span>
+    <span class="n">dem_elevations</span> <span class="o">=</span> <span class="n">get_values_at_points</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xcellcenters</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ycellcenters</span><span class="p">,</span>
+                                          <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+    <span class="c1"># convert to model units</span>
+    <span class="n">dem_elevations</span> <span class="o">*=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">dem_elevation_units</span><span class="p">,</span> <span class="n">dest_elevation_units</span><span class="p">)</span>
+
+    <span class="n">raster_elevations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">raster</span> <span class="ow">in</span> <span class="n">rasters</span><span class="p">:</span>
+        <span class="n">grid_cell_values</span> <span class="o">=</span> <span class="n">get_values_at_points</span><span class="p">(</span><span class="n">raster</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">xcellcenters</span><span class="p">,</span> <span class="n">grid</span><span class="o">.</span><span class="n">ycellcenters</span><span class="p">,</span>
+                                                <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+        <span class="c1"># convert to model units</span>
+        <span class="n">grid_cell_values</span> <span class="o">*=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">raster_elevation_units</span><span class="p">,</span> <span class="n">dest_elevation_units</span><span class="p">)</span>
+        <span class="n">raster_elevations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">grid_cell_values</span><span class="p">)</span>
+    <span class="n">raster_elevations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">raster_elevations</span><span class="p">)</span>
+    
+    <span class="c1"># fill nans in the sampled original framework elevations</span>
+    <span class="c1"># (nans are where a layer surface is absent)</span>
+    <span class="c1"># fill the nans with the next surface above</span>
+    <span class="c1"># see https://github.com/aleaf/modflow-setup/blob/develop/mfsetup/discretization.py</span>
+    <span class="n">model_top_filled</span><span class="p">,</span> <span class="n">filled_raster_elevations</span> <span class="o">=</span> <span class="n">fill_cells_vertically</span><span class="p">(</span><span class="n">dem_elevations</span><span class="p">,</span> <span class="n">raster_elevations</span><span class="p">)</span>
+    <span class="n">above_land_surface</span> <span class="o">=</span> <span class="n">filled_raster_elevations</span> <span class="o">&gt;</span> <span class="n">dem_elevations</span>
+    <span class="c1"># reset any values above land surface to land surface</span>
+    <span class="n">dem_means_3d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">dem_elevations</span><span class="p">,</span> <span class="p">(</span><span class="n">filled_raster_elevations</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">filled_raster_elevations</span><span class="p">[</span><span class="n">above_land_surface</span><span class="p">]</span> <span class="o">=</span> <span class="n">dem_means_3d</span><span class="p">[</span><span class="n">above_land_surface</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">dem_means_3d</span>
+    <span class="n">filled_raster_elevations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dem_elevations</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">dem_elevations</span><span class="o">.</span><span class="n">shape</span><span class="p">)),</span>
+                                          <span class="n">filled_raster_elevations</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">filled_raster_elevations</span></div>
+    
+
+<div class="viewcode-block" id="layers_to_zones"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.layers_to_zones">[docs]</a><span class="k">def</span> <span class="nf">layers_to_zones</span><span class="p">(</span><span class="n">botm_array</span><span class="p">,</span> <span class="n">model_cell_z_centers</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Map the layers from one grid to zones on another grid. In other words,</span>
+<span class="sd">    given a 3D array of model cell bottom elevations (botm_array), and a second</span>
+<span class="sd">    3D array of cell centers at the same i, j locations as botm_array,</span>
+<span class="sd">    but with different vertical discretization (model_cell_z_centers),</span>
+<span class="sd">    assign each cell in the model_cell_z_centers array a zone value based on its</span>
+<span class="sd">    vertical position within botm array. For example, a cell that lies above all of the</span>
+<span class="sd">    elevations in botm_array would be assigned a zone number of zero; a cell that lies below</span>
+<span class="sd">    the first bottom elevation would be assigned a value of 1.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    botm_array : 3D numpy array</span>
+<span class="sd">        Layer bottom elevations</span>
+<span class="sd">    model_cell_z_centers : 3D numpy array</span>
+<span class="sd">        Cell centers for another grid that is aligned with</span>
+<span class="sd">        botm_array along the i and j axis, but has a different vertical</span>
+<span class="sd">        discretation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    zones : 3D numpy array</span>
+<span class="sd">        Zone numbers indicating the layer in botm_array for each</span>
+<span class="sd">        cell in model_cell_z_centers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># convert from 2D to 3D</span>
+    <span class="n">is2D</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_cell_z_centers</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">is2D</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">model_cell_z_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">model_cell_z_centers</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">model_cell_z_centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="n">botm_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># for each, i, j location and cell midpoint in the model_cell_z_centers array</span>
+    <span class="c1"># get the corresponding layer within the original meras framework</span>
+    <span class="c1"># get the i, j locations for each grid cell</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">model_cell_z_centers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">zones</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">layer_centers</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model_cell_z_centers</span><span class="p">):</span>
+        <span class="n">layer_in_botm_array</span> <span class="o">=</span> <span class="n">get_layer</span><span class="p">(</span><span class="n">botm_array</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">layer_centers</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+        <span class="n">layer_in_botm_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">layer_in_botm_array</span><span class="p">,</span> <span class="n">layer_centers</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">zones</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer_in_botm_array</span><span class="p">)</span>
+    <span class="n">zones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zones</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">is2D</span><span class="p">:</span>
+        <span class="n">zones</span> <span class="o">=</span> <span class="n">zones</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">zones</span></div>
+
+
+<div class="viewcode-block" id="setup_model_layers"><a class="viewcode-back" href="../../api/mapgwm.framework.html#mapgwm.framework.setup_model_layers">[docs]</a><span class="k">def</span> <span class="nf">setup_model_layers</span><span class="p">(</span><span class="n">dem_means_raster</span><span class="p">,</span> <span class="n">facies_classes_netcdf</span><span class="p">,</span> <span class="n">framework_rasters</span><span class="p">,</span> <span class="n">modelgrid</span><span class="p">,</span>
+                       <span class="n">facies_class_variable</span><span class="o">=</span><span class="s1">&#39;facies-class&#39;</span><span class="p">,</span> <span class="n">facies_zedge_variable</span><span class="o">=</span><span class="s1">&#39;z-edges&#39;</span><span class="p">,</span>
+                       <span class="n">dem_elevation_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span> <span class="n">framework_raster_elevation_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                       <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span> <span class="n">output_folder</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
+                       <span class="n">frac_valid_cells_thresh</span><span class="o">=</span><span class="mf">0.50</span><span class="p">,</span>
+                       <span class="n">framework_unit_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate model layering and property zones from voxel-based zone numbers at uniform depths</span>
+<span class="sd">    and raster surfaces that represent hydrogeologic contacts. The voxel-based zone numbers may</span>
+<span class="sd">    represent hydrogeologically different sediments, as determined from an airborne electromagnetic survey, </span>
+<span class="sd">    and are assumed to have priority over the raster surfaces. The model top is set at the land surface (DEM). </span>
+<span class="sd">    Subsequent cell bottoms beneath the land surface are set based on the voxel depths subtracted from the DEM elevations, </span>
+<span class="sd">    as sampled at the grid cell centers. Voxel cells without valid data are filled with zone numbers based</span>
+<span class="sd">    on their position within the raster surfaces of hydrogeologic contacts. For example, a voxel</span>
+<span class="sd">    cell that lies above all of the raster surfaces would be assigned a zone number equal to the</span>
+<span class="sd">    highest voxel-based zone number + 3 (an arbitrary gap in the zone numbering between the voxel data</span>
+<span class="sd">    and the raster surfaces). Similarly, beneath the lowest voxel cell at each location, grid cells are </span>
+<span class="sd">    assigned zone values based on their vertical position relative to the raster surfaces. Below the voxel data,</span>
+<span class="sd">    botm_array and their bottom elevations correspond to the framework_raster surfaces. The lowermost</span>
+<span class="sd">    (last) raster surface forms the model bottom.</span>
+<span class="sd">    </span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dem_means_raster : str (filepath)</span>
+<span class="sd">        Raster representing the land surface, at the highest resolution being contemplated for the model.</span>
+<span class="sd">        Usually this is derived by sampling a higher resolution DEM using zonal statistics, taking</span>
+<span class="sd">        the mean DEM value for each model cell.</span>
+<span class="sd">    facies_classes_netcdf : str (filepath)</span>
+<span class="sd">        NetCDF file with the voxel zone data, with a facies_class_variable that contains the zone numbers. </span>
+<span class="sd">    framework_rasters : list of strings (filepaths)</span>
+<span class="sd">        Raster surfaces describing hydrogelogic contacts surrounding the voxel data.</span>
+<span class="sd">    modelgrid : mfsetup.MFsetupGrid instance</span>
+<span class="sd">        Modflow-setup grid instance describing the model grid</span>
+<span class="sd">    facies_class_variable : str, optional</span>
+<span class="sd">        Variable in facies_classes_netcdf containing the zone information, </span>
+<span class="sd">        by default &#39;facies-class&#39;</span>
+<span class="sd">    facies_zedge_variable : str, optional</span>
+<span class="sd">        Variable in facies_classes_netcdf containing the vertical depth edge information.</span>
+<span class="sd">        by default &#39;z-edges&#39;</span>
+<span class="sd">    dem_elevation_units : str, optional</span>
+<span class="sd">        Elevation units of dem_means_raster, by default &#39;meters&#39;</span>
+<span class="sd">    framework_raster_elevation_units : str, optional</span>
+<span class="sd">        Elevation units of the framework_rasters, by default &#39;meters&#39;</span>
+<span class="sd">    model_length_units : str, optional</span>
+<span class="sd">        Length units used in the model, by default &#39;meters&#39;</span>
+<span class="sd">    output_folder : str, optional</span>
+<span class="sd">        Location where results will be saved, by default &#39;.&#39;</span>
+<span class="sd">    frac_valid_cells_thresh : float between 0 and 1, optional</span>
+<span class="sd">        Layers within facies_classes_netcdf must have at least this fraction</span>
+<span class="sd">        of valid (not Nan) cells to be included.</span>
+<span class="sd">    framework_unit_names : list, optional</span>
+<span class="sd">        Unit names for the framework_rasters, by default None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    botm_array : 3D numpy array</span>
+<span class="sd">        Array of layer elevations, starting with the model top. </span>
+<span class="sd">        (Length equal to the number of botm_array + 1)</span>
+<span class="sd">    zone_array : 3D numpy array </span>
+<span class="sd">        Array of zone numbers, including the values from facies_classes_netcdf,</span>
+<span class="sd">        followed by a gap of 3 and then the numbers for the framework_rasters.</span>
+<span class="sd">        For example, if there are 5 zones in facies_classes_netcdf, and 3 raster surfaces</span>
+<span class="sd">        that intersect cells outside of the voxel data, zones 1-5 would correspond</span>
+<span class="sd">        to the voxel zones, and zones 8-10 would correspond to hydrogeologic units</span>
+<span class="sd">        bounded by the framework_rasters.</span>
+<span class="sd">        </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    In addition to the variables returned, the results are written</span>
+<span class="sd">    to text-array and GeoTiff files within the output_folder.</span>
+<span class="sd">    </span>
+<span class="sd">    Two PDFs of figures are also generated- one showing the layering</span>
+<span class="sd">    in cross sections at regular intervals throughout the model grid, and one</span>
+<span class="sd">    showing the zones within each layer in plan view.</span>
+<span class="sd">    &quot;&quot;&quot;</span>    
+
+    <span class="c1"># output folders</span>
+    <span class="n">figures_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">&#39;figures&#39;</span><span class="p">)</span>
+    <span class="n">layers_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">&#39;botm_array&#39;</span><span class="p">)</span>
+    <span class="n">zones_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output_folder</span><span class="p">,</span> <span class="s1">&#39;zones&#39;</span><span class="p">)</span>
+    <span class="c1"># zone rasters are saved to zones_folder/rasters</span>
+    <span class="n">output_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">figures_folder</span><span class="p">,</span>
+                      <span class="n">layers_folder</span><span class="p">,</span>
+                      <span class="n">zones_folder</span><span class="p">,</span>
+                      <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">zones_folder</span><span class="p">,</span> <span class="s1">&#39;rasters&#39;</span><span class="p">),</span>
+
+                      <span class="p">]</span>
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">output_folders</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+
+    <span class="c1"># output PDF with cross sections</span>
+    <span class="n">out_xsection_pdf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figures_folder</span><span class="p">,</span> <span class="s1">&#39;zone_xsections.pdf&#39;</span><span class="p">)</span>
+    <span class="n">out_maps_pdf</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figures_folder</span><span class="p">,</span> <span class="s1">&#39;zone_maps.pdf&#39;</span><span class="p">)</span>
+
+    <span class="c1"># flopy model grid</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">modelgrid</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">modelgrid</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># read in the facies classes and resisitivity values</span>
+    <span class="c1"># from framework team</span>
+    <span class="c1"># and verify that the grid is aligned with the nhg</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">facies_classes_netcdf</span><span class="p">)</span>
+    <span class="c1"># check that cell corners are aligned with NHG</span>
+    <span class="n">x_edges</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">x</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_edges</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">y</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">point_is_on_nhg</span><span class="p">(</span><span class="n">x_edges</span><span class="p">,</span> <span class="n">y_edges</span><span class="p">)</span>
+
+    <span class="c1"># read in the dem and framework rasters and fill locations of no data</span>
+    <span class="c1"># with the next valid elevation above</span>
+    <span class="n">filled_framework_layers</span> <span class="o">=</span> <span class="n">rasters_to_grid</span><span class="p">(</span><span class="n">modelgrid</span><span class="p">,</span>
+                                              <span class="n">dem_means_raster</span><span class="p">,</span> <span class="n">framework_rasters</span><span class="p">,</span>
+                                              <span class="n">dem_elevation_units</span><span class="o">=</span><span class="n">dem_elevation_units</span><span class="p">,</span>
+                                              <span class="n">raster_elevation_units</span><span class="o">=</span><span class="n">framework_raster_elevation_units</span><span class="p">,</span>
+                                              <span class="n">dest_elevation_units</span><span class="o">=</span><span class="n">model_length_units</span><span class="p">)</span>
+    <span class="n">dem_means</span> <span class="o">=</span> <span class="n">filled_framework_layers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">framework_layer_botms_filled</span> <span class="o">=</span> <span class="n">filled_framework_layers</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># make AEM framework z edge elevations by subtracting off depths from model top</span>
+    <span class="n">voxel_z_edges</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># 1D vector of uniform depths</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">facies_zedge_variable</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">depth</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="n">facies_zedge_variable</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="n">voxel_z_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dem_means</span> <span class="o">-</span> <span class="n">depth</span><span class="p">)</span>
+            
+        <span class="c1"># elevations of the voxel cell centers</span>
+        <span class="n">voxel_z_centers</span> <span class="o">=</span> <span class="n">voxel_z_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> \
+            <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">voxel_z_edges</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">nlay</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">voxel_z_centers</span><span class="p">)</span>
+        <span class="c1">#depth_centers_3d = np.ones((nlay, nrow, ncol)) * \</span>
+        <span class="c1">#    np.reshape(depth_centers, (nlay, 1, 1))</span>
+
+    <span class="c1"># 3D array of depths (edges) by cell</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">depth_edges</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">facies_zedge_variable</span><span class="p">]</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">xcellcenters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                        <span class="n">y</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">ycellcenters</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> 
+                                        <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+        <span class="n">voxel_z_edges</span> <span class="o">=</span> <span class="n">dem_means</span> <span class="o">-</span> <span class="n">depth_edges</span>
+        
+        <span class="c1"># elevations of the voxel cell centers</span>
+        <span class="n">voxel_z_centers</span> <span class="o">=</span> <span class="n">voxel_z_edges</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> \
+            <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">voxel_z_edges</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1"># get the fraction of nan values in each layer</span>
+        <span class="n">frac_nan</span> <span class="o">=</span> <span class="n">voxel_z_edges</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">voxel_z_edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">nan_thresh</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">frac_valid_cells_thresh</span>
+        <span class="n">voxel_z_edges</span> <span class="o">=</span> <span class="n">voxel_z_edges</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">frac_nan</span> <span class="o">&lt;</span> <span class="n">nan_thresh</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> 
+        
+        <span class="c1"># fill NaN values to the east and west with last value in those directions</span>
+        <span class="n">voxel_z_edges_filled</span> <span class="o">=</span> <span class="n">voxel_z_edges</span><span class="o">.</span><span class="n">ffill</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="n">voxel_z_edges_filled</span> <span class="o">=</span> <span class="n">voxel_z_edges_filled</span><span class="o">.</span><span class="n">bfill</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+        <span class="c1"># convert to numpy array so we can use boolean indexing</span>
+        <span class="n">voxel_z_edges_filled</span> <span class="o">=</span> <span class="n">voxel_z_edges_filled</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">min_thickness</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="c1"># create a 3D boolean array indicated whether each cell</span>
+        <span class="c1"># is at least the minimum thickness</span>
+        <span class="n">valid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="n">voxel_z_edges_filled</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">),</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">voxel_z_edges_filled</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">min_thickness</span><span class="p">))</span>
+        <span class="c1"># set bottom edges of cells below the minimum thickness to Nans</span>
+        <span class="n">voxel_z_edges_filled</span><span class="p">[</span><span class="o">~</span><span class="n">valid</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        
+        
+    <span class="c1">#pdf_xs = PdfPages(&#39;STM_res_depth_grad_mrvacut_v1_xsections.pdf&#39;)</span>
+    <span class="c1">#for row in np.arange(voxel_z_edges_filled.shape[1])[::50]:</span>
+    <span class="c1">#    z = voxel_z_edges_filled[:, row, :]</span>
+    <span class="c1">#    x = grid.xcellcenters[row, :]</span>
+    <span class="c1">#    x = np.tile(x, (z.shape[0], 1))</span>
+    <span class="c1">#    fig, ax = plt.subplots()</span>
+    <span class="c1">#    ax.plot(x.T, z.T)</span>
+    <span class="c1">#    ax.invert_yaxis()</span>
+    <span class="c1">#    ax.set_title(f&#39;Row {row}&#39;)</span>
+    <span class="c1">#    pdf_xs.savefig()</span>
+    <span class="c1">#    plt.close()</span>
+    <span class="c1">#pdf_xs.close()</span>
+
+
+
+    <span class="c1"># get the resistivity facies for each model cell (nearest neighbor)</span>
+    <span class="n">voxel_array</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">facies_class_variable</span><span class="p">]</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">xcellcenters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                <span class="n">y</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">ycellcenters</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+    <span class="n">voxel_zones</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">voxel_array</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">voxel_array</span><span class="o">.</span><span class="n">values</span><span class="p">)])</span>
+
+    <span class="c1"># fill areas of voxel_array that don&#39;t have AEM data with zone values</span>
+    <span class="c1"># representing units in the original MERAS framework</span>
+    <span class="n">framework_layer</span> <span class="o">=</span> <span class="n">layers_to_zones</span><span class="p">(</span><span class="n">framework_layer_botms_filled</span><span class="p">,</span> <span class="n">voxel_z_centers</span><span class="p">)</span>
+
+    <span class="c1"># start framework zone numbers after resistivity facies, +3</span>
+    <span class="n">framework_zones</span> <span class="o">=</span> <span class="n">framework_layer</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmax</span><span class="p">(</span><span class="n">voxel_array</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span>
+    <span class="n">voxel_array</span> <span class="o">=</span> <span class="n">voxel_array</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">voxel_array</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">voxel_array</span><span class="p">)]</span> <span class="o">=</span> <span class="n">framework_zones</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">voxel_array</span><span class="p">)]</span>
+
+    <span class="c1"># put the botm_array together</span>
+    <span class="n">layers</span> <span class="o">=</span> <span class="n">voxels_to_layers</span><span class="p">(</span><span class="n">voxel_array</span><span class="p">,</span> <span class="n">z_edges</span><span class="o">=</span><span class="n">voxel_z_edges</span><span class="p">,</span> <span class="n">model_top</span><span class="o">=</span><span class="n">dem_means</span><span class="p">,</span>
+                              <span class="n">model_botm</span><span class="o">=</span><span class="n">framework_layer_botms_filled</span><span class="p">,</span> <span class="n">no_data_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># add framework zones below the voxel botm_array</span>
+    <span class="n">nlay</span><span class="p">,</span> <span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">nlay</span> <span class="o">-=</span> <span class="mi">1</span>  <span class="c1"># botm_array includes the model top</span>
+    <span class="n">framework_layers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">voxel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nlay</span><span class="p">))</span>
+    <span class="n">first_framework_zone</span> <span class="o">=</span> <span class="n">framework_zones</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">n_framwork_zones</span> <span class="o">=</span> <span class="n">framework_layer_botms_filled</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">framework_zone_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">first_framework_zone</span><span class="p">,</span> 
+                                       <span class="n">first_framework_zone</span> <span class="o">+</span> <span class="n">n_framwork_zones</span><span class="p">)</span>
+
+    <span class="c1"># assume that the last len(framework_layers) are sequential</span>
+    <span class="n">framework_zones_below</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">zone_number</span> <span class="ow">in</span> <span class="n">framework_zone_numbers</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">framework_layers</span><span class="p">):]:</span>
+        <span class="n">framework_zones_below</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">))</span> <span class="o">*</span> <span class="n">zone_number</span><span class="p">)</span>
+    <span class="n">framework_zones_below</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">framework_zones_below</span><span class="p">)</span>
+
+    <span class="c1"># make an array of all zones, including the resisitivity facies</span>
+    <span class="c1"># and the zones representing the units in the original meras framework</span>
+    <span class="n">zone_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">voxel_array</span><span class="p">,</span> <span class="n">framework_zones_below</span><span class="p">])</span>
+
+    <span class="c1"># plot cross sections</span>
+    <span class="n">framework_unit_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">framework_zone_numbers</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">framework_unit_names</span><span class="p">))</span>
+    <span class="n">plot_cross_sections</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">out_xsection_pdf</span><span class="p">,</span> <span class="n">property_data</span><span class="o">=</span><span class="n">zone_array</span><span class="p">,</span>
+                        <span class="n">voxel_start_layer</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">voxel_zones</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">,</span>
+                        <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;copper&#39;</span><span class="p">,</span>
+                        <span class="n">voxel_cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">framework_unit_labels</span><span class="p">)</span>
+
+    <span class="c1"># plot maps showing distribution of zones in each layer</span>
+    <span class="n">plot_zone_maps</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span> <span class="n">out_maps_pdf</span><span class="p">,</span> <span class="n">zones</span><span class="o">=</span><span class="n">zone_array</span><span class="p">,</span>
+                   <span class="n">voxel_zones</span><span class="o">=</span><span class="n">voxel_zones</span><span class="p">,</span> <span class="n">unit_labels</span><span class="o">=</span><span class="n">framework_unit_labels</span><span class="p">)</span>
+
+    <span class="c1"># write out the layer elevation rasters</span>
+    <span class="n">write_raster</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">layers_folder</span><span class="p">,</span> <span class="s1">&#39;model_top.tif&#39;</span><span class="p">),</span> <span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xul</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">xul</span><span class="p">,</span> <span class="n">yul</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">yul</span><span class="p">,</span>
+                 <span class="n">dx</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">delc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dy</span><span class="o">=-</span><span class="n">grid</span><span class="o">.</span><span class="n">delr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">rotation</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">proj_str</span><span class="o">=</span><span class="s1">&#39;epsg:5070&#39;</span><span class="p">,</span>
+                 <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">fieldname</span><span class="o">=</span><span class="s1">&#39;elevation&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">layers</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+        <span class="n">write_raster</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">layers_folder</span><span class="p">,</span> <span class="s1">&#39;botm</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                     <span class="n">layer</span><span class="p">,</span> <span class="n">xul</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">xul</span><span class="p">,</span> <span class="n">yul</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">yul</span><span class="p">,</span>
+                     <span class="n">dx</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">delc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dy</span><span class="o">=-</span><span class="n">grid</span><span class="o">.</span><span class="n">delr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="n">rotation</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+                     <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">fieldname</span><span class="o">=</span><span class="s1">&#39;elevation&#39;</span><span class="p">)</span>
+
+    <span class="c1"># write out zone arrays (in GeoTiff and text format)</span>
+    <span class="n">voxel_start_layer</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">voxel_end_layer</span> <span class="o">=</span> <span class="n">voxel_start_layer</span> <span class="o">+</span> <span class="n">voxel_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">zones2d</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">zone_array</span><span class="p">):</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">zones_folder</span><span class="p">,</span> <span class="s1">&#39;res_fac</span><span class="si">{}</span><span class="s1">.dat&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                   <span class="n">zones2d</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.0f</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">write_raster</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">zones_folder</span><span class="p">,</span> <span class="s1">&#39;rasters/res_fac</span><span class="si">{}</span><span class="s1">.tif&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span>
+                     <span class="n">zones2d</span><span class="p">,</span> <span class="n">xul</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">xul</span><span class="p">,</span> <span class="n">yul</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">yul</span><span class="p">,</span>
+                     <span class="n">dx</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">delc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dy</span><span class="o">=-</span><span class="n">grid</span><span class="o">.</span><span class="n">delr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="n">rotation</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">grid</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span>
+                     <span class="n">nodata</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">fieldname</span><span class="o">=</span><span class="s1">&#39;elevation&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">layers</span><span class="p">,</span> <span class="n">zone_array</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">Last updated on Feb 09, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

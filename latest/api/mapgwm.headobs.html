@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mapgwm.headobs module &mdash; usgs-map-gwmodels 0.post72.dev0+g3e0095e documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="mapgwm.lookups module" href="mapgwm.lookups.html" />
+    <link rel="prev" title="mapgwm.framework module" href="mapgwm.framework.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> usgs-map-gwmodels
+          </a>
+              <div class="version">
+                0.post72.dev0+g3e0095e
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Example.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Example.html"> Demo of USGS-MAP-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html"> Code reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.checkdatasets.html">mapgwm.check_input_datasets module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.framework.html">mapgwm.framework module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mapgwm.headobs module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.lookups.html">mapgwm.lookups module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.nhdplus.html">mapgwm.nhdplus module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.swb.html">mapgwm.swb module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.swflows.html">mapgwm.swflows module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.swuds.html">mapgwm.swuds module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mapgwm.thermal.html">mapgwm.te_wateruse module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../inputs.html"> Input Data Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references.html"> References cited</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">usgs-map-gwmodels</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Modules</a> &raquo;</li>
+      <li>mapgwm.headobs module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/mapgwm.headobs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="module-mapgwm.headobs">
+<span id="mapgwm-headobs-module"></span><h1>mapgwm.headobs module<a class="headerlink" href="#module-mapgwm.headobs" title="Permalink to this headline">¶</a></h1>
+<p>Code for preprocessing head observation data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mapgwm.headobs.fill_well_open_intervals">
+<span class="sig-prename descclassname"><span class="pre">mapgwm.headobs.</span></span><span class="sig-name descname"><span class="pre">fill_well_open_intervals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">well_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_open_interval_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'open_interval_lengths.pdf'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#fill_well_open_intervals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mapgwm.headobs.fill_well_open_intervals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Many or most of the well_info output from <cite>visGWDB &lt;https://doi.org/10.5066/P9W004O6&gt;</cite>
+may not have complete open interval information. A much greater proportion may have
+depth information. Use reported well depths and a computed median open interval
+length to estimate a screen top and bottom where available. Categorize well_info
+based on the quality of open interval information:</p>
+<ol class="arabic simple">
+<li><p>top and bottom elevations included</p></li>
+<li><p>only bottom (median open interval length of 40 ft. used for top)</p></li>
+<li><p>bottom and well depth are inconsistent</p></li>
+<li><p>neither top or bottom are known</p></li>
+</ol>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>well_info</strong><span class="classifier">DataFrame</span></dt><dd><p>Metadata from <a class="reference internal" href="#mapgwm.headobs.preprocess_headobs" title="mapgwm.headobs.preprocess_headobs"><code class="xref py py-func docutils literal notranslate"><span class="pre">preprocess_headobs()</span></code></a>
+Columns (all lengths in model units):</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 77%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>screen_top</p></td>
+<td><p>open interval top elevation</p></td>
+</tr>
+<tr class="row-even"><td><p>screen_botm</p></td>
+<td><p>open interval bottom elevation</p></td>
+</tr>
+<tr class="row-odd"><td><p>well_botm</p></td>
+<td><p>well bottom elevation</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>default_open_interval_length</strong><span class="classifier">float, optional</span></dt><dd><p>Option to specify a default open interval length 
+for wells that don’t have screen top information.
+By default None, in which case the median length is used,
+or zero open interval length, if no wells in the dataset 
+have screen top information.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>well_info</strong><span class="classifier">DataFrame</span></dt><dd><p>Metadata from <a class="reference internal" href="#mapgwm.headobs.preprocess_headobs" title="mapgwm.headobs.preprocess_headobs"><code class="xref py py-func docutils literal notranslate"><span class="pre">preprocess_headobs()</span></code></a>, with
+additional screen top and bottom estimates and category column
+with above categories.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mapgwm.headobs.get_data">
+<span class="sig-prename descclassname"><span class="pre">mapgwm.headobs.</span></span><span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aquifer_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_renames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mapgwm.headobs.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read groundwater level data output from the 
+<a class="reference external" href="https://doi.org/10.5066/P9W004O6">visGWDB program</a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>data_file</strong><span class="classifier">str</span></dt><dd><p>Text file with groundwater level time series. Expected to have
+the following columns, or their renames. See the <a class="reference internal" href="../inputs.html#head-observation-input"><span class="std std-ref">Head Observation Input</span></a>
+for more details.
+(NAME: rename):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">SITE_BADGE</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">site_no</span><span class="w"></span>
+<span class="nt">DEC_LAT_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lat</span><span class="w"></span>
+<span class="nt">DEC_LONG_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lon</span><span class="w"></span>
+<span class="nt">MONTHLY_LEV_ALT_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">head</span><span class="w"></span>
+<span class="nt">MONTHLY_STDEV_LEV_ALT_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">head_std</span><span class="w"></span>
+<span class="nt">MONTHLY_LAST_LEV_ALT_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">last_head</span><span class="w"></span>
+<span class="nt">MONTHLY_LEV_COUNT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">n</span><span class="w"></span>
+<span class="nt">YEAR</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">year</span><span class="w"></span>
+<span class="nt">MONTH</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">month</span><span class="w"></span>
+<span class="c1"># columns in version with statistical estimates</span><span class="w"></span>
+<span class="nt">LEV_DT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">datetime</span><span class="w"></span>
+<span class="nt">EST_LEV_ALT_STDEV</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">head_std</span><span class="w"></span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>metadata_files</strong><span class="classifier">str</span></dt><dd><p>Text file with groundwater level metadata. Expected to have
+the following columns, or their renames. See the <a class="reference internal" href="../inputs.html#head-observation-input"><span class="std std-ref">Head Observation Input</span></a>
+for more details.
+(NAME: rename):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">WELL_DEPTH_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">well_depth</span><span class="w"></span>
+<span class="nt">OPEN_TOP_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">screen_top</span><span class="w"></span>
+<span class="nt">OPEN_BOTTOM_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">screen_botm</span><span class="w"></span>
+<span class="nt">ALT_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">well_el</span><span class="w"></span>
+<span class="nt">AQFR_CD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aqfr_cd</span><span class="w"></span>
+<span class="nt">NAT_AQFR_CD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nat_aqfr_cd</span><span class="w"></span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>aquifer_names</strong><span class="classifier">dict, optional</span></dt><dd><p>Option to explicitly specify regional aquifer names associated with local aquifer codes.
+Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">aquifer_names</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;124SPT&#39;</span><span class="p">:</span> <span class="s1">&#39;middle clairborne&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>by default None, in which case the names listed in the <a class="reference internal" href="../inputs.html#regional-aquifer-code-names"><span class="std std-ref">Regional Aquifer Code Names</span></a> lookup
+are used.</p>
+</dd>
+<dt><strong>column_renames</strong><span class="classifier">dict, optional</span></dt><dd><p>Option to rename columns in the data or metadata that are different than those listed above.
+For example, if the data file has a ‘SITE_NO’ column instead of ‘SITE_BADGE’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">column_renames</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">:</span> <span class="s1">&#39;site_no&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>by default None, in which case the renames listed above will be used.
+Note that the renames must be the same as those listed above for
+<a class="reference internal" href="#mapgwm.headobs.preprocess_headobs" title="mapgwm.headobs.preprocess_headobs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapgwm.headobs.preprocess_headobs()</span></code></a> to work.</p>
+</dd>
+<dt><strong>data_kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Keyword arguments to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="(in pandas v1.4.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.read_csv()</span></code></a> for reading <code class="docutils literal notranslate"><span class="pre">data_file</span></code>,
+by default None</p>
+</dd>
+<dt><strong>metadata_kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Keyword arguments to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="(in pandas v1.4.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.read_csv()</span></code></a> for reading <code class="docutils literal notranslate"><span class="pre">metadata_files</span></code>,
+by default None</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>data</strong><span class="classifier">DataFrame</span></dt><dd><p>Head observation timeseries, e.g. for input to func:<cite>mapgwm.headobs.preprocess_headobs</cite></p>
+<p>Key columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 88%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>lat</p></td>
+<td><p>lattitude</p></td>
+</tr>
+<tr class="row-odd"><td><p>lon</p></td>
+<td><p>longitude</p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>measurement dates in pandas datetime format</p></td>
+</tr>
+<tr class="row-odd"><td><p>head</p></td>
+<td><p>average head for the period represented by the datetime</p></td>
+</tr>
+<tr class="row-even"><td><p>last_head</p></td>
+<td><p>last head measurement for the period represented by the datetime</p></td>
+</tr>
+<tr class="row-odd"><td><p>head_std</p></td>
+<td><p>standard deviation of measured heads within the datetime period</p></td>
+</tr>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>number of measured heads within the period represented</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>metadata</strong><span class="classifier">DataFrame</span></dt><dd><p>Head observation metadata, e.g. for input to func:<cite>mapgwm.headobs.preprocess_headobs</cite></p>
+<p>Key columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 81%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no (index)</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>aqfr_cd</p></td>
+<td><p>Local aquifer code</p></td>
+</tr>
+<tr class="row-odd"><td><p>nat_aqfr_cd</p></td>
+<td><p>National aquifer code</p></td>
+</tr>
+<tr class="row-even"><td><p>screen_botm</p></td>
+<td><p>Well screen bottom, as a depth below land surface, in feet</p></td>
+</tr>
+<tr class="row-odd"><td><p>screen_top</p></td>
+<td><p>Well screen top, as a depth below land surface, in feet</p></td>
+</tr>
+<tr class="row-even"><td><p>well_depth</p></td>
+<td><p>Well depth, in feet</p></td>
+</tr>
+<tr class="row-odd"><td><p>well_el</p></td>
+<td><p>Altitude of land surface, in feet</p></td>
+</tr>
+<tr class="row-even"><td><p>local_aquifer</p></td>
+<td><p>Local aquifer name corresponding to aqfr_cd, see <a class="reference internal" href="../inputs.html#aquifer-code-names"><span class="std std-ref">Aquifer Code Names</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_aquifer</p></td>
+<td><p>Lumped regional aquifer, see <a class="reference internal" href="../inputs.html#regional-aquifer-code-names"><span class="std std-ref">Regional Aquifer Code Names</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mapgwm.headobs.get_header_length">
+<span class="sig-prename descclassname"><span class="pre">mapgwm.headobs.</span></span><span class="sig-name descname"><span class="pre">get_header_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sitefile</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SITE_BADGE'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#get_header_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mapgwm.headobs.get_header_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect the number of rows to skip when reading
+a tabular file with ‘#’ head comments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mapgwm.headobs.get_spinup_obs">
+<span class="sig-prename descclassname"><span class="pre">mapgwm.headobs.</span></span><span class="sig-name descname"><span class="pre">get_spinup_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_measurements</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_measurement_inventory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perioddata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_crs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geographic_groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_open_interval_ft</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#get_spinup_obs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mapgwm.headobs.get_spinup_obs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute head observations that are the observed equivalents of
+simulated heads on the last timestep of multiyear or multi-decadal stress periods.
+Observed equivalents should ideally be free of seasonal bias, and representative
+of average conditions near the end of the stress period. For example, if
+the stress period was 1900-1950, we would want an average head value
+for the late 1940s (for comparison with the simulated value on the last timestep).</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>field_measurements</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame of head measurements. Must have the following columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 88%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>measurement dates in pandas datetime format</p></td>
+</tr>
+<tr class="row-odd"><td><p>head</p></td>
+<td><p>average head for the period represented by the datetime</p></td>
+</tr>
+<tr class="row-even"><td><p>last_head</p></td>
+<td><p>last head measurement for the period represented by the datetime</p></td>
+</tr>
+<tr class="row-odd"><td><p>head_std</p></td>
+<td><p>standard deviation of measured heads within the datetime period</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>field_measurement_inventory</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame of head observation site information. Must have the following columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 88%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>measurement dates in pandas datetime format</p></td>
+</tr>
+<tr class="row-odd"><td><p>head</p></td>
+<td><p>average head for the period represented by the datetime</p></td>
+</tr>
+<tr class="row-even"><td><p>last_head</p></td>
+<td><p>last head measurement for the period represented by the datetime</p></td>
+</tr>
+<tr class="row-odd"><td><p>head_std</p></td>
+<td><p>standard deviation of measured heads within the datetime period</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>perioddata</strong><span class="classifier">DataFrame</span></dt><dd><p>DataFrame with start/end dates for stress periods or timesteps. 
+Must have the following columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 76%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>time</p></td>
+<td><p>modflow simulation time, in days</p></td>
+</tr>
+<tr class="row-even"><td><p>start_datetime</p></td>
+<td><p>start date for each stress period or timestep</p></td>
+</tr>
+<tr class="row-odd"><td><p>end_datetime</p></td>
+<td><p>end date for each stress period or timestep</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>dem</strong><span class="classifier">[type]</span></dt><dd><p>[description]</p>
+</dd>
+<dt><strong>source_crs</strong><span class="classifier">[type]</span></dt><dd><p>[description]</p>
+</dd>
+<dt><strong>active_area</strong><span class="classifier">str</span></dt><dd><p>Shapefile with polygon to cull observations to. Automatically reprojected
+to dest_crs if the shapefile includes a .prj file.
+by default, None.</p>
+</dd>
+<dt><strong>start_date</strong><span class="classifier">None</span></dt><dd><p>Start date for truncating observations.</p>
+</dd>
+<dt><strong>default_open_interval_ft</strong><span class="classifier">int, optional</span></dt><dd><p>[description], by default 50</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mapgwm.headobs.preprocess_headobs">
+<span class="sig-prename descclassname"><span class="pre">mapgwm.headobs.</span></span><span class="sig-name descname"><span class="pre">preprocess_headobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">head_data_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['head',</span> <span class="pre">'last_head',</span> <span class="pre">'head_std']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dem</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dem_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'meters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_date</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1998-04-01'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_area</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_area_id_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_area_feature_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4269</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5070</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_open_interval_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_length_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'meters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_length_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'meters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geographic_groups</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geographic_groups_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_obsname_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'../source_data/observations/head_obs/preprocessed_head_obs.csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#preprocess_headobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mapgwm.headobs.preprocess_headobs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preprocess head observation data, for example, groundwater level data output from the
+<a class="reference external" href="https://doi.org/10.5066/P9W004O6">visGWDB program</a>.</p>
+<ul class="simple">
+<li><p>Data are reprojected from a <cite>source_crs</cite> (Coordinate reference system; assumed to be in geographic coordinates)
+to the CRS of the model (<cite>dest_crs</cite>)</p></li>
+<li><p>Data are culled to a <cite>start_date</cite> and optionally, a polygon or set of polygons defining the model area</p></li>
+<li><p>length units are converted to those of the groundwater model. Open intervals for the wells are
+converted from depths to elevations</p></li>
+<li><p>missing open intervals are filled based on well bottom depths (if availabile) and the median open
+interval length for the dataset.</p></li>
+<li><p>Wells are categorized based on the quality of the open interval information (see the documentation
+for <a class="reference internal" href="#mapgwm.headobs.fill_well_open_intervals" title="mapgwm.headobs.fill_well_open_intervals"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapgwm.headobs.fill_well_open_intervals()</span></code></a>).</p></li>
+<li><p>Prefixes for observation names (with an optional length limit) that identify the location are generated</p></li>
+<li><p>Preliminary observation groups can also be assigned, based on geographic areas defined by polygons
+(<cite>aoi</cite> parameter)</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>data</strong><span class="classifier">DataFrame</span></dt><dd><p>Head observation data, e.g. as output from <a class="reference internal" href="#mapgwm.headobs.get_data" title="mapgwm.headobs.get_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapgwm.headobs.get_data()</span></code></a>.
+Columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 88%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>lat or y</p></td>
+<td><p>latitude or y-coorindate in <cite>source_crs</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p>lon or x</p></td>
+<td><p>longitude or x-coordinate in <cite>source_crs</cite></p></td>
+</tr>
+<tr class="row-even"><td><p>datetime</p></td>
+<td><p>measurement dates in pandas datetime format</p></td>
+</tr>
+<tr class="row-odd"><td><p>head</p></td>
+<td><p>average head for the period represented by the datetime</p></td>
+</tr>
+<tr class="row-even"><td><p>last_head</p></td>
+<td><p>last head measurement for the period represented by the datetime</p></td>
+</tr>
+<tr class="row-odd"><td><p>head_std</p></td>
+<td><p>standard deviation of measured heads within the datetime period</p></td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ul class="simple">
+<li><p>lat and lon columns can alternatively be in the metadata table</p></li>
+<li><p>‘x’ and ‘y’ columns can be supplied in</p></li>
+<li><p><cite>last_head</cite> and <cite>head_std</cite> only need to be included if they are in
+<cite>head_data_columns</cite></p></li>
+</ul>
+</dd>
+<dt><strong>metadata</strong><span class="classifier">DataFrame</span></dt><dd><p>Head observation data, e.g. as output from <a class="reference internal" href="#mapgwm.headobs.get_data" title="mapgwm.headobs.get_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapgwm.headobs.get_data()</span></code></a>.</p>
+<p>Must have the following columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 81%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no (index)</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>aqfr_cd</p></td>
+<td><p>Local aquifer code</p></td>
+</tr>
+<tr class="row-odd"><td><p>screen_botm</p></td>
+<td><p>Well screen bottom, as a depth below land surface, in feet</p></td>
+</tr>
+<tr class="row-even"><td><p>screen_top</p></td>
+<td><p>Well screen top, as a depth below land surface, in feet</p></td>
+</tr>
+<tr class="row-odd"><td><p>well_depth</p></td>
+<td><p>Well depth, in feet</p></td>
+</tr>
+<tr class="row-even"><td><p>well_el</p></td>
+<td><p>Altitude of land surface, in feet</p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+<dt><strong>head_data_columns</strong><span class="classifier">list of strings</span></dt><dd><p>Columns in data with head values or their statistics.
+By default, ‘head’, ‘last_head’, ‘head_std’, which allows both
+the average and last head values for the stress period to be considered,
+as well as the variability of water levels contributing to an average value.</p>
+</dd>
+<dt><strong>dem</strong><span class="classifier">str, optional</span></dt><dd><p>DEM raster of the land surface. Used for estimating missing wellhead elevations.
+Any reprojection to dest_crs is handled automatically, assuming
+the DEM raster has CRS information embedded (arc-ascii grids do not!)
+By default, None.</p>
+</dd>
+<dt><strong>dem_units</strong><span class="classifier">str, {‘feet’, ‘meters’, ..}</span></dt><dd><p>Units of DEM elevations, by default, ‘meters’</p>
+</dd>
+<dt><strong>start_date</strong><span class="classifier">str (YYYY-mm-dd)</span></dt><dd><p>Simulation start date (cull observations before this date)</p>
+</dd>
+<dt><strong>active_area</strong><span class="classifier">str</span></dt><dd><p>Shapefile with polygon to cull observations to. Automatically reprojected
+to dest_crs if the shapefile includes a .prj file.
+by default, None.</p>
+</dd>
+<dt><strong>active_area_id_column</strong><span class="classifier">str, optional</span></dt><dd><p>Column in active_area with feature ids.
+By default, None, in which case all features are used.</p>
+</dd>
+<dt><strong>active_area_feature_id</strong><span class="classifier">str, optional</span></dt><dd><p>ID of feature to use for active area
+By default, None, in which case all features are used.</p>
+</dd>
+<dt><strong>source_crs</strong><span class="classifier">obj</span></dt><dd><p>Coordinate reference system of the head observation locations.
+A Python int, dict, str, or <a class="reference external" href="https://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS" title="(in pyproj v3.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyproj.crs.CRS</span></code></a> instance
+passed to <a class="reference external" href="https://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS.from_user_input" title="(in pyproj v3.3.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyproj.crs.CRS.from_user_input()</span></code></a></p>
+<dl class="simple">
+<dt>Can be any of:</dt><dd><ul class="simple">
+<li><p>PROJ string</p></li>
+<li><p>Dictionary of PROJ parameters</p></li>
+<li><p>PROJ keyword arguments for parameters</p></li>
+<li><p>JSON string with PROJ parameters</p></li>
+<li><p>CRS WKT string</p></li>
+<li><p>An authority string [i.e. ‘epsg:4326’]</p></li>
+<li><p>An EPSG integer code [i.e. 4326]</p></li>
+<li><p>A tuple of (“auth_name”: “auth_code”) [i.e (‘epsg’, ‘4326’)]</p></li>
+<li><p>An object with a <cite>to_wkt</cite> method.</p></li>
+<li><p>A <a class="reference external" href="https://pyproj4.github.io/pyproj/stable/api/crs/crs.html#pyproj.crs.CRS" title="(in pyproj v3.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyproj.crs.CRS</span></code></a> class</p></li>
+</ul>
+</dd>
+</dl>
+<p>By default, epsg:4269</p>
+</dd>
+<dt><strong>dest_crs</strong><span class="classifier">obj</span></dt><dd><p>Coordinate reference system of the model. Same input types
+as <code class="docutils literal notranslate"><span class="pre">source_crs</span></code>.
+By default, epsg:5070</p>
+</dd>
+<dt><strong>default_open_interval_length</strong><span class="classifier">float, optional</span></dt><dd><p>Option to specify a default open interval length 
+for wells that don’t have screen top information.
+By default None, in which case the median length is used,
+or zero open interval length, if no wells in the dataset 
+have screen top information.</p>
+</dd>
+<dt><strong>data_length_units</strong><span class="classifier">str; ‘meters’, ‘feet’, etc.</span></dt><dd><p>Length units of head observations.</p>
+</dd>
+<dt><strong>model_length_units</strong><span class="classifier">str; ‘meters’, ‘feet’, etc.</span></dt><dd><p>Length units of model.</p>
+</dd>
+<dt><strong>geographic_groups</strong><span class="classifier">file, dict or list-like</span></dt><dd><p>Option to group observations by area(s) of interest. Can
+be a shapefile, list of shapefiles, or dictionary of shapely polygons.
+A ‘group’ column will be created in the metadata, and observation
+sites within each polygon will be assigned the group name
+associated with that polygon.</p>
+<p>For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">geographic_groups</span><span class="o">=</span><span class="s1">&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
+<span class="n">geographic_groups</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span><span class="p">]</span>
+<span class="n">geographic_groups</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cha&#39;</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">shapely</span> <span class="n">Polygon</span><span class="o">&gt;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Where ‘cha’ is an observation group name for observations located within the
+the area defined by CompositeHydrographArea.shp. For shapefiles,
+group names are provided in a <cite>geographic_groups_col</cite>.</p>
+</dd>
+<dt><strong>geographic_groups_col</strong><span class="classifier">str</span></dt><dd><p>Field name in the <cite>geographic_groups</cite> shapefile(s) containing the
+observation group names associated with each polygon.</p>
+</dd>
+<dt><strong>max_obsname_len</strong><span class="classifier">int or None</span></dt><dd><p>Maximum length for observation name prefix. Default of 13
+allows for a PEST obsnme of 20 characters or less with
+&lt;prefix&gt;_yyyydd or &lt;prefix&gt;_&lt;per&gt;d&lt;per&gt;
+(e.g. &lt;prefix&gt;_2d1 for a difference between stress periods 2 and 1)
+If None, observation names will not be truncated. PEST++ does not have
+a limit on observation name length.</p>
+</dd>
+<dt><strong>outfile</strong><span class="classifier">str</span></dt><dd><p>Where output file will be written. Metadata are written to a file
+with the same name, with an additional “_info” suffix prior to
+the file extension.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>df</strong><span class="classifier">DataFrame</span></dt><dd><p>Preprocessed time series</p>
+</dd>
+<dt><strong>well_info</strong><span class="classifier">DataFrame</span></dt><dd><p>Preprocessed metadata</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p><cite>The PEST++ Manual &lt;https://github.com/usgs/pestpp/tree/master/documentation&gt;</cite></p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mapgwm.headobs.read_metadata">
+<span class="sig-prename descclassname"><span class="pre">mapgwm.headobs.</span></span><span class="sig-name descname"><span class="pre">read_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_renames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aquifer_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mapgwm/headobs.html#read_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mapgwm.headobs.read_metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read groundwater level metadata output from the
+<a class="reference external" href="https://doi.org/10.5066/P9W004O6">visGWDB program</a>.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>metadata_files</strong><span class="classifier">str</span></dt><dd><p>Text file with groundwater level metadata. Expected to have
+the following columns, or their renames. See the <a class="reference internal" href="../inputs.html#head-observation-input"><span class="std std-ref">Head Observation Input</span></a>
+for more details.
+(NAME: rename):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">WELL_DEPTH_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">well_depth</span><span class="w"></span>
+<span class="nt">OPEN_TOP_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">screen_top</span><span class="w"></span>
+<span class="nt">OPEN_BOTTOM_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">screen_botm</span><span class="w"></span>
+<span class="nt">ALT_VA</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">well_el</span><span class="w"></span>
+<span class="nt">AQFR_CD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aqfr_cd</span><span class="w"></span>
+<span class="nt">NAT_AQFR_CD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nat_aqfr_cd</span><span class="w"></span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>aquifer_names</strong><span class="classifier">dict, optional</span></dt><dd><p>Option to explicitly specify regional aquifer names associated with local aquifer codes.
+Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">aquifer_names</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;124SPT&#39;</span><span class="p">:</span> <span class="s1">&#39;middle clairborne&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>by default None, in which case the names listed in the <a class="reference internal" href="../inputs.html#regional-aquifer-code-names"><span class="std std-ref">Regional Aquifer Code Names</span></a> lookup
+are used.</p>
+</dd>
+<dt><strong>column_renames</strong><span class="classifier">dict, optional</span></dt><dd><p>Option to rename columns in the data or metadata that are different than those listed above.
+For example, if the data file has a ‘SITE_NO’ column instead of ‘SITE_BADGE’:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">column_renames</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">:</span> <span class="s1">&#39;site_no&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>by default None, in which case the renames listed above will be used.
+Note that the renames must be the same as those listed above for
+<a class="reference internal" href="#mapgwm.headobs.preprocess_headobs" title="mapgwm.headobs.preprocess_headobs"><code class="xref py py-func docutils literal notranslate"><span class="pre">mapgwm.headobs.preprocess_headobs()</span></code></a> to work.</p>
+</dd>
+<dt><strong>metadata_kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Keyword arguments to <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_csv.html#pandas.read_csv" title="(in pandas v1.4.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">pandas.read_csv()</span></code></a> for reading <code class="docutils literal notranslate"><span class="pre">metadata_files</span></code>,
+by default None</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt><strong>metadata</strong><span class="classifier">DataFrame</span></dt><dd><p>Head observation metadata, e.g. for input to func:<cite>mapgwm.headobs.preprocess_headobs</cite></p>
+<p>Key columns:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 81%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>site_no (index)</p></td>
+<td><p>site identifier</p></td>
+</tr>
+<tr class="row-even"><td><p>aqfr_cd</p></td>
+<td><p>Local aquifer code</p></td>
+</tr>
+<tr class="row-odd"><td><p>nat_aqfr_cd</p></td>
+<td><p>National aquifer code</p></td>
+</tr>
+<tr class="row-even"><td><p>screen_botm</p></td>
+<td><p>Well screen bottom, as a depth below land surface, in feet</p></td>
+</tr>
+<tr class="row-odd"><td><p>screen_top</p></td>
+<td><p>Well screen top, as a depth below land surface, in feet</p></td>
+</tr>
+<tr class="row-even"><td><p>well_depth</p></td>
+<td><p>Well depth, in feet</p></td>
+</tr>
+<tr class="row-odd"><td><p>well_el</p></td>
+<td><p>Altitude of land surface, in feet</p></td>
+</tr>
+<tr class="row-even"><td><p>local_aquifer</p></td>
+<td><p>Local aquifer name corresponding to aqfr_cd, see <a class="reference internal" href="../inputs.html#aquifer-code-names"><span class="std std-ref">Aquifer Code Names</span></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>regional_aquifer</p></td>
+<td><p>Lumped regional aquifer, see <a class="reference internal" href="../inputs.html#regional-aquifer-code-names"><span class="std std-ref">Regional Aquifer Code Names</span></a></p></td>
+</tr>
+</tbody>
+</table>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mapgwm.framework.html" class="btn btn-neutral float-left" title="mapgwm.framework module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mapgwm.lookups.html" class="btn btn-neutral float-right" title="mapgwm.lookups module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">Last updated on Feb 09, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

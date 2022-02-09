@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Philosophy &mdash; usgs-map-gwmodels 0.post72.dev0+g3e0095e documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="usgs-map-gwmodels 0.post72.dev0+g3e0095e" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> usgs-map-gwmodels
+          </a>
+              <div class="version">
+                0.post72.dev0+g3e0095e
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Philosophy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-usgs-map-gwmodels-does">What usgs-map-gwmodels does</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-usgs-map-gwmodels-doesn-t-do">What usgs-map-gwmodels doesn’t do</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Example.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Example.html"> Demo of USGS-MAP-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/index.html"> Code reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inputs.html"> Input Data Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="references.html"> References cited</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">usgs-map-gwmodels</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Philosophy</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/philosophy.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="philosophy">
+<h1>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this headline">¶</a></h1>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>The Mississippi Alluvial Plain (MAP) is one of the most import agricultural
+regions in the US, and <a class="reference external" href="https://ngwa.onlinelibrary.wiley.com/doi/abs/10.1111/gwat.12306">among the most depleted</a>
+in terms of its groundwater resource .
+Groundwater modeling with MODFLOW is being used to support future management decisions (e.g. Haugh et al. 2020).
+Given the size and heterogeneity of the MAP region, management decisions are best supported by local-scale
+models– inset within a larger regional hydrogeologic framework– that can be tuned to answer specific
+questions. Construction and management of multiple models presents a challenge to project resources, however,
+especially if incremental updates to the models are desired as new data become available.</p>
+<p>USGS-MAP-gwmodels provides a single code base for preprocessing
+input data to the
+<a class="reference external" href="https://www2.usgs.gov/water/lowermississippigulf/map/">USGS Mississippi Alluvial Plain (MAP) project</a> groundwater models.
+Input data are derived from other components within the MAP project and from
+external sources such as the National Water Information System (NWIS). Preprocessed
+data are output in clean formats that are independent of a particular model
+grid, allowing the model discretization to be easily changed without rerunning the preprocessing. By having
+a single code base that is well tested and documented, we avoid the many of the potential errors and
+confusion that are inherent in ad-hoc scripting. A single code base also facilitates reproducability
+in the modeling workflow, and incremental updating of the models as new data
+become available.</p>
+</section>
+<section id="what-usgs-map-gwmodels-does">
+<h2>What usgs-map-gwmodels does<a class="headerlink" href="#what-usgs-map-gwmodels-does" title="Permalink to this headline">¶</a></h2>
+<p>Input data from other components within the MAP project and from
+external sources such as the National Water Information System (NWIS) are preprocessed
+into clean formats that are readable by the <a class="reference external" href="https://github.com/aleaf/modflow-setup">modflow-setup</a>
+package, which assembles the actual input files to MODFLOW, and
+<a class="reference external" href="https://github.com/aleaf/modflow-obs">modflow-obs</a>, which creates observation input for the
+<a class="reference external" href="https://pesthomepage.org/pest-suite">PEST family of programs</a>.</p>
+<p>The original data, coming from different sources, is heterogenous and may cover large areas.
+The intial preprocessing step performed by USGS-MAP-gwmodels allows the often unwieldy source data to be
+kept separate from the model setup workflow. This way, the well-organized and minimal
+input data created by USGS-MAP-gwmodels can be included, along with the model input files and build script,
+in a self-contained git repository that has everything needed to regenerate a model at
+different spatial or temporal discretizations, or with other input modifications. An overview
+of the modeling workflow is shown below:</p>
+<iframe src="_static/modeling_flow_chart.html/modeling_flow_chart.html" height="550px" width="100%" frameBorder="0" scrolling="no" style="-webkit-transform:scale(1.0);-moz-transform-scale(1.0);"></iframe></section>
+<section id="what-usgs-map-gwmodels-doesn-t-do">
+<h2>What usgs-map-gwmodels doesn’t do<a class="headerlink" href="#what-usgs-map-gwmodels-doesn-t-do" title="Permalink to this headline">¶</a></h2>
+<p>USGS-MAP-gwmodels has been developed thus far to support groundwater modeling efforts for
+the <a class="reference external" href="https://www2.usgs.gov/water/lowermississippigulf/map/">Mississippi Alluvial Plain (MAP) project</a>.
+While many of the features may be transferable
+to other water availability modeling, USGS-MAP-gwmodels is not currently intended
+to be fully general or comprehensive in terms of the types of input data it supports. If
+you are interested in adapting USGS-MAP-gwmodels to your work and would like to see support
+added for another type of data, get ahold of us via
+<a class="reference external" href="https://github.com/aleaf/usgs-map-gwmodels/issues">the Issues tab on our GitHub page</a>.
+Finally, USGS-MAP-gwmodels does not write actual input MODFLOW or PEST. These tasks
+are delegated to <a class="reference external" href="https://github.com/aleaf/modflow-setup">modflow-setup</a> and
+<a class="reference external" href="https://github.com/aleaf/modflow-obs">modflow-obs</a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="usgs-map-gwmodels 0.post72.dev0+g3e0095e" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">Last updated on Feb 09, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

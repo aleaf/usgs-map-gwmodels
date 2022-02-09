@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mapgwm.headobs &mdash; usgs-map-gwmodels 0.post72.dev0+g3e0095e documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> usgs-map-gwmodels
+          </a>
+              <div class="version">
+                0.post72.dev0+g3e0095e
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html"> Demo of USGS-MAP-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html"> Code reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html"> Input Data Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html"> References cited</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">usgs-map-gwmodels</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>mapgwm.headobs</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mapgwm.headobs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Code for preprocessing head observation data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">MultiPolygon</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">gisutils</span> <span class="kn">import</span> <span class="n">shp2df</span><span class="p">,</span> <span class="n">df2shp</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">get_values_at_points</span>
+<span class="kn">from</span> <span class="nn">mfsetup.obs</span> <span class="kn">import</span> <span class="n">make_obsname</span>
+<span class="kn">from</span> <span class="nn">mfsetup.units</span> <span class="kn">import</span> <span class="n">convert_length_units</span>
+<span class="kn">from</span> <span class="nn">mapgwm.lookups</span> <span class="kn">import</span> <span class="n">aq_codes_dict</span><span class="p">,</span> <span class="n">gwlevels_col_renames</span>
+<span class="kn">from</span> <span class="nn">mapgwm.utils</span> <span class="kn">import</span> <span class="n">makedirs</span><span class="p">,</span> <span class="n">assign_geographic_obsgroups</span><span class="p">,</span> <span class="n">cull_data_to_active_area</span>
+
+
+<div class="viewcode-block" id="get_header_length"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.get_header_length">[docs]</a><span class="k">def</span> <span class="nf">get_header_length</span><span class="p">(</span><span class="n">sitefile</span><span class="p">,</span> <span class="n">col0</span><span class="o">=</span><span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Detect the number of rows to skip when reading</span>
+<span class="sd">    a tabular file with &#39;#&#39; head comments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sitefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;#&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">and</span> <span class="n">col0</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">i</span></div>
+
+
+<div class="viewcode-block" id="read_metadata"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.read_metadata">[docs]</a><span class="k">def</span> <span class="nf">read_metadata</span><span class="p">(</span><span class="n">metadata_files</span><span class="p">,</span> <span class="n">column_renames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">aquifer_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">metadata_kwargs</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;Read groundwater level metadata output from the</span>
+<span class="sd">    `visGWDB program &lt;https://doi.org/10.5066/P9W004O6&gt;`_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    metadata_files : str</span>
+<span class="sd">        Text file with groundwater level metadata. Expected to have</span>
+<span class="sd">        the following columns, or their renames. See the :ref:`Head Observation Input`</span>
+<span class="sd">        for more details.</span>
+<span class="sd">        (NAME: rename):</span>
+
+<span class="sd">        .. literalinclude:: ../../../mapgwm/lookups/gwlevels_column_renames.yml</span>
+<span class="sd">            :language: yaml</span>
+<span class="sd">            :start-after: # metadata column</span>
+
+<span class="sd">    aquifer_names : dict, optional</span>
+<span class="sd">        Option to explicitly specify regional aquifer names associated with local aquifer codes.</span>
+<span class="sd">        Example::</span>
+
+<span class="sd">            aquifer_names={&#39;124SPT&#39;: &#39;middle clairborne&#39;}</span>
+
+<span class="sd">        by default None, in which case the names listed in the :ref:`Regional Aquifer Code Names` lookup</span>
+<span class="sd">        are used.</span>
+
+<span class="sd">    column_renames : dict, optional</span>
+<span class="sd">        Option to rename columns in the data or metadata that are different than those listed above.</span>
+<span class="sd">        For example, if the data file has a &#39;SITE_NO&#39; column instead of &#39;SITE_BADGE&#39;::</span>
+
+<span class="sd">            column_renames={&#39;SITE_NO&#39;: &#39;site_no&#39;}</span>
+
+<span class="sd">        by default None, in which case the renames listed above will be used.</span>
+<span class="sd">        Note that the renames must be the same as those listed above for</span>
+<span class="sd">        :func:`mapgwm.headobs.preprocess_headobs` to work.</span>
+
+<span class="sd">    metadata_kwargs : dict, optional</span>
+<span class="sd">        Keyword arguments to :func:`pandas.read_csv` for reading ``metadata_files``,</span>
+<span class="sd">        by default None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    metadata : DataFrame</span>
+<span class="sd">        Head observation metadata, e.g. for input to func:`mapgwm.headobs.preprocess_headobs`</span>
+
+<span class="sd">        Key columns:</span>
+
+<span class="sd">        ================= ==========================================================================</span>
+<span class="sd">        site_no (index)   site identifier</span>
+<span class="sd">        aqfr_cd           Local aquifer code</span>
+<span class="sd">        nat_aqfr_cd       National aquifer code</span>
+<span class="sd">        screen_botm       Well screen bottom, as a depth below land surface, in feet</span>
+<span class="sd">        screen_top        Well screen top, as a depth below land surface, in feet</span>
+<span class="sd">        well_depth        Well depth, in feet</span>
+<span class="sd">        well_el           Altitude of land surface, in feet</span>
+<span class="sd">        local_aquifer     Local aquifer name corresponding to aqfr_cd, see :ref:`Aquifer Code Names`</span>
+<span class="sd">        regional_aquifer  Lumped regional aquifer, see :ref:`Regional Aquifer Code Names`</span>
+<span class="sd">        ================= ==========================================================================</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># update the default column renames</span>
+    <span class="c1"># with any supplied via column_renames parameter</span>
+    <span class="n">col_renames</span> <span class="o">=</span> <span class="n">gwlevels_col_renames</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">column_renames</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="n">col_renames</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">column_renames</span><span class="p">)</span>
+
+    <span class="c1"># read in the metadata</span>
+    <span class="n">dflist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata_files</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata_files</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>  <span class="c1"># allows list of paths or single path</span>
+        <span class="n">metadata_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">metadata_files</span><span class="p">]</span>
+    <span class="c1"># default columns to read, unless &#39;usecols&#39; is specified in the metadata kwargs</span>
+    <span class="n">metadata_usecols</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;WELL_DEPTH_VA&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;OPEN_TOP_VA&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;OPEN_BOTTOM_VA&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;AQFR_CD&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;NAT_AQFR_CD&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ALT_VA&#39;</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="s1">&#39;usecols&#39;</span> <span class="ow">in</span> <span class="n">metadata_kwargs</span><span class="p">:</span>
+        <span class="n">metadata_usecols</span> <span class="o">=</span> <span class="n">metadata_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;usecols&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">metadata_files</span><span class="p">:</span>
+        <span class="n">metadata_skiprows</span> <span class="o">=</span> <span class="n">get_header_length</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="n">metadata_usecols</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+                         <span class="n">skiprows</span><span class="o">=</span><span class="n">metadata_skiprows</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">col_renames</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">dflist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dflist</span><span class="p">,</span> <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># create aquifer column in metadata</span>
+    <span class="n">regional_aquifer_codes</span> <span class="o">=</span> <span class="n">aq_codes_dict</span><span class="p">[</span><span class="s1">&#39;regional_aquifer&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">aquifer_names</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="n">regional_aquifer_codes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">aquifer_names</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;local_aquifer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">aq_codes_dict</span><span class="p">[</span><span class="s1">&#39;aquifer_code_names&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="s1">&#39;unspecified&#39;</span><span class="p">)</span>
+                                 <span class="k">for</span> <span class="n">cd</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">aqfr_cd</span><span class="p">]</span>
+    <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;regional_aquifer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">regional_aquifer_codes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cd</span><span class="p">,</span> <span class="s1">&#39;unspecified&#39;</span><span class="p">)</span>
+                                    <span class="k">for</span> <span class="n">cd</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">aqfr_cd</span><span class="p">]</span>
+    <span class="n">unspec_rows</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">metadata</span><span class="p">[[</span><span class="s1">&#39;local_aquifer&#39;</span><span class="p">,</span> <span class="s1">&#39;regional_aquifer&#39;</span><span class="p">]]</span> <span class="o">==</span> <span class="s1">&#39;unspecified&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">unspec_rows</span><span class="p">):</span>
+        <span class="n">codes_without_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;aqfr_cd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">unspec_rows</span><span class="p">])</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">((</span><span class="s1">&#39;No aquifer names found for aquifer codes:</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                       <span class="s1">&#39;Please add them to mapgwm/lookups/aquifer_codes.yml, &#39;</span>
+                       <span class="s1">&#39;or specify them with the aquifer_names argument&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">codes_without_names</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">metadata</span></div>
+
+            
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.get_data">[docs]</a><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">metadata_files</span><span class="p">,</span> <span class="n">aquifer_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">column_renames</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+             <span class="n">data_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">metadata_kwargs</span><span class="o">=</span><span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;Read groundwater level data output from the </span>
+<span class="sd">    `visGWDB program &lt;https://doi.org/10.5066/P9W004O6&gt;`_.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data_file : str</span>
+<span class="sd">        Text file with groundwater level time series. Expected to have</span>
+<span class="sd">        the following columns, or their renames. See the :ref:`Head Observation Input`</span>
+<span class="sd">        for more details.</span>
+<span class="sd">        (NAME: rename):</span>
+<span class="sd">        </span>
+<span class="sd">        .. literalinclude:: ../../../mapgwm/lookups/gwlevels_column_renames.yml</span>
+<span class="sd">            :language: yaml</span>
+<span class="sd">            :start-after: # data columns</span>
+<span class="sd">            :end-before: # metadata column</span>
+<span class="sd">            </span>
+<span class="sd">    metadata_files : str</span>
+<span class="sd">        Text file with groundwater level metadata. Expected to have</span>
+<span class="sd">        the following columns, or their renames. See the :ref:`Head Observation Input`</span>
+<span class="sd">        for more details.</span>
+<span class="sd">        (NAME: rename):</span>
+<span class="sd">        </span>
+<span class="sd">        .. literalinclude:: ../../../mapgwm/lookups/gwlevels_column_renames.yml</span>
+<span class="sd">            :language: yaml</span>
+<span class="sd">            :start-after: # metadata column</span>
+<span class="sd">            </span>
+<span class="sd">    aquifer_names : dict, optional</span>
+<span class="sd">        Option to explicitly specify regional aquifer names associated with local aquifer codes.</span>
+<span class="sd">        Example::</span>
+
+<span class="sd">            aquifer_names={&#39;124SPT&#39;: &#39;middle clairborne&#39;}</span>
+
+<span class="sd">        by default None, in which case the names listed in the :ref:`Regional Aquifer Code Names` lookup</span>
+<span class="sd">        are used.</span>
+
+<span class="sd">    column_renames : dict, optional</span>
+<span class="sd">        Option to rename columns in the data or metadata that are different than those listed above.</span>
+<span class="sd">        For example, if the data file has a &#39;SITE_NO&#39; column instead of &#39;SITE_BADGE&#39;::</span>
+
+<span class="sd">            column_renames={&#39;SITE_NO&#39;: &#39;site_no&#39;}</span>
+
+<span class="sd">        by default None, in which case the renames listed above will be used.</span>
+<span class="sd">        Note that the renames must be the same as those listed above for</span>
+<span class="sd">        :func:`mapgwm.headobs.preprocess_headobs` to work.</span>
+
+<span class="sd">    data_kwargs : dict, optional</span>
+<span class="sd">        Keyword arguments to :func:`pandas.read_csv` for reading ``data_file``,</span>
+<span class="sd">        by default None</span>
+<span class="sd">    metadata_kwargs : dict, optional</span>
+<span class="sd">        Keyword arguments to :func:`pandas.read_csv` for reading ``metadata_files``,</span>
+<span class="sd">        by default None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    data : DataFrame</span>
+<span class="sd">        Head observation timeseries, e.g. for input to func:`mapgwm.headobs.preprocess_headobs`</span>
+
+<span class="sd">        Key columns:</span>
+
+<span class="sd">        ========= ================================================================</span>
+<span class="sd">        site_no   site identifier</span>
+<span class="sd">        lat       lattitude</span>
+<span class="sd">        lon       longitude</span>
+<span class="sd">        datetime  measurement dates in pandas datetime format</span>
+<span class="sd">        head      average head for the period represented by the datetime</span>
+<span class="sd">        last_head last head measurement for the period represented by the datetime</span>
+<span class="sd">        head_std  standard deviation of measured heads within the datetime period</span>
+<span class="sd">        n         number of measured heads within the period represented</span>
+<span class="sd">        ========= ================================================================</span>
+
+<span class="sd">    metadata : DataFrame</span>
+<span class="sd">        Head observation metadata, e.g. for input to func:`mapgwm.headobs.preprocess_headobs`</span>
+
+<span class="sd">        Key columns:</span>
+
+<span class="sd">        ================= ==========================================================================</span>
+<span class="sd">        site_no (index)   site identifier</span>
+<span class="sd">        aqfr_cd           Local aquifer code</span>
+<span class="sd">        nat_aqfr_cd       National aquifer code</span>
+<span class="sd">        screen_botm       Well screen bottom, as a depth below land surface, in feet</span>
+<span class="sd">        screen_top        Well screen top, as a depth below land surface, in feet</span>
+<span class="sd">        well_depth        Well depth, in feet</span>
+<span class="sd">        well_el           Altitude of land surface, in feet</span>
+<span class="sd">        local_aquifer     Local aquifer name corresponding to aqfr_cd, see :ref:`Aquifer Code Names`</span>
+<span class="sd">        regional_aquifer  Lumped regional aquifer, see :ref:`Regional Aquifer Code Names`</span>
+<span class="sd">        ================= ==========================================================================</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># update the default column renames</span>
+    <span class="c1"># with any supplied via column_renames parameter</span>
+    <span class="n">col_renames</span> <span class="o">=</span> <span class="n">gwlevels_col_renames</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">column_renames</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="n">col_renames</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">column_renames</span><span class="p">)</span>
+
+    <span class="n">data_skiprows</span> <span class="o">=</span> <span class="n">get_header_length</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span>
+                       <span class="n">skiprows</span><span class="o">=</span><span class="n">data_skiprows</span><span class="p">,</span> <span class="o">**</span><span class="n">data_kwargs</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">col_renames</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s1">&#39;datetime&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">datetimes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-</span><span class="si">{:02d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">)</span> 
+                     <span class="k">for</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">month</span><span class="p">)]</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">datetimes</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
+    
+    <span class="c1"># read in the metadata</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">read_metadata</span><span class="p">(</span><span class="n">metadata_files</span><span class="p">,</span> <span class="n">column_renames</span><span class="o">=</span><span class="n">col_renames</span><span class="p">,</span>
+                             <span class="n">aquifer_names</span><span class="o">=</span><span class="n">aquifer_names</span><span class="p">,</span>
+                             <span class="n">metadata_kwargs</span><span class="o">=</span><span class="n">metadata_kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">metadata</span></div>
+
+
+<div class="viewcode-block" id="preprocess_headobs"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.preprocess_headobs">[docs]</a><span class="k">def</span> <span class="nf">preprocess_headobs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">head_data_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="s1">&#39;last_head&#39;</span><span class="p">,</span> <span class="s1">&#39;head_std&#39;</span><span class="p">],</span>
+                       <span class="n">dem</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dem_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                       <span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;1998-04-01&#39;</span><span class="p">,</span> <span class="n">active_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">active_area_id_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">active_area_feature_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                       <span class="n">default_open_interval_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                       <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                       <span class="n">geographic_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">geographic_groups_col</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">max_obsname_len</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">outfile</span><span class="o">=</span><span class="s1">&#39;../source_data/observations/head_obs/preprocessed_head_obs.csv&#39;</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;Preprocess head observation data, for example, groundwater level data output from the</span>
+<span class="sd">    `visGWDB program &lt;https://doi.org/10.5066/P9W004O6&gt;`_.</span>
+
+<span class="sd">    * Data are reprojected from a `source_crs` (Coordinate reference system; assumed to be in geographic coordinates)</span>
+<span class="sd">      to the CRS of the model (`dest_crs`)</span>
+<span class="sd">    * Data are culled to a `start_date` and optionally, a polygon or set of polygons defining the model area</span>
+<span class="sd">    * length units are converted to those of the groundwater model. Open intervals for the wells are</span>
+<span class="sd">      converted from depths to elevations</span>
+<span class="sd">    * missing open intervals are filled based on well bottom depths (if availabile) and the median open</span>
+<span class="sd">      interval length for the dataset.</span>
+<span class="sd">    * Wells are categorized based on the quality of the open interval information (see the documentation</span>
+<span class="sd">      for :func:`mapgwm.headobs.fill_well_open_intervals`).</span>
+<span class="sd">    * Prefixes for observation names (with an optional length limit) that identify the location are generated</span>
+<span class="sd">    * Preliminary observation groups can also be assigned, based on geographic areas defined by polygons</span>
+<span class="sd">      (`aoi` parameter)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : DataFrame</span>
+<span class="sd">        Head observation data, e.g. as output from :func:`mapgwm.headobs.get_data`.</span>
+<span class="sd">        Columns:</span>
+
+<span class="sd">        ========= ================================================================</span>
+<span class="sd">        site_no   site identifier</span>
+<span class="sd">        lat or y  latitude or y-coorindate in `source_crs`</span>
+<span class="sd">        lon or x  longitude or x-coordinate in `source_crs`</span>
+<span class="sd">        datetime  measurement dates in pandas datetime format</span>
+<span class="sd">        head      average head for the period represented by the datetime</span>
+<span class="sd">        last_head last head measurement for the period represented by the datetime</span>
+<span class="sd">        head_std  standard deviation of measured heads within the datetime period</span>
+<span class="sd">        ========= ================================================================</span>
+
+<span class="sd">        Notes:</span>
+
+<span class="sd">        * lat and lon columns can alternatively be in the metadata table</span>
+<span class="sd">        * &#39;x&#39; and &#39;y&#39; columns can be supplied in</span>
+<span class="sd">        * `last_head` and `head_std` only need to be included if they are in</span>
+<span class="sd">          `head_data_columns`</span>
+
+<span class="sd">    metadata : DataFrame</span>
+<span class="sd">        Head observation data, e.g. as output from :func:`mapgwm.headobs.get_data`.</span>
+
+<span class="sd">        Must have the following columns:</span>
+
+<span class="sd">        ================= ==========================================================================</span>
+<span class="sd">        site_no (index)   site identifier</span>
+<span class="sd">        aqfr_cd           Local aquifer code</span>
+<span class="sd">        screen_botm       Well screen bottom, as a depth below land surface, in feet</span>
+<span class="sd">        screen_top        Well screen top, as a depth below land surface, in feet</span>
+<span class="sd">        well_depth        Well depth, in feet</span>
+<span class="sd">        well_el           Altitude of land surface, in feet</span>
+<span class="sd">        ================= ==========================================================================</span>
+
+<span class="sd">    head_data_columns : list of strings</span>
+<span class="sd">        Columns in data with head values or their statistics.</span>
+<span class="sd">        By default, &#39;head&#39;, &#39;last_head&#39;, &#39;head_std&#39;, which allows both</span>
+<span class="sd">        the average and last head values for the stress period to be considered,</span>
+<span class="sd">        as well as the variability of water levels contributing to an average value.</span>
+<span class="sd">    dem : str, optional</span>
+<span class="sd">        DEM raster of the land surface. Used for estimating missing wellhead elevations.</span>
+<span class="sd">        Any reprojection to dest_crs is handled automatically, assuming</span>
+<span class="sd">        the DEM raster has CRS information embedded (arc-ascii grids do not!)</span>
+<span class="sd">        By default, None.</span>
+<span class="sd">    dem_units : str, {&#39;feet&#39;, &#39;meters&#39;, ..}</span>
+<span class="sd">        Units of DEM elevations, by default, &#39;meters&#39;</span>
+<span class="sd">    start_date : str (YYYY-mm-dd)</span>
+<span class="sd">        Simulation start date (cull observations before this date)</span>
+<span class="sd">    active_area : str</span>
+<span class="sd">        Shapefile with polygon to cull observations to. Automatically reprojected</span>
+<span class="sd">        to dest_crs if the shapefile includes a .prj file.</span>
+<span class="sd">        by default, None.</span>
+<span class="sd">    active_area_id_column : str, optional</span>
+<span class="sd">        Column in active_area with feature ids.</span>
+<span class="sd">        By default, None, in which case all features are used.</span>
+<span class="sd">    active_area_feature_id : str, optional</span>
+<span class="sd">        ID of feature to use for active area</span>
+<span class="sd">        By default, None, in which case all features are used.</span>
+<span class="sd">    source_crs : obj</span>
+<span class="sd">        Coordinate reference system of the head observation locations.</span>
+<span class="sd">        A Python int, dict, str, or :class:`pyproj.crs.CRS` instance</span>
+<span class="sd">        passed to :meth:`pyproj.crs.CRS.from_user_input`</span>
+
+<span class="sd">        Can be any of:</span>
+<span class="sd">          - PROJ string</span>
+<span class="sd">          - Dictionary of PROJ parameters</span>
+<span class="sd">          - PROJ keyword arguments for parameters</span>
+<span class="sd">          - JSON string with PROJ parameters</span>
+<span class="sd">          - CRS WKT string</span>
+<span class="sd">          - An authority string [i.e. &#39;epsg:4326&#39;]</span>
+<span class="sd">          - An EPSG integer code [i.e. 4326]</span>
+<span class="sd">          - A tuple of (&quot;auth_name&quot;: &quot;auth_code&quot;) [i.e (&#39;epsg&#39;, &#39;4326&#39;)]</span>
+<span class="sd">          - An object with a `to_wkt` method.</span>
+<span class="sd">          - A :class:`pyproj.crs.CRS` class</span>
+
+<span class="sd">        By default, epsg:4269</span>
+
+<span class="sd">    dest_crs : obj</span>
+<span class="sd">        Coordinate reference system of the model. Same input types</span>
+<span class="sd">        as ``source_crs``.</span>
+<span class="sd">        By default, epsg:5070</span>
+<span class="sd">    default_open_interval_length : float, optional</span>
+<span class="sd">        Option to specify a default open interval length </span>
+<span class="sd">        for wells that don&#39;t have screen top information.</span>
+<span class="sd">        By default None, in which case the median length is used,</span>
+<span class="sd">        or zero open interval length, if no wells in the dataset </span>
+<span class="sd">        have screen top information.</span>
+<span class="sd">    data_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
+<span class="sd">        Length units of head observations.</span>
+<span class="sd">    model_length_units : str; &#39;meters&#39;, &#39;feet&#39;, etc.</span>
+<span class="sd">        Length units of model.</span>
+<span class="sd">    geographic_groups : file, dict or list-like</span>
+<span class="sd">        Option to group observations by area(s) of interest. Can</span>
+<span class="sd">        be a shapefile, list of shapefiles, or dictionary of shapely polygons.</span>
+<span class="sd">        A &#39;group&#39; column will be created in the metadata, and observation</span>
+<span class="sd">        sites within each polygon will be assigned the group name</span>
+<span class="sd">        associated with that polygon.</span>
+
+<span class="sd">        For example::</span>
+
+<span class="sd">            geographic_groups=&#39;../source_data/extents/CompositeHydrographArea.shp&#39;</span>
+<span class="sd">            geographic_groups=[&#39;../source_data/extents/CompositeHydrographArea.shp&#39;]</span>
+<span class="sd">            geographic_groups={&#39;cha&#39;: &lt;shapely Polygon&gt;}</span>
+
+<span class="sd">        Where &#39;cha&#39; is an observation group name for observations located within the</span>
+<span class="sd">        the area defined by CompositeHydrographArea.shp. For shapefiles,</span>
+<span class="sd">        group names are provided in a `geographic_groups_col`.</span>
+
+<span class="sd">    geographic_groups_col : str</span>
+<span class="sd">        Field name in the `geographic_groups` shapefile(s) containing the</span>
+<span class="sd">        observation group names associated with each polygon.</span>
+
+<span class="sd">    max_obsname_len : int or None</span>
+<span class="sd">        Maximum length for observation name prefix. Default of 13</span>
+<span class="sd">        allows for a PEST obsnme of 20 characters or less with</span>
+<span class="sd">        &lt;prefix&gt;_yyyydd or &lt;prefix&gt;_&lt;per&gt;d&lt;per&gt;</span>
+<span class="sd">        (e.g. &lt;prefix&gt;_2d1 for a difference between stress periods 2 and 1)</span>
+<span class="sd">        If None, observation names will not be truncated. PEST++ does not have</span>
+<span class="sd">        a limit on observation name length.</span>
+<span class="sd">    outfile : str</span>
+<span class="sd">        Where output file will be written. Metadata are written to a file</span>
+<span class="sd">        with the same name, with an additional &quot;_info&quot; suffix prior to</span>
+<span class="sd">        the file extension.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df : DataFrame</span>
+<span class="sd">        Preprocessed time series</span>
+<span class="sd">    well_info : DataFrame</span>
+<span class="sd">        Preprocessed metadata</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    `The PEST++ Manual &lt;https://github.com/usgs/pestpp/tree/master/documentation&gt;`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># multiplier to convert input length units to model units</span>
+    <span class="n">unit_conversion</span> <span class="o">=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">data_length_units</span><span class="p">,</span> <span class="n">model_length_units</span><span class="p">)</span>
+
+    <span class="c1"># outputs</span>
+    <span class="n">out_plot</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">outpath</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+        <span class="n">makedirs</span><span class="p">(</span><span class="n">outpath</span><span class="p">)</span>
+        <span class="n">outname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+        <span class="n">out_info_csvfile</span> <span class="o">=</span> <span class="n">outname</span> <span class="o">+</span> <span class="s1">&#39;_info.csv&#39;</span>
+        <span class="n">out_data_csvfile</span> <span class="o">=</span> <span class="n">outfile</span>
+        <span class="n">out_plot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">outpath</span><span class="p">,</span> <span class="s1">&#39;open_interval_lengths.pdf&#39;</span><span class="p">)</span>
+        <span class="n">out_shapefile</span> <span class="o">=</span> <span class="n">outname</span> <span class="o">+</span> <span class="s1">&#39;_info.shp&#39;</span>
+
+    <span class="c1"># set the starting and ending dates here</span>
+    <span class="n">stdate</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+
+    <span class="c1"># convert to datetime; drop the timestamps</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">normalize</span><span class="p">()</span>
+
+    <span class="c1"># trim to the time range</span>
+    <span class="n">n_measurements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">n_sites</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">site_no</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;starting with </span><span class="si">{</span><span class="n">n_measurements</span><span class="si">:</span><span class="s1">,d</span><span class="si">}</span><span class="s1"> measurements at </span><span class="si">{</span><span class="n">n_sites</span><span class="si">:</span><span class="s1">,d</span><span class="si">}</span><span class="s1"> unique wells&#39;</span><span class="p">)</span>
+    <span class="n">no_data_in_period</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&lt;</span> <span class="n">stdate</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">no_data_in_period</span><span class="p">):</span>
+        <span class="n">in_period</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">datetime</span> <span class="o">&gt;=</span> <span class="n">stdate</span>
+        <span class="n">n_sites_before</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">no_data_in_period</span><span class="p">,</span> <span class="s1">&#39;site_no&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">in_period</span><span class="p">,</span> <span class="s1">&#39;site_no&#39;</span><span class="p">])))</span>
+        <span class="nb">print</span><span class="p">((</span><span class="sa">f</span><span class="s1">&#39;culling </span><span class="si">{</span><span class="n">no_data_in_period</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s1">,d</span><span class="si">}</span><span class="s1"> measurements from </span><span class="si">{</span><span class="n">n_sites_before</span><span class="si">:</span><span class="s1">,d</span><span class="si">}</span><span class="s1"> &#39;</span>
+              <span class="sa">f</span><span class="s1">&#39;sites that are prior to start date of </span><span class="si">{</span><span class="n">start_date</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">in_period</span><span class="p">]</span>
+
+    <span class="c1"># collapse dataset to mean values at each site</span>
+    <span class="k">if</span> <span class="s1">&#39;site_no&#39;</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">metadata</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;site_no&#39;</span><span class="p">:</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">rsuffix</span><span class="o">=</span><span class="s1">&#39;_meta&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">head_data_columns</span><span class="p">:</span>
+        <span class="n">well_info</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;start_dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;end_dt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+    <span class="c1"># project x, y to model crs</span>
+    <span class="n">x_col</span> <span class="o">=</span> <span class="s1">&#39;lon&#39;</span>
+    <span class="n">y_col</span> <span class="o">=</span> <span class="s1">&#39;lat&#39;</span>
+    <span class="k">if</span> <span class="s1">&#39;lon&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">well_info</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;lat&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">well_info</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="n">x_col</span> <span class="o">=</span> <span class="s1">&#39;x&#39;</span>
+        <span class="n">y_col</span> <span class="o">=</span> <span class="s1">&#39;y&#39;</span>
+    <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span> <span class="o">=</span> <span class="n">project</span><span class="p">((</span><span class="n">well_info</span><span class="p">[</span><span class="n">x_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">well_info</span><span class="p">[</span><span class="n">y_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">),</span> <span class="n">source_crs</span><span class="p">,</span> <span class="n">dest_crs</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_pr</span><span class="p">,</span> <span class="n">y_pr</span><span class="p">)]</span>
+
+    <span class="c1"># cull data to that within the model area</span>
+    <span class="k">if</span> <span class="n">active_area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span><span class="p">,</span> <span class="n">md</span> <span class="o">=</span> <span class="n">cull_data_to_active_area</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">active_area</span><span class="p">,</span>
+                                          <span class="n">active_area_id_column</span><span class="p">,</span>
+                                          <span class="n">active_area_feature_id</span><span class="p">,</span>
+                                          <span class="n">data_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">well_info</span><span class="p">)</span>
+
+    <span class="c1"># convert length units; convert screen tops and botms to depths</span>
+    <span class="n">missing_elevations</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">well_el</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">dem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">missing_elevations</span><span class="p">):</span>
+        <span class="n">well_location_elevations</span> <span class="o">=</span> <span class="n">get_values_at_points</span><span class="p">(</span><span class="n">dem</span><span class="p">,</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">points_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+        <span class="n">well_location_elevations</span> <span class="o">*=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">dem_units</span><span class="p">,</span> <span class="n">model_length_units</span><span class="p">)</span>
+        <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missing_elevations</span><span class="p">,</span> <span class="s1">&#39;well_el&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_location_elevations</span><span class="p">[</span><span class="n">missing_elevations</span><span class="p">]</span>
+
+    <span class="n">length_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;well_el&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">head_data_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">length_columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">well_info</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">well_info</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">*=</span> <span class="n">unit_conversion</span>
+    <span class="k">if</span> <span class="n">default_open_interval_length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">default_open_interval_length</span> <span class="o">*=</span> <span class="n">unit_conversion</span>
+
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_botm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_el&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_depth&#39;</span><span class="p">]</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_el&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_el&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span>
+
+    <span class="c1"># just the data, site numbers, times and aquifer</span>
+    <span class="n">head_data_columns</span> <span class="o">=</span> <span class="n">head_data_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;head_std&#39;</span><span class="p">]</span>
+    <span class="n">transient_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">head_data_columns</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span>
+    <span class="n">transient_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">transient_cols</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">transient_cols</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">head_data_columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">*=</span> <span class="n">unit_conversion</span>
+
+    <span class="c1"># #### trim down to only well_info with both estimated water levels and standard deviation</span>
+    <span class="c1"># monthly measured levels may not have standard deviation</span>
+    <span class="c1"># (as opposed to monthly statistical estimates)</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="n">head_data_columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+    <span class="c1">#if &#39;head_std&#39; in df.columns:</span>
+    <span class="c1">#    criteria = criteria &amp; pd.notnull(well_info[&#39;head_std&#39;])</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="n">criteria</span><span class="p">]</span>
+
+    <span class="c1"># verify that all well_info have a wellhead elevation</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">well_el</span><span class="p">))</span>
+
+    <span class="c1"># categorize wells based on quality of open interval information</span>
+    <span class="c1"># estimate missing open intervals where possible</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">fill_well_open_intervals</span><span class="p">(</span><span class="n">well_info</span><span class="p">,</span> 
+                                         <span class="n">default_open_interval_length</span><span class="o">=</span><span class="n">default_open_interval_length</span><span class="p">,</span>
+                                         <span class="n">out_plot</span><span class="o">=</span><span class="n">out_plot</span><span class="p">)</span>
+
+    <span class="c1"># drop well_info with negative reported open interval</span>
+    <span class="c1">#well_info = well_info.loc[open_interval_length &gt; 0]</span>
+
+    <span class="c1"># cull data to well_info in well info table</span>
+    <span class="n">has_metadata</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">site_no</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="o">~</span><span class="n">has_metadata</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;culling </span><span class="si">{}</span><span class="s1"> wells not found in metadata table!&#39;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">~</span><span class="n">has_metadata</span><span class="p">)))</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">has_metadata</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># make unique n-character prefixes (site identifiers) for each observation location</span>
+    <span class="c1"># 13 character length allows for prefix_yyyymmm in 20 character observation names</span>
+    <span class="c1"># (BeoPEST limit)</span>
+    <span class="n">unique_obsnames</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">obsnames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">well_info</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">max_obsname_len</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">make_obsname</span><span class="p">(</span><span class="n">sn</span><span class="p">,</span> <span class="n">unique_names</span><span class="o">=</span><span class="n">unique_obsnames</span><span class="p">,</span>
+                                <span class="n">maxlen</span><span class="o">=</span><span class="n">max_obsname_len</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">unique_obsnames</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">sn</span>
+        <span class="n">unique_obsnames</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">obsnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;obsprefix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">obsnames</span>
+    <span class="n">obsprefix</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">well_info</span><span class="o">.</span><span class="n">obsprefix</span><span class="p">))</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;obsprefix&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">obsprefix</span><span class="p">[</span><span class="n">sn</span><span class="p">]</span> <span class="k">for</span> <span class="n">sn</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">site_no</span><span class="p">]</span>
+
+    <span class="c1"># add area of interest information</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;group&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;heads&#39;</span>
+    <span class="n">well_info</span> <span class="o">=</span> <span class="n">assign_geographic_obsgroups</span><span class="p">(</span><span class="n">well_info</span><span class="p">,</span> <span class="n">geographic_groups</span><span class="p">,</span>
+                                            <span class="n">geographic_groups_col</span><span class="p">,</span>
+                                            <span class="n">metadata_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+
+    <span class="c1"># save out the results</span>
+    <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df2shp</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+               <span class="n">out_shapefile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">))</span>
+        <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_info_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_data_csvfile</span><span class="p">))</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_data_csvfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.2f</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span><span class="p">,</span> <span class="n">well_info</span></div>
+
+
+<div class="viewcode-block" id="fill_well_open_intervals"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.fill_well_open_intervals">[docs]</a><span class="k">def</span> <span class="nf">fill_well_open_intervals</span><span class="p">(</span><span class="n">well_info</span><span class="p">,</span> 
+                             <span class="n">default_open_interval_length</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                             <span class="n">out_plot</span><span class="o">=</span><span class="s1">&#39;open_interval_lengths.pdf&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Many or most of the well_info output from `visGWDB &lt;https://doi.org/10.5066/P9W004O6&gt;`</span>
+<span class="sd">    may not have complete open interval information. A much greater proportion may have</span>
+<span class="sd">    depth information. Use reported well depths and a computed median open interval</span>
+<span class="sd">    length to estimate a screen top and bottom where available. Categorize well_info</span>
+<span class="sd">    based on the quality of open interval information:</span>
+
+<span class="sd">    1) top and bottom elevations included</span>
+<span class="sd">    2) only bottom (median open interval length of 40 ft. used for top)</span>
+<span class="sd">    3) bottom and well depth are inconsistent</span>
+<span class="sd">    4) neither top or bottom are known</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    well_info : DataFrame</span>
+<span class="sd">        Metadata from :func:`~mapgwm.headobs.preprocess_headobs`</span>
+<span class="sd">        Columns (all lengths in model units):</span>
+
+<span class="sd">        ===========  ====================================</span>
+<span class="sd">        screen_top   open interval top elevation</span>
+<span class="sd">        screen_botm  open interval bottom elevation</span>
+<span class="sd">        well_botm    well bottom elevation</span>
+<span class="sd">        ===========  ====================================</span>
+<span class="sd">    default_open_interval_length : float, optional</span>
+<span class="sd">        Option to specify a default open interval length </span>
+<span class="sd">        for wells that don&#39;t have screen top information.</span>
+<span class="sd">        By default None, in which case the median length is used,</span>
+<span class="sd">        or zero open interval length, if no wells in the dataset </span>
+<span class="sd">        have screen top information.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    well_info : DataFrame</span>
+<span class="sd">        Metadata from :func:`~mapgwm.headobs.preprocess_headobs`, with</span>
+<span class="sd">        additional screen top and bottom estimates and category column</span>
+<span class="sd">        with above categories.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_incomplete</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span> <span class="o">|</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">((</span><span class="s1">&#39;</span><span class="si">{:.0%}</span><span class="s1"> of wells (n=</span><span class="si">{}</span><span class="s1">) have incomplete open interval information. &#39;</span>
+           <span class="s1">&#39;Filling screen bottoms with well bottoms where available, &#39;</span>
+           <span class="s1">&#39;and estimating screen tops from median open interval length.&#39;</span>
+           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">is_incomplete</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">well_info</span><span class="p">),</span> <span class="n">is_incomplete</span><span class="o">.</span><span class="n">sum</span><span class="p">())))</span>
+
+    <span class="c1"># populate a well bottom column from well depth or open bottom field(s)</span>
+    <span class="n">bottom_known</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_botm&#39;</span><span class="p">])</span> <span class="o">|</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">])</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;botm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="c1"># only use well depth where there isn&#39;t a screen botm</span>
+    <span class="n">botm_from_well_depth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;botm&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="n">bottom_known</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">botm_from_well_depth</span><span class="p">,</span> <span class="s1">&#39;botm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">botm_from_well_depth</span><span class="p">,</span> <span class="s1">&#39;well_botm&#39;</span><span class="p">]</span>
+
+    <span class="c1"># label indicating what is known about open interval</span>
+    <span class="c1"># 1) top and bottom elevations included</span>
+    <span class="c1"># 2) only bottom (use median open interval length of 40 ft. for top)</span>
+    <span class="c1"># 3) bottom and well depth are inconsistent</span>
+    <span class="c1"># 4) neither top or bottom are known</span>
+
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">cd2</span> <span class="o">=</span> <span class="n">bottom_known</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">])</span>
+    <span class="n">cd1</span> <span class="o">=</span> <span class="n">bottom_known</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">])</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cd2</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cd1</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># identify well_info where well depth and open interval bottom are different</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;well_botm&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">])</span>
+    <span class="n">isdifferent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">inds</span><span class="p">,</span> <span class="s1">&#39;well_botm&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">inds</span><span class="p">,</span> <span class="s1">&#39;screen_botm&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">tol</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">inds</span> <span class="o">&amp;</span> <span class="n">isdifferent</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="c1"># group 1 well_info have known tops and bottoms</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># assign group 2 tops using median open interval length</span>
+    <span class="c1"># these well_info only have well_depth values</span>
+    <span class="c1"># make a histogram of open interval length</span>
+    <span class="n">open_interval_length</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">out_plot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">open_interval_length</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Well open interval length, in feet&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Count&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">.3</span><span class="p">,</span> <span class="mf">.7</span><span class="p">,</span> <span class="s1">&#39;median: </span><span class="si">{:.0f}</span><span class="se">\n</span><span class="s1">mean: </span><span class="si">{:.0f}</span><span class="se">\n</span><span class="s1">max: </span><span class="si">{:.0f}</span><span class="se">\n</span><span class="s1">min:  </span><span class="si">{:.0f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">open_interval_length</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span>
+                                                                                         <span class="n">open_interval_length</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+                                                                                         <span class="n">open_interval_length</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span>
+                                                                                         <span class="n">open_interval_length</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                                                                                         <span class="p">),</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_plot</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">default_open_interval_length</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">default_open_interval_length</span> <span class="o">=</span> <span class="n">open_interval_length</span><span class="o">.</span><span class="n">median</span><span class="p">()</span>
+        <span class="c1"># in cases where there is no screen top information in the dataset</span>
+        <span class="c1"># median will be nan; assign default open inv. length of 0</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">default_open_interval_length</span><span class="p">):</span>
+            <span class="n">default_open_interval_length</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">category</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;well_botm&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">default_open_interval_length</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;botm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ind</span><span class="p">,</span> <span class="s1">&#39;well_botm&#39;</span><span class="p">]</span>
+
+    <span class="c1"># verify that the assigned top and bottom depths are consistent with</span>
+    <span class="c1"># original columns</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">botm</span> <span class="o">-</span> <span class="n">well_info</span><span class="o">.</span><span class="n">screen_botm</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+    <span class="n">diff2</span> <span class="o">=</span> <span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">botm</span> <span class="o">-</span> <span class="n">well_info</span><span class="o">.</span><span class="n">well_botm</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">screen_botm</span><span class="p">)</span>
+    <span class="n">ind2</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">well_depth</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">diff</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="c1"># verify that assigned botms are at most tol feet different</span>
+    <span class="c1"># from well depth values</span>
+    <span class="c1">#assert diff2[ind].max() &lt;= tol</span>
+
+    <span class="c1"># replace the original screen top/botm columns with filled versions</span>
+    <span class="c1"># maintain original values for checking</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;orig_scbot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;orig_sctop&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;botm&#39;</span><span class="p">]</span>
+    <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">]</span>
+    <span class="n">well_info</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;botm&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">is_incomplete</span> <span class="o">=</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span> <span class="o">|</span> <span class="n">well_info</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.0%}</span><span class="s1"> of wells (n=</span><span class="si">{}</span><span class="s1">) still missing open interval information; &#39;</span>
+          <span class="s1">&#39;assigned to category 4.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">is_incomplete</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">well_info</span><span class="p">),</span>
+                                           <span class="n">is_incomplete</span><span class="o">.</span><span class="n">sum</span><span class="p">()))</span>
+    <span class="c1"># any wells still missing information should be in the fourth category</span>
+    <span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">well_info</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">is_incomplete</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">union</span><span class="p">({</span><span class="mi">4</span><span class="p">})</span> <span class="o">==</span> <span class="p">{</span><span class="mi">4</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">well_info</span></div>
+
+
+<div class="viewcode-block" id="get_spinup_obs"><a class="viewcode-back" href="../../api/mapgwm.headobs.html#mapgwm.headobs.get_spinup_obs">[docs]</a><span class="k">def</span> <span class="nf">get_spinup_obs</span><span class="p">(</span><span class="n">field_measurements</span><span class="p">,</span> <span class="n">field_measurement_inventory</span><span class="p">,</span>
+                   <span class="n">perioddata</span><span class="p">,</span> <span class="n">dem</span><span class="p">,</span> <span class="n">source_crs</span><span class="p">,</span> <span class="n">active_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geographic_groups</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">default_open_interval_ft</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                   <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute head observations that are the observed equivalents of</span>
+<span class="sd">    simulated heads on the last timestep of multiyear or multi-decadal stress periods.</span>
+<span class="sd">    Observed equivalents should ideally be free of seasonal bias, and representative</span>
+<span class="sd">    of average conditions near the end of the stress period. For example, if</span>
+<span class="sd">    the stress period was 1900-1950, we would want an average head value</span>
+<span class="sd">    for the late 1940s (for comparison with the simulated value on the last timestep).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    field_measurements : DataFrame</span>
+<span class="sd">        DataFrame of head measurements. Must have the following columns:</span>
+
+<span class="sd">        ========= ================================================================</span>
+<span class="sd">        site_no   site identifier</span>
+<span class="sd">        datetime  measurement dates in pandas datetime format</span>
+<span class="sd">        head      average head for the period represented by the datetime</span>
+<span class="sd">        last_head last head measurement for the period represented by the datetime</span>
+<span class="sd">        head_std  standard deviation of measured heads within the datetime period</span>
+<span class="sd">        ========= ================================================================</span>
+<span class="sd">    </span>
+<span class="sd">    field_measurement_inventory : DataFrame</span>
+<span class="sd">        DataFrame of head observation site information. Must have the following columns:</span>
+<span class="sd">        </span>
+<span class="sd">        ========= ================================================================</span>
+<span class="sd">        site_no   site identifier</span>
+<span class="sd">        datetime  measurement dates in pandas datetime format</span>
+<span class="sd">        head      average head for the period represented by the datetime</span>
+<span class="sd">        last_head last head measurement for the period represented by the datetime</span>
+<span class="sd">        head_std  standard deviation of measured heads within the datetime period</span>
+<span class="sd">        ========= ================================================================</span>
+<span class="sd">    </span>
+<span class="sd">    perioddata : DataFrame</span>
+<span class="sd">        DataFrame with start/end dates for stress periods or timesteps. </span>
+<span class="sd">        Must have the following columns:</span>
+<span class="sd">        </span>
+<span class="sd">        =================== =============================================================</span>
+<span class="sd">        time                modflow simulation time, in days</span>
+<span class="sd">        start_datetime      start date for each stress period or timestep</span>
+<span class="sd">        end_datetime        end date for each stress period or timestep</span>
+<span class="sd">        =================== =============================================================</span>
+<span class="sd">    dem : [type]</span>
+<span class="sd">        [description]</span>
+<span class="sd">    source_crs : [type]</span>
+<span class="sd">        [description]</span>
+<span class="sd">    active_area : str</span>
+<span class="sd">        Shapefile with polygon to cull observations to. Automatically reprojected</span>
+<span class="sd">        to dest_crs if the shapefile includes a .prj file.</span>
+<span class="sd">        by default, None.</span>
+<span class="sd">    start_date : None</span>
+<span class="sd">        Start date for truncating observations.</span>
+<span class="sd">    default_open_interval_ft : int, optional</span>
+<span class="sd">        [description], by default 50</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fm</span> <span class="o">=</span> <span class="n">field_measurements</span>
+    <span class="k">if</span> <span class="s1">&#39;datetime&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fm</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span> <span class="ow">and</span> <span class="s1">&#39;datetime&#39;</span> <span class="ow">in</span> <span class="n">fm</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+      <span class="n">fm</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">fm</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">])</span>
+    <span class="n">fm_inv</span> <span class="o">=</span> <span class="n">field_measurement_inventory</span>
+    <span class="c1"># Assign stress periods to the measured values</span>
+    <span class="n">fm</span><span class="p">[</span><span class="s1">&#39;per&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span>
+    <span class="k">for</span> <span class="n">per</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">perioddata</span><span class="p">[</span><span class="s1">&#39;per&#39;</span><span class="p">],</span> <span class="n">perioddata</span><span class="p">[</span><span class="s1">&#39;start_datetime&#39;</span><span class="p">],</span> <span class="n">perioddata</span><span class="p">[</span><span class="s1">&#39;end_datetime&#39;</span><span class="p">]):</span>
+        <span class="n">fm</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">,</span> <span class="s1">&#39;per&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">per</span>
+
+    <span class="c1"># group the measured values by period, retaining the last n values within 2 years</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;per&#39;</span><span class="p">)</span>
+
+    <span class="c1"># aggreate the measured values to the mean of the last two years in each period</span>
+    <span class="c1"># only retaining sites with at least two measurements in those two years</span>
+    <span class="n">retain_last_nyears</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">nmin</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># min number of measurements</span>
+    <span class="n">means_dfs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">per</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">groups</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">per</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">perioddata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">per</span><span class="p">,</span> <span class="s1">&#39;end_datetime&#39;</span><span class="p">])</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="mf">365.25</span><span class="o">*</span><span class="n">retain_last_nyears</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;days&#39;</span><span class="p">)</span>
+        <span class="n">culled</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">):</span><span class="n">end</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span> <span class="p">:]</span>
+        <span class="n">grouped</span> <span class="o">=</span> <span class="n">culled</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="n">grouped</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">means</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grouped</span><span class="o">.</span><span class="n">count</span><span class="p">()[</span><span class="s1">&#39;per&#39;</span><span class="p">]</span>
+        <span class="n">means</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grouped</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">means</span> <span class="o">=</span> <span class="n">means</span><span class="p">[</span><span class="n">means</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">nmin</span><span class="p">]</span>
+        <span class="n">means</span><span class="p">[</span><span class="s1">&#39;per&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">means</span><span class="p">[</span><span class="s1">&#39;per&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">means</span><span class="p">[</span><span class="s1">&#39;datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">perioddata</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">per</span><span class="p">,</span> <span class="s1">&#39;end_datetime&#39;</span><span class="p">]</span>
+        <span class="n">means_dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
+
+    <span class="n">spinup_obs</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">means_dfs</span><span class="p">)</span>
+    
+    <span class="c1"># Now format the spinup obs to match the other obs &#39;data&#39; dataframe above</span>
+    <span class="c1"># Remove any duplicates</span>
+    <span class="c1"># Group all obs prior to 4/2007 (in the multi-year stress periods) as spinup</span>
+    <span class="k">if</span> <span class="s1">&#39;sl_lev_va&#39;</span> <span class="ow">in</span> <span class="n">spinup_obs</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s1">&#39;last_head&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">spinup_obs</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+      <span class="n">spinup_obs</span><span class="p">[</span><span class="s1">&#39;last_head&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">spinup_obs</span><span class="p">[</span><span class="s1">&#39;sl_lev_va&#39;</span><span class="p">]</span>
+    <span class="n">spinup_data</span><span class="p">,</span> <span class="n">spinup_meta</span> <span class="o">=</span> <span class="n">preprocess_headobs</span><span class="p">(</span><span class="n">spinup_obs</span><span class="p">,</span>
+                                        <span class="n">fm_inv</span><span class="p">,</span>
+                                        <span class="n">head_data_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;last_head&#39;</span><span class="p">],</span>
+                                        <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                                        <span class="n">active_area</span><span class="o">=</span><span class="n">active_area</span><span class="p">,</span>
+                                        <span class="n">source_crs</span><span class="o">=</span><span class="n">source_crs</span><span class="p">,</span>
+                                        <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                                        <span class="n">start_date</span><span class="o">=</span><span class="n">start_date</span><span class="p">,</span>
+                                        <span class="n">geographic_groups</span><span class="o">=</span><span class="n">geographic_groups</span><span class="p">,</span>
+                                        <span class="n">geographic_groups_col</span><span class="o">=</span><span class="s1">&#39;obsgroup&#39;</span><span class="p">,</span>
+                                        <span class="n">default_open_interval_length</span><span class="o">=</span><span class="n">default_open_interval_ft</span><span class="p">,</span>
+                                        <span class="n">dem</span><span class="o">=</span><span class="n">dem</span><span class="p">,</span>
+                                        <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">spinup_data</span><span class="p">,</span> <span class="n">spinup_meta</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">Last updated on Feb 09, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

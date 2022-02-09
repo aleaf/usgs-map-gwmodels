@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mapgwm.te_wateruse &mdash; usgs-map-gwmodels 0.post72.dev0+g3e0095e documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> usgs-map-gwmodels
+          </a>
+              <div class="version">
+                0.post72.dev0+g3e0095e
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html"> Demo of USGS-MAP-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html"> Code reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html"> Input Data Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html"> References cited</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">usgs-map-gwmodels</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>mapgwm.te_wateruse</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mapgwm.te_wateruse</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span>
+
+<span class="kn">from</span> <span class="nn">gisutils</span> <span class="kn">import</span> <span class="n">df2shp</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">get_values_at_points</span>
+<span class="kn">from</span> <span class="nn">mfsetup.units</span> <span class="kn">import</span> <span class="n">convert_length_units</span><span class="p">,</span> <span class="n">convert_volume_units</span>
+<span class="kn">from</span> <span class="nn">mapgwm.utils</span> <span class="kn">import</span> <span class="n">cull_data_to_active_area</span>
+
+
+<div class="viewcode-block" id="read_te_water_use_spreadsheet"><a class="viewcode-back" href="../../api/mapgwm.thermal.html#mapgwm.te_wateruse.read_te_water_use_spreadsheet">[docs]</a><span class="k">def</span> <span class="nf">read_te_water_use_spreadsheet</span><span class="p">(</span><span class="n">xlsx_file</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="s1">&#39;2010&#39;</span><span class="p">,</span> <span class="n">site_no_col</span><span class="o">=</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+                                  <span class="n">site_name_col</span><span class="o">=</span><span class="s1">&#39;site_name&#39;</span><span class="p">,</span>
+                                  <span class="n">x_coord_col</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">y_coord_col</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span>
+                                  <span class="n">q_col</span><span class="o">=</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="n">source_name_col</span><span class="o">=</span><span class="s1">&#39;source_name&#39;</span><span class="p">,</span>
+                                  <span class="n">source_code_col</span><span class="o">=</span><span class="s1">&#39;WATER_SOURCE_CODE&#39;</span><span class="p">,</span>
+                                  <span class="n">source_code_filter</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GW&#39;</span><span class="p">],</span>
+                                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read water use data for thermoelectric power generation from</span>
+<span class="sd">    a spreadsheet; filter by a source code, and rename columns to</span>
+<span class="sd">    uniform names so that multiple datasets from spreadsheets with different</span>
+<span class="sd">    formatting can be easily combined.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xlsx_file : Excel spreadsheet</span>
+<span class="sd">        Thermoelectric power water use data, in a format readable by</span>
+<span class="sd">        :func:`pandas.read_excel`.</span>
+<span class="sd">    date : str</span>
+<span class="sd">        Date string in a format readable by :func:`pandas.Timestamp`,</span>
+<span class="sd">        indicating the time of the water use data (most likely a year).</span>
+<span class="sd">    site_no_col : str</span>
+<span class="sd">        Column in `xlsx_file` with identifiers for water users (power plants).</span>
+<span class="sd">    site_name_col : str</span>
+<span class="sd">        Column in `xlsx_file` with names of water users (power plants).</span>
+<span class="sd">    x_coord_col : str</span>
+<span class="sd">        Column in `xlsx_file` with power plant location x-coordinates.</span>
+<span class="sd">    y_coord_col : str</span>
+<span class="sd">        Column in `xlsx_file` with power plant location y-coordinates.</span>
+<span class="sd">    q_col : str</span>
+<span class="sd">        Column in `xlsx_file` with power plant pumping rates.</span>
+<span class="sd">    source_name_col : str</span>
+<span class="sd">        Column in `xlsx_file` with names of water sources.</span>
+<span class="sd">    source_code_col : str</span>
+<span class="sd">        Column in `xlsx_file` with codes for water supply sources.</span>
+<span class="sd">    source_code_filter : sequence of strings</span>
+<span class="sd">        Source code(s) in `source_code_col` to filter on; e.g. &#39;GW&#39; for groundwater</span>
+<span class="sd">    kwargs : keywword arguments to :func:`pandas.read_excel`</span>
+<span class="sd">        Arguments to read_excel that might be needed to read</span>
+<span class="sd">        `xlsx_file`; for example ``sheet_name`` or ``skiprows``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df : DataFrame</span>
+<span class="sd">        TE data with unified column names:</span>
+
+<span class="sd">        ========= ====================================================</span>
+<span class="sd">        site_no   power plant identifier (plant code)</span>
+<span class="sd">        date      pandas datetime representative of flux (e.g. &#39;2010&#39;)</span>
+<span class="sd">        x         x-coordinate of withdrawl, in `source_crs`</span>
+<span class="sd">        y         y-coordinate of withdrawl, in `source_crs`</span>
+<span class="sd">        q         withdrawl flux, in `data_volume_units` per days</span>
+<span class="sd">        site_name name of power plant, if provided</span>
+<span class="sd">        ========= ====================================================</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">xlsx_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">renames</span> <span class="o">=</span> <span class="p">{</span><span class="n">site_no_col</span><span class="p">:</span> <span class="s1">&#39;site_no&#39;</span><span class="p">,</span>
+               <span class="n">site_name_col</span><span class="p">:</span> <span class="s1">&#39;site_name&#39;</span><span class="p">,</span>
+               <span class="n">source_name_col</span><span class="p">:</span> <span class="s1">&#39;source_name&#39;</span><span class="p">,</span>
+               <span class="n">source_code_col</span><span class="p">:</span> <span class="s1">&#39;source_cd&#39;</span><span class="p">,</span>
+               <span class="n">x_coord_col</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span>
+               <span class="n">y_coord_col</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span>
+               <span class="n">q_col</span><span class="p">:</span> <span class="s1">&#39;q&#39;</span><span class="p">}</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">renames</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># filter by source code</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;source_cd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">source_code_filter</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">source_code_filter</span> <span class="o">==</span> <span class="s1">&#39;GW&#39;</span><span class="p">:</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="n">criteria</span> <span class="o">|</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;source_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;well&#39;</span><span class="p">))</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">criteria</span><span class="p">]</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;start_datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;start_datetime&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;site_name&#39;</span><span class="p">,</span> <span class="s1">&#39;source_name&#39;</span><span class="p">]</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">columns</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="preprocess_te_wateruse"><a class="viewcode-back" href="../../api/mapgwm.thermal.html#mapgwm.te_wateruse.preprocess_te_wateruse">[docs]</a><span class="k">def</span> <span class="nf">preprocess_te_wateruse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+                           <span class="n">start_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">end_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">active_area</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">active_area_id_column</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">active_area_feature_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">estimated_production_zone_top</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">estimated_production_zone_botm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">estimated_production_surface_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">,</span>
+                           <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span>
+                           <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                           <span class="n">interp_method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span>
+                           <span class="n">data_volume_units</span><span class="o">=</span><span class="s1">&#39;mgal&#39;</span><span class="p">,</span>
+                           <span class="n">model_length_units</span><span class="o">=</span><span class="s1">&#39;meters&#39;</span><span class="p">,</span>
+                           <span class="n">outfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Preprocess water use data from thermoelectric power plants:</span>
+
+<span class="sd">    * reproject data to a destination CRS `dest_crs`)</span>
+<span class="sd">    * cull data to an area of interest (`active_area`)</span>
+<span class="sd">    * if input data do not have information on the well screen intervals;</span>
+<span class="sd">      sample screen tops and bottoms from raster surfaces bounding</span>
+<span class="sd">      an estimated production zone (e.g. `estimated_production_zone_top`)</span>
+<span class="sd">    * reindex the data to continous monthly values extending from `start_date`</span>
+<span class="sd">      to `end_date`. Typically, these would bracket the time period for which</span>
+<span class="sd">      the pumping should be simulated in a model. For example, the earliest data</span>
+<span class="sd">      may be from 2010, but if the model starts in 2008, it may be appropriate to</span>
+<span class="sd">      begin using the 2010 rates then (``start_date=&#39;2008&#39;``). If no start or end</span>
+<span class="sd">      date are given, the first and last years of pumping in `data` are used.</span>
+<span class="sd">    * fill empty months by interpolation via a specified `interp_method`</span>
+<span class="sd">    * backfill any remaining empty months going back to the `start_date`</span>
+<span class="sd">    * write processed data to a CSV file and shapefile of the same name</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : DataFrame</span>
+<span class="sd">        Thermoelectric water use data in the following format</span>
+<span class="sd">        (similar to that output by :func:`mapgwm.te_wateruse.read_te_water_use_spreadsheet`):</span>
+
+<span class="sd">        =============== =======================================================</span>
+<span class="sd">        site_no         power plant identifier (plant code)</span>
+<span class="sd">        start_datetime  pandas datetime representative of flux (e.g. &#39;2010&#39;)</span>
+<span class="sd">        x               x-coordinate of withdrawl, in `source_crs`</span>
+<span class="sd">        y               y-coordinate of withdrawl, in `source_crs`</span>
+<span class="sd">        q               withdrawl flux, in `data_volume_units` per days</span>
+<span class="sd">        =============== =======================================================</span>
+
+<span class="sd">    start_date : str</span>
+<span class="sd">        Start date for pumping rates. If earlier than the dates in `data`,</span>
+<span class="sd">        pumping rates will be backfilled to this date.</span>
+<span class="sd">    end_date : str</span>
+<span class="sd">        End date for pumping rates. If later than the dates in `data`,</span>
+<span class="sd">        pumping rates will be forward filled to this date.</span>
+<span class="sd">    active_area : str</span>
+<span class="sd">        Shapefile with polygon to cull observations to. Automatically reprojected</span>
+<span class="sd">        to dest_crs if the shapefile includes a .prj file.</span>
+<span class="sd">        by default, None.</span>
+<span class="sd">    active_area_id_column : str, optional</span>
+<span class="sd">        Column in active_area with feature ids.</span>
+<span class="sd">        By default, None, in which case all features are used.</span>
+<span class="sd">    active_area_feature_id : str, optional</span>
+<span class="sd">        ID of feature to use for active area</span>
+<span class="sd">        By default, None, in which case all features are used.</span>
+<span class="sd">    estimated_production_zone_top : file path</span>
+<span class="sd">        Raster surface for assigning screen tops</span>
+<span class="sd">    estimated_production_zone_botm : file path</span>
+<span class="sd">        Raster surface for assigning screen bottoms</span>
+<span class="sd">    estimated_production_surface_units : str, {&#39;meters&#39;, &#39;ft&#39;, etc.}</span>
+<span class="sd">        Length units of elevations in estimated production surface rasters.</span>
+<span class="sd">    source_crs : obj</span>
+<span class="sd">        Coordinate reference system of the head observation locations.</span>
+<span class="sd">        A Python int, dict, str, or :class:`pyproj.crs.CRS` instance</span>
+<span class="sd">        passed to :meth:`pyproj.crs.CRS.from_user_input`</span>
+
+<span class="sd">        Can be any of:</span>
+<span class="sd">          - PROJ string</span>
+<span class="sd">          - Dictionary of PROJ parameters</span>
+<span class="sd">          - PROJ keyword arguments for parameters</span>
+<span class="sd">          - JSON string with PROJ parameters</span>
+<span class="sd">          - CRS WKT string</span>
+<span class="sd">          - An authority string [i.e. &#39;epsg:4326&#39;]</span>
+<span class="sd">          - An EPSG integer code [i.e. 4326]</span>
+<span class="sd">          - A tuple of (&quot;auth_name&quot;: &quot;auth_code&quot;) [i.e (&#39;epsg&#39;, &#39;4326&#39;)]</span>
+<span class="sd">          - An object with a `to_wkt` method.</span>
+<span class="sd">          - A :class:`pyproj.crs.CRS` class</span>
+
+<span class="sd">        By default, epsg:4269</span>
+<span class="sd">    dest_crs : obj</span>
+<span class="sd">        Coordinate reference system of the model. Same input types</span>
+<span class="sd">        as ``source_crs``.</span>
+<span class="sd">        By default, epsg:5070</span>
+<span class="sd">    interp_method : str</span>
+<span class="sd">        Interpolation method to use for filling pumping rates to monthly values.</span>
+<span class="sd">        By default, &#39;linear&#39;</span>
+<span class="sd">    data_volume_units : str; e.g. &#39;mgal&#39;, &#39;m3&#39;, &#39;cubic feet&#39;, etc.</span>
+<span class="sd">        Volume units of pumping data. All time units are assumed to be in days.</span>
+<span class="sd">    model_length_units : str; e.g. &#39;feet&#39;, &#39;m&#39;, &#39;meters&#39;, etc.</span>
+<span class="sd">        Length units of model.</span>
+<span class="sd">    outfile : str</span>
+<span class="sd">        Path for output file. A shapefile of the same name is also written.</span>
+<span class="sd">        If None, no output file is written. By default, None</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    df_monthly : DataFrame</span>
+<span class="sd">        </span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    * time units for TE data and model are assumed to be days</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># reproject to dest_crs</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">project</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]),</span> <span class="n">source_crs</span><span class="p">,</span> <span class="n">dest_crs</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;geometry&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)]</span>
+
+    <span class="c1"># drop wells with no location information (for now)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># cull sites to those within the Delta footprint</span>
+    <span class="c1"># cull data to that within the model area</span>
+    <span class="k">if</span> <span class="n">active_area</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">cull_data_to_active_area</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">active_area</span><span class="p">,</span>
+                                      <span class="n">active_area_id_column</span><span class="p">,</span>
+                                      <span class="n">active_area_feature_id</span><span class="p">,</span>
+                                      <span class="n">data_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+
+    <span class="c1"># get top and bottom of estimated production interval at each well</span>
+    <span class="k">if</span> <span class="n">estimated_production_zone_top</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+            <span class="n">estimated_production_zone_botm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">surf_unit_conversion</span> <span class="o">=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">estimated_production_surface_units</span><span class="p">,</span>
+                                                    <span class="n">model_length_units</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">est_screen_top</span> <span class="o">=</span> <span class="n">get_values_at_points</span><span class="p">(</span><span class="n">estimated_production_zone_top</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
+                                              <span class="n">points_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+        <span class="n">est_screen_top</span> <span class="o">*=</span> <span class="n">surf_unit_conversion</span>
+        <span class="n">est_screen_botm</span> <span class="o">=</span> <span class="n">get_values_at_points</span><span class="p">(</span><span class="n">estimated_production_zone_botm</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
+                                               <span class="n">points_crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+        <span class="n">est_screen_botm</span> <span class="o">*=</span> <span class="n">surf_unit_conversion</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;screen_top&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">est_screen_top</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;screen_botm&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">est_screen_botm</span>
+
+    <span class="c1"># distribute fluxes to monthly values</span>
+    <span class="c1"># set start and end dates if not already set</span>
+    <span class="k">if</span> <span class="n">start_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">start_date</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">start_datetime</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">end_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">start_datetime</span><span class="o">.</span><span class="n">mmax</span><span class="p">()</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;site_no&#39;</span><span class="p">)</span>
+    <span class="n">all_groups</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">site_no</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+        <span class="n">dfg</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># create a continuous monthly time index</span>
+        <span class="c1"># labeled at the month start</span>
+        <span class="n">all_dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">)</span>
+        <span class="n">dfg</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">dfg</span><span class="p">[</span><span class="s1">&#39;start_datetime&#39;</span><span class="p">]</span>
+        <span class="n">dfg</span> <span class="o">=</span> <span class="n">dfg</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">all_dates</span><span class="p">)</span>
+
+        <span class="c1"># interpolate the discharge values;</span>
+        <span class="c1"># back filling to the start date</span>
+        <span class="n">dfg</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfg</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">interp_method</span><span class="p">)</span><span class="o">.</span><span class="n">bfill</span><span class="p">()</span>
+        <span class="n">dfg</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">convert_volume_units</span><span class="p">(</span><span class="n">data_volume_units</span><span class="p">,</span> <span class="n">model_length_units</span><span class="p">)</span>
+
+        <span class="c1"># fill remaining columns</span>
+        <span class="n">dfg</span><span class="p">[</span><span class="s1">&#39;start_datetime&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dfg</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">fill_columns</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dfg</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">({</span><span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;start_datetime&#39;</span><span class="p">})</span>
+        <span class="n">fill_values</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">fill_columns</span><span class="p">:</span>
+            <span class="n">dfg</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">fill_values</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+
+        <span class="c1"># add &#39;te&#39; prefix to site number</span>
+        <span class="n">dfg</span><span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;te_</span><span class="si">{</span><span class="n">site_no</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">all_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dfg</span><span class="p">)</span>
+    <span class="n">df_monthly</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">all_groups</span><span class="p">)</span>
+
+    <span class="c1"># assume most values represent abstraction</span>
+    <span class="c1"># if sum is positive, invert so that output values are negative</span>
+    <span class="k">if</span> <span class="n">df_monthly</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">df_monthly</span><span class="p">[</span><span class="s1">&#39;q&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># clean up the columns</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;start_datetime&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_top&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_botm&#39;</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]</span>
+    <span class="n">cols</span> <span class="o">+=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">df_monthly</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">cols</span><span class="p">))</span>
+    <span class="n">df_monthly</span> <span class="o">=</span> <span class="n">df_monthly</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
+
+    <span class="c1"># write the output</span>
+    <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">outfile</span><span class="p">)</span>
+        <span class="n">df_monthly</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;geometry&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">outfile</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%g</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;wrote </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">outfile</span><span class="p">))</span>
+
+        <span class="c1"># write only unique pumping values to shapefile</span>
+        <span class="n">to_shapefile</span> <span class="o">=</span> <span class="n">df_monthly</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+        <span class="n">shapefile</span> <span class="o">=</span> <span class="n">outfile</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s1">&#39;.shp&#39;</span><span class="p">)</span>
+        <span class="n">df2shp</span><span class="p">(</span><span class="n">to_shapefile</span><span class="p">,</span> <span class="n">shapefile</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">dest_crs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df_monthly</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">Last updated on Feb 09, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

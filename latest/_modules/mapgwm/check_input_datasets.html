@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mapgwm.check_input_datasets &mdash; usgs-map-gwmodels 0.post72.dev0+g3e0095e documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> usgs-map-gwmodels
+          </a>
+              <div class="version">
+                0.post72.dev0+g3e0095e
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../philosophy.html">Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html">Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/Example.html"> Demo of USGS-MAP-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/index.html"> Code reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html"> Input Data Descriptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-history.html"> Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html"> Contributing to usgs-map-gwmodels</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Bibliography</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html"> References cited</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">usgs-map-gwmodels</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>mapgwm.check_input_datasets</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mapgwm.check_input_datasets</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functions to test input files against those</span>
+<span class="sd">   used for module testing by Travis CI.</span>
+
+<span class="sd">   The automatic testing of the scripts uses standard</span>
+<span class="sd">   input files in tests/data/ to make sure routines will</span>
+<span class="sd">   run after changes are made.  These tests, however, do</span>
+<span class="sd">   not check if there are changes to input file formats</span>
+<span class="sd">   that can cause errors in the processing.  Functions in</span>
+<span class="sd">   this package just test user specified input files against</span>
+<span class="sd">   those used in the tests directory.  </span>
+
+<span class="sd">   Authors should add a method for any datasets</span>
+<span class="sd">   added to tests/data/</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">mapgwm.headobs</span> <span class="kn">import</span> <span class="n">preprocess_headobs</span><span class="p">,</span> <span class="n">get_data</span>
+
+
+<div class="viewcode-block" id="get_header_length"><a class="viewcode-back" href="../../api/mapgwm.checkdatasets.html#mapgwm.check_input_datasets.get_header_length">[docs]</a><span class="k">def</span> <span class="nf">get_header_length</span><span class="p">(</span><span class="n">sitefile</span><span class="p">,</span> <span class="n">col0</span><span class="o">=</span><span class="s1">&#39;SITE_BADGE&#39;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sitefile</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sitefile</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">src</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;#&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="ow">and</span> <span class="n">col0</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">i</span></div>
+
+<div class="viewcode-block" id="compare_lists"><a class="viewcode-back" href="../../api/mapgwm.checkdatasets.html#mapgwm.check_input_datasets.compare_lists">[docs]</a><span class="k">def</span> <span class="nf">compare_lists</span><span class="p">(</span><span class="n">list1</span><span class="p">,</span> <span class="n">name1</span><span class="p">,</span> <span class="n">list2</span><span class="p">,</span> <span class="n">name2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;compare two lists and check for different or missing entries</span>
+<span class="sd">       print out missing or different entries in list 2 compared to list 1</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        list1: list </span>
+<span class="sd">        name1: str - name to be printed in comparison</span>
+<span class="sd">        list2: second list</span>
+<span class="sd">        name2: str - name to be printed in comparison</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        passed: boolean,  returns True if files match</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">no_match</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">list2</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list1</span><span class="p">]</span>
+    <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">list1</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">list2</span><span class="p">]</span>
+    <span class="n">passed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">no_match</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">no_match</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> is in </span><span class="si">{2}</span><span class="s1"> but not in </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name1</span><span class="p">,</span> <span class="n">name2</span><span class="p">))</span>
+            <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> is missing in </span><span class="si">{2}</span><span class="s1"> compared to </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">name1</span><span class="p">,</span> <span class="n">name2</span><span class="p">))</span>
+            <span class="n">passed</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;lists match: </span><span class="si">{0}</span><span class="s1">, </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name1</span><span class="p">,</span> <span class="n">name2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">passed</span></div>
+
+
+<div class="viewcode-block" id="check_headobs_header"><a class="viewcode-back" href="../../api/mapgwm.checkdatasets.html#mapgwm.check_input_datasets.check_headobs_header">[docs]</a><span class="k">def</span> <span class="nf">check_headobs_header</span><span class="p">(</span><span class="n">new_data_file</span><span class="p">,</span> <span class="n">new_meta_file</span><span class="p">,</span> <span class="n">test_data_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;headobs.py reads in data from Will Asquith as two csv files</span>
+<span class="sd">       datafile - csv with observed monthly heads</span>
+<span class="sd">       metadata - csv with site characteristics</span>
+
+<span class="sd">       test_headobs points to </span>
+<span class="sd">       mapgwm/tests/data/headobs/GW_monthly_stats_test.txt</span>
+<span class="sd">       mapgwm/tests/data/headobs/GW_monthly_meta_test.txt</span>
+
+<span class="sd">       Which have the top 1000 lines of datasets from August 2020.</span>
+
+<span class="sd">       Parameters</span>
+<span class="sd">       ----------</span>
+<span class="sd">       new_data_file: path to data file to test</span>
+<span class="sd">       new_meta_file: path to metadata file to test</span>
+
+
+<span class="sd">       Returns</span>
+<span class="sd">       -------</span>
+<span class="sd">       (pass1 and pass2):  Boolean, False if files do not match</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+       
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_data_path</span><span class="p">,</span> <span class="s1">&#39;headobs&#39;</span><span class="p">)</span>
+    <span class="n">data_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;GW_monthly_stats_test.txt&#39;</span><span class="p">)</span>
+    <span class="n">metadata_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;GW_monthly_meta_test.txt&#39;</span><span class="p">)</span>
+
+    <span class="n">data_skiprows</span> <span class="o">=</span> <span class="n">get_header_length</span><span class="p">(</span><span class="n">data_file</span><span class="p">)</span>
+    <span class="n">testdata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">data_skiprows</span><span class="p">)</span>
+    <span class="n">data_skiprows</span> <span class="o">=</span> <span class="n">get_header_length</span><span class="p">(</span><span class="n">metadata_file</span><span class="p">)</span>
+    <span class="n">testmeta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">metadata_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">data_skiprows</span><span class="p">)</span>
+
+    <span class="n">data_skiprows</span> <span class="o">=</span> <span class="n">get_header_length</span><span class="p">(</span><span class="n">new_data_file</span><span class="p">)</span>
+    <span class="n">newdata</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">new_data_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">data_skiprows</span><span class="p">)</span>
+    <span class="n">data_skiprows</span> <span class="o">=</span> <span class="n">get_header_length</span><span class="p">(</span><span class="n">new_meta_file</span><span class="p">)</span>
+    <span class="n">newmeta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">new_meta_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">data_skiprows</span><span class="p">)</span>
+
+    <span class="n">pass1</span> <span class="o">=</span> <span class="n">compare_lists</span><span class="p">(</span><span class="n">testdata</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="s1">&#39;Test Dataset&#39;</span><span class="p">,</span> 
+                  <span class="n">newdata</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="s1">&#39;New Dataset&#39;</span><span class="p">)</span>
+
+    <span class="n">pass2</span> <span class="o">=</span> <span class="n">compare_lists</span><span class="p">(</span><span class="n">testmeta</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="s1">&#39;Test Metafile&#39;</span><span class="p">,</span> 
+                  <span class="n">newmeta</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="s1">&#39;New Metafile&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="p">(</span><span class="n">pass1</span> <span class="ow">and</span> <span class="n">pass2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_preprocess_headobs_input"><a class="viewcode-back" href="../../api/mapgwm.checkdatasets.html#mapgwm.check_input_datasets.check_preprocess_headobs_input">[docs]</a><span class="k">def</span> <span class="nf">check_preprocess_headobs_input</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">metadata_file</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
+    <span class="n">test_data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;tests/data&#39;</span>
+    <span class="n">geographic_groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;extents/CompositeHydrographArea.shp&#39;</span><span class="p">,</span>
+                         <span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;extents/MAP_generalized_regions.shp&#39;</span>
+                         <span class="p">]</span>
+    <span class="n">output_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="n">output_path</span> <span class="o">/</span> <span class="s1">&#39;preprocessed_monthly_output.csv&#39;</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">metadata</span> <span class="o">=</span> <span class="n">get_data</span><span class="p">(</span><span class="n">data_file</span><span class="o">=</span><span class="n">data_file</span><span class="p">,</span> <span class="n">metadata_files</span><span class="o">=</span><span class="n">metadata_file</span><span class="p">)</span>
+    <span class="n">preproc_data</span><span class="p">,</span> <span class="n">preproc_metadata</span> <span class="o">=</span> <span class="n">preprocess_headobs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span>
+                                        <span class="n">head_data_columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="s1">&#39;last_head&#39;</span><span class="p">],</span>
+                                        <span class="n">data_length_units</span><span class="o">=</span><span class="s1">&#39;feet&#39;</span><span class="p">,</span>
+                                        <span class="n">active_area</span><span class="o">=</span><span class="n">test_data_path</span> <span class="o">/</span> <span class="s1">&#39;extents/ms_delta.shp&#39;</span><span class="p">,</span>
+                                        <span class="n">source_crs</span><span class="o">=</span><span class="mi">4269</span><span class="p">,</span> <span class="n">dest_crs</span><span class="o">=</span><span class="mi">5070</span><span class="p">,</span>
+                                        <span class="n">start_date</span><span class="o">=</span><span class="s1">&#39;1998-04-01&#39;</span><span class="p">,</span>
+                                        <span class="n">geographic_groups</span><span class="o">=</span><span class="n">geographic_groups</span><span class="p">,</span>
+                                        <span class="n">geographic_groups_col</span><span class="o">=</span><span class="s1">&#39;obsgroup&#39;</span><span class="p">,</span>
+                                        <span class="n">outfile</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">outfile</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">Path</span><span class="p">(</span><span class="n">outfile</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">outfile</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s1">&#39;_info.csv&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">Path</span><span class="p">(</span><span class="n">outfile</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">outfile</span><span class="o">.</span><span class="n">stem</span> <span class="o">+</span> <span class="s1">&#39;_info.shp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">preproc_data</span><span class="o">.</span><span class="n">columns</span> <span class="o">==</span>
+                  <span class="p">[</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;datetime&#39;</span><span class="p">,</span> <span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="s1">&#39;last_head&#39;</span><span class="p">,</span> <span class="s1">&#39;head_std&#39;</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span><span class="p">,</span> <span class="s1">&#39;obsprefix&#39;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">preproc_data</span><span class="o">.</span><span class="n">obsprefix</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">preproc_metadata</span><span class="o">.</span><span class="n">obsprefix</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">({</span><span class="s1">&#39;site_no&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_botm&#39;</span><span class="p">,</span> <span class="s1">&#39;screen_top&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;category&#39;</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">}</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">preproc_metadata</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">preproc_metadata</span><span class="p">[</span><span class="s1">&#39;n&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span>
+    <span class="c1"># unit conversion was applied evenly</span>
+    <span class="n">preproc_data</span><span class="p">[</span><span class="s1">&#39;head_diffs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">preproc_data</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">preproc_data</span><span class="o">.</span><span class="n">last_head</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">preproc_data</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;head_diffs&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">preproc_data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">preproc_data</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">preproc_data</span><span class="o">.</span><span class="n">last_head</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+    <span class="n">preproc_metadata</span><span class="p">[</span><span class="s1">&#39;head_diffs&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">preproc_metadata</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">preproc_metadata</span><span class="o">.</span><span class="n">last_head</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">preproc_metadata</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;head_diffs&#39;</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">preproc_metadata</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">preproc_metadata</span><span class="p">[</span><span class="s1">&#39;head&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">preproc_metadata</span><span class="o">.</span><span class="n">last_head</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+
+    <span class="c1"># no negative open intervals</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">((</span><span class="n">preproc_metadata</span><span class="o">.</span><span class="n">screen_top</span> <span class="o">-</span> <span class="n">preproc_metadata</span><span class="o">.</span><span class="n">screen_botm</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">data_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;tests&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;headobs&#39;</span><span class="p">,</span> <span class="s1">&#39;GW_monthly_stats_test.txt&#39;</span><span class="p">)</span>
+    <span class="n">metadata_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;tests&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;headobs&#39;</span><span class="p">,</span> <span class="s1">&#39;GW_monthly_meta_test.txt&#39;</span><span class="p">)</span>
+
+    <span class="n">check</span> <span class="o">=</span> <span class="n">check_headobs_header</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="n">metadata_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">check</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PASSED&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;FAILED&#39;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+      <span class="lastupdated">Last updated on Feb 09, 2022.
+      </span></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
