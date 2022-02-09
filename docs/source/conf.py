@@ -211,5 +211,5 @@ intersphinx_mapping = {
     'flopy': ('https://modflowpy.github.io/flopydoc/', None),
     'rasterstats': ('https://pythonhosted.org/rasterstats/', None),
     'shapely': ('https://shapely.readthedocs.io/en/latest/', None),
-    'pyproj': ('http://pyproj4.github.io/pyproj/stable/', None)
+    'pyproj': ('https://pyproj4.github.io/pyproj/stable/', None)
 }
