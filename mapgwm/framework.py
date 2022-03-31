@@ -114,8 +114,12 @@ def plot_slice(layer_elevations, property_data=None,
         ncells = nrow
         title = 'Column {}'.format(column)
         xlabel = 'Row in model'
-    x = np.arange(ncells)
+    x = np.arange(ncells + 1)
     z = layer_elevations[:, row, column].copy()
+    # z needs to represent the voxel edges (not centers)
+    # cheat by simply repeating the right-most row
+    z = np.concatenate([z, z[:, -1:]], axis=1)
+    
     # since z is used to define cell edges in the pcolormesh (below)
     # z cannot be masked or have nan values
     # set missing data values (outside of the model footprint) in z
@@ -137,7 +141,7 @@ def plot_slice(layer_elevations, property_data=None,
         z[k, j] = z[k, j+side]
 
     #z = np.ma.masked_where(np.isnan(z), z)
-    thicknesses = np.diff(z, axis=0) * -1
+    thicknesses = np.diff(z[:, :-1], axis=0) * -1
     thicknesses[thicknesses <= 0] = 0.
 
     fig, ax = plt.subplots(figsize=(11, 8.5))
@@ -153,7 +157,7 @@ def plot_slice(layer_elevations, property_data=None,
         #x = np.squeeze(x[loc])  # + [x[-1] + 1]
         #x = np.ma.masked_array(x, mask=~loc)
         zstart = voxel_start_layer
-        zend = voxel_start_layer + property_data.shape[0] #+ 1
+        zend = voxel_start_layer + property_data.shape[0] + 1
         z = np.squeeze(z[zstart:zend, :])
 
         #if not np.any(z):
@@ -196,8 +200,12 @@ def plot_slice(layer_elevations, property_data=None,
 
     # plot the layer bottom elevations
     plot_layer = np.any(thicknesses > 0, axis=1)
+    plot_layer = np.insert(plot_layer, 0, True)
+    
     #plot_layer = np.append(plot_layer, True)
     plot_ij = np.any(thicknesses > 0, axis=0)
+    plot_ij = np.append(plot_ij, plot_ij[-1])
+    
     z[z == z_nodata] = np.nan
     if np.any(plot_ij):
         for layer_edge in z[plot_layer, :]:
