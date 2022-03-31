@@ -128,7 +128,7 @@ def check_preprocess_headobs_input(data_file, metadata_file, output_path='.'):
     assert not any(set(preproc_data.obsprefix).difference(preproc_metadata.obsprefix))
     assert not any({'site_no', 'x', 'y', 'screen_botm', 'screen_top',
                     'category', 'group'}.difference(preproc_metadata.columns))
-    assert preproc_metadata['n'].dtype == np.integer
+    assert np.issubdtype(preproc_metadata['n'].dtype, np.integer)
     # unit conversion was applied evenly
     preproc_data['head_diffs'] = np.abs(preproc_data['head'].values - preproc_data.last_head.values)
     preproc_data.sort_values(by='head_diffs', ascending=False, inplace=True)
