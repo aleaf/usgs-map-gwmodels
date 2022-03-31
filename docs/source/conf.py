@@ -207,7 +207,7 @@ intersphinx_mapping = {
     'scipy': ('https://docs.scipy.org/doc/scipy/reference/', None),
     'pandas': ('https://pandas.pydata.org/pandas-docs/stable', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'modflow-setup': ('https://aleaf.github.io/modflow-setup/latest/', None),
+    'modflow-setup': ('https://usgs.github.io/modflow-setup/latest/', None),
     'flopy': ('https://flopy.readthedocs.io/en/latest/', None),
     'rasterstats': ('https://pythonhosted.org/rasterstats/', None),
     'shapely': ('https://shapely.readthedocs.io/en/latest/', None),
