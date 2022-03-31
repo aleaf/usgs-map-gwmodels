@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>mapgwm.swuds &mdash; usgs-map-gwmodels 0.post72.dev0+g3e0095e documentation</title>
+  <title>mapgwm.swuds &mdash; usgs-map-gwmodels 0.post78.dev0+g4591bd8 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
@@ -32,7 +32,7 @@
             <a href="../../index.html" class="icon icon-home"> usgs-map-gwmodels
           </a>
               <div class="version">
-                0.post72.dev0+g3e0095e
+                0.post78.dev0+g4591bd8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -273,18 +273,23 @@
         <span class="k">if</span> <span class="s1">&#39;FROM_AQFR_CD&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;FROM_AQFR_CD&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;FROM_AQFR_CD&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-        <span class="c1"># make depths floats</span>
-        <span class="k">if</span> <span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="c1"># make depths floats and convert units</span>
+        <span class="n">length_conversion</span> <span class="o">=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">data_length_units</span><span class="p">,</span> <span class="n">model_length_units</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;FROM_ALT_VA&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">length_conversion</span>
+        <span class="c1"># TODO: move this below and populate screen bottom with actual elevations</span>
+        <span class="c1"># check subsequent code</span>
+        <span class="k">if</span> <span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">length_conversion</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            
         <span class="c1"># make dictionaries</span>
-        <span class="n">length_conversion</span> <span class="o">=</span> <span class="n">convert_length_units</span><span class="p">(</span><span class="n">data_length_units</span><span class="p">,</span> <span class="n">model_length_units</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">depths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SCREEN_BOT&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">length_conversion</span><span class="p">)))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">length_conversion</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depths</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_WELL_DEPTH_VA&#39;</span><span class="p">])))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">well_elevations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;SITE_NO&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;FROM_ALT_VA&#39;</span><span class="p">]))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">sort_sites</span><span class="p">(</span><span class="n">primarysort</span><span class="o">=</span><span class="n">site_no_col</span><span class="p">)</span>
         <span class="c1"># Best to reproject on init so that we know the points are in the dest_crs</span>
@@ -495,6 +500,9 @@
             <span class="c1"># reindex the site data to include all months for simulation period</span>
             <span class="n">all_dates</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;MS&#39;</span><span class="p">)</span>
             <span class="n">group</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">all_dates</span><span class="p">)</span>
+            <span class="c1"># skip sites that don&#39;t overlap at all with the start and end date</span>
+            <span class="k">if</span> <span class="n">group</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">all_dates</span><span class="p">)</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="k">continue</span>
             <span class="c1"># fill empty dates</span>
             <span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">month</span><span class="p">,</span> <span class="n">q_monthly</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">group</span><span class="o">.</span><span class="n">q_monthly</span><span class="p">):</span>
@@ -904,7 +912,7 @@
 
   <div role="contentinfo">
     <p>
-      <span class="lastupdated">Last updated on Feb 09, 2022.
+      <span class="lastupdated">Last updated on Mar 31, 2022.
       </span></p>
   </div>
 

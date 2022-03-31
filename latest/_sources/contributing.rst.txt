@@ -99,7 +99,7 @@ want to clone your fork to your machine::
 
     git clone git@github.com:your-user-name/usgs-map-gwmodels.git usgs-map-gwmodels-yourname
     cd usgs-map-gwmodels-yourname
-    git remote add upstream git://github.com/aleaf/usgs-map-gwmodels.git
+    git remote add upstream https://github.com/aleaf/usgs-map-gwmodels.git
 
 This creates the directory `usgs-map-gwmodels-yourname` and connects your repository to
 the upstream (main project) *usgs-map-gwmodels* repository.

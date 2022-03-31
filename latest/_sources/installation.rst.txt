@@ -73,14 +73,14 @@ Pip can be used to fetch USGS-MAP-gwmodels directly from GitHub:
 
 .. code-block:: bash
 
-    pip install git+git://github.com/aleaf/usgs-map-gwmodels@master
+    pip install git+https://github.com/aleaf/usgs-map-gwmodels@master
 
 Subsequent updates can then be made with
 
 .. code-block:: bash
 
     pip uninstall usgs-map-gwmodels
-    pip install git+git://github.com/aleaf/usgs-map-gwmodels@master
+    pip install git+https://github.com/aleaf/usgs-map-gwmodels@master
 
 Installing the USGS-MAP-gwmodels source code in-place
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

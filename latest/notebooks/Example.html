@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post72.dev0+g3e0095e documentation</title>
+  <title>Demo of USGS-MAP-gwmodels &mdash; usgs-map-gwmodels 0.post78.dev0+g4591bd8 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
@@ -37,7 +37,7 @@
             <a href="../index.html" class="icon icon-home"> usgs-map-gwmodels
           </a>
               <div class="version">
-                0.post72.dev0+g3e0095e
+                0.post78.dev0+g4591bd8
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -554,11 +554,11 @@ div.rendered_html tbody tr:hover {
 reading data from ../mapgwm/tests/data/rasters/dem_mean_elevs_1000.tif...
 finished in 0.05s
 reading data from ../mapgwm/tests/data/rasters/vkbg_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/ucaq_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mccu_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mcaq_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/lccu_surf.tif...
@@ -566,16 +566,16 @@ finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/lcaq_surf.tif...
 finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mwaq_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/lwaq_surf.tif...
-finished in 0.02s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/rasters/mdwy_surf.tif...
-finished in 0.02s
+finished in 0.03s
 computing cell thicknesses...
-finished in 7.38s
+finished in 5.84s
 
 computing cell thicknesses...
-finished in 15.07s
+finished in 12.36s
 
 wrote output/botm_array/model_top.tif
 wrote output/botm_array/botm0.tif
@@ -710,10 +710,10 @@ opening ../mapgwm/tests/data/swb/delta_swb_summer2018.nc...
 culling to bounding box: (434955.0, 1040285.0, 569955.0, 1342785.0)
 Aggregating to monthly values...
 wrote output/swb_monthly_means.nc
-took 0.38s
+took 0.36s
 
 checking compressed file
-finished in 0.40s
+finished in 0.38s
 
 </pre></div></div>
 </div>
@@ -2360,16 +2360,16 @@ writing output/preprocessed_monthly_headobs.csv
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 reading data from ../mapgwm/tests/data/iwum/est_prod_zone_top.tif...
-finished in 0.30s
+finished in 0.12s
 reading data from ../mapgwm/tests/data/iwum/est_prod_zone_botm.tif...
-finished in 0.10s
+finished in 0.12s
 Reset screen top and bottom to mean elevation at 9 locations where screen top was &lt; screen bottom
 
 reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
 Culling 14086 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 wrote output/iwum_m3.csv
-wrote output/plots/irr_wu_1km_1999_to_2017.nc_2022-02-09.pdf
+wrote output/plots/irr_wu_1km_1999_to_2017.nc_2022-03-31.pdf
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
@@ -2631,10 +2631,10 @@ writing output/preprocessed_swuds_data.shp... Done
       <td>-20895.471597</td>
       <td>5.52</td>
       <td>JAN_VAL</td>
-      <td>85.0</td>
+      <td>25.908</td>
       <td>37.1856</td>
-      <td>47.8144</td>
-      <td>67.8144</td>
+      <td>-11.2776</td>
+      <td>8.7224</td>
       <td>478430.626345</td>
       <td>1.050261e+06</td>
       <td>2010-01-01</td>
@@ -2646,10 +2646,10 @@ writing output/preprocessed_swuds_data.shp... Done
       <td>-20895.471597</td>
       <td>5.52</td>
       <td>FEB_VAL</td>
-      <td>85.0</td>
+      <td>25.908</td>
       <td>37.1856</td>
-      <td>47.8144</td>
-      <td>67.8144</td>
+      <td>-11.2776</td>
+      <td>8.7224</td>
       <td>478430.626345</td>
       <td>1.050261e+06</td>
       <td>2010-02-01</td>
@@ -2661,10 +2661,10 @@ writing output/preprocessed_swuds_data.shp... Done
       <td>-20895.471597</td>
       <td>5.52</td>
       <td>MAR_VAL</td>
-      <td>85.0</td>
+      <td>25.908</td>
       <td>37.1856</td>
-      <td>47.8144</td>
-      <td>67.8144</td>
+      <td>-11.2776</td>
+      <td>8.7224</td>
       <td>478430.626345</td>
       <td>1.050261e+06</td>
       <td>2010-03-01</td>
@@ -2676,10 +2676,10 @@ writing output/preprocessed_swuds_data.shp... Done
       <td>-20895.471597</td>
       <td>5.52</td>
       <td>APR_VAL</td>
-      <td>85.0</td>
+      <td>25.908</td>
       <td>37.1856</td>
-      <td>47.8144</td>
-      <td>67.8144</td>
+      <td>-11.2776</td>
+      <td>8.7224</td>
       <td>478430.626345</td>
       <td>1.050261e+06</td>
       <td>2010-04-01</td>
@@ -2691,10 +2691,10 @@ writing output/preprocessed_swuds_data.shp... Done
       <td>-20895.471597</td>
       <td>5.52</td>
       <td>MAY_VAL</td>
-      <td>85.0</td>
+      <td>25.908</td>
       <td>37.1856</td>
-      <td>47.8144</td>
-      <td>67.8144</td>
+      <td>-11.2776</td>
+      <td>8.7224</td>
       <td>478430.626345</td>
       <td>1.050261e+06</td>
       <td>2010-05-01</td>
@@ -2779,9 +2779,9 @@ reading ../mapgwm/tests/data/extents/ms_delta.shp...
 --&gt; building dataframe... (may take a while for large shapefiles)
 Culling 405 sites outside of the model area defined by [&#39;../mapgwm/tests/data/extents/ms_delta.shp&#39;].
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_top.tif...
-finished in 0.04s
+finished in 0.03s
 reading data from ../mapgwm/tests/data/swuds/rasters/pz_MCAQP_bot.tif...
-finished in 0.04s
+finished in 0.02s
 wrote output/preprocessed_te_data.csv
 writing output/preprocessed_te_data.shp... Done
 </pre></div></div>
@@ -2825,8 +2825,8 @@ writing output/preprocessed_te_data.shp... Done
       <th>screen_botm</th>
       <th>q</th>
       <th>geometry</th>
-      <th>source_name</th>
       <th>site_name</th>
+      <th>source_name</th>
     </tr>
   </thead>
   <tbody>
@@ -2840,8 +2840,8 @@ writing output/preprocessed_te_data.shp... Done
       <td>-162.649514</td>
       <td>-0.0</td>
       <td>POINT (497139.15087110555 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
     <tr>
       <th>2008-02-01</th>
@@ -2853,8 +2853,8 @@ writing output/preprocessed_te_data.shp... Done
       <td>-162.649514</td>
       <td>-0.0</td>
       <td>POINT (497139.15087110555 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
     <tr>
       <th>2008-03-01</th>
@@ -2866,8 +2866,8 @@ writing output/preprocessed_te_data.shp... Done
       <td>-162.649514</td>
       <td>-0.0</td>
       <td>POINT (497139.15087110555 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
     <tr>
       <th>2008-04-01</th>
@@ -2879,8 +2879,8 @@ writing output/preprocessed_te_data.shp... Done
       <td>-162.649514</td>
       <td>-0.0</td>
       <td>POINT (497139.15087110555 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
     <tr>
       <th>2008-05-01</th>
@@ -2892,8 +2892,8 @@ writing output/preprocessed_te_data.shp... Done
       <td>-162.649514</td>
       <td>-0.0</td>
       <td>POINT (497139.15087110555 1249816.468462982)</td>
-      <td>Wells</td>
       <td>L L Wilkins</td>
+      <td>Wells</td>
     </tr>
   </tbody>
 </table>
@@ -2960,7 +2960,7 @@ Text(0, 0.5, &#39;Pumpage from SWUDs, in m$^3$/day&#39;)
 
   <div role="contentinfo">
     <p>
-      <span class="lastupdated">Last updated on Feb 09, 2022.
+      <span class="lastupdated">Last updated on Mar 31, 2022.
       </span></p>
   </div>
 
