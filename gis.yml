@@ -38,8 +38,8 @@ dependencies:
 - pip
 - pip:
   - pytest-dependency
-  - git+git://github.com/modflowpy/flopy@develop
+  - git+https://github.com/modflowpy/flopy@develop
   - gis-utils
-  - git+git://github.com/modflowpy/modflow-export@develop
-  - git+git://github.com/modflowpy/sfrmaker@develop
-  - git+git://github.com/modflowpy/modflow-setup@develop
+  - git+https://github.com/modflowpy/modflow-export@develop
+  - git+https://github.com/modflowpy/sfrmaker@develop
+  - git+https://github.com/modflowpy/modflow-setup@develop
