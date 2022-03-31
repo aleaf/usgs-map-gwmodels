@@ -37,9 +37,8 @@ dependencies:
 - pip
 - pip:
   - gis-utils
-  - doctr
   - git+https://github.com/modflowpy/flopy@develop
-  - git+https://github.com/aleaf/sfrmaker@develop
-  - git+https://github.com/aleaf/modflow-setup@develop
+  - git+https://github.com/usgs/sfrmaker@develop
+  - git+https://github.com/usgs/modflow-setup@develop
   - git+https://github.com/aleaf/modflow-export@develop
 
