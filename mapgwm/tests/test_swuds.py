@@ -50,7 +50,7 @@ def test_preprocess_swuds(preprocessed_swuds_data, test_data_path, test_output_f
                                             results.model_length_units), 3785.4, atol=0.02)
     assert outfile.exists()
     assert outfile.with_suffix('.shp').exists()
-    check_cols = ['q', 'screen_top', 'screen_bot', 'x', 'y', 'start_datetime', 'site_no']
+    check_cols = ['q', 'screen_top', 'screen_botm', 'x', 'y', 'start_datetime', 'site_no']
     # discharges must be negative!
     assert results.df['q'].sum() < 0
     for col in check_cols:

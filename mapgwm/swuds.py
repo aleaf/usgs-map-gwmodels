@@ -450,17 +450,17 @@ class Swuds:
                 prod_zone_top = self.prod_zone_top[prod_name][site_no]
                 prod_zone_bot = self.prod_zone_bot[prod_name][site_no]
                 if np.isnan(prod_zone_top) or np.isnan(prod_zone_bot):  # missing zone
-                    group['screen_bot'] = self.well_elevations[site_no] - self.depths[site_no]
+                    group['screen_botm'] = self.well_elevations[site_no] - self.depths[site_no]
                     group['screen_top'] = self.well_elevations[site_no] - self.depths[site_no] + self.default_screen_len
                     group['open_int_method'] = 'well depth'
                 else:
                     if well_botm_depth < prod_zone_top and well_botm_depth > prod_zone_bot:
                         production_zone = prod_name
-                        group['screen_bot'] = prod_zone_bot
+                        group['screen_botm'] = prod_zone_bot
                         group['screen_top'] = prod_zone_top
                         group['open_int_method'] = 'production zone'
                     else:
-                        group['screen_bot'] = self.well_elevations[site_no] - self.depths[site_no]
+                        group['screen_botm'] = self.well_elevations[site_no] - self.depths[site_no]
                         group['screen_top'] = self.well_elevations[site_no] - self.depths[site_no] + self.default_screen_len
                         group['open_int_method'] = 'well depth'
             group['production_zone'] = production_zone
@@ -469,7 +469,7 @@ class Swuds:
             group['aquifer_name'] = self.aquifer_names.get(group["FROM_AQFR_CD"].values[0], 'unnamed')
 
             cols = ['site_no', 'q', 'q_monthly', 'month', 'well_elev', 'depth',
-                    'screen_bot', 'screen_top', 'x', 'y']
+                    'screen_botm', 'screen_top', 'x', 'y']
             all_groups.append(group[cols])
 
         self.df = pd.concat(all_groups)
