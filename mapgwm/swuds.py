@@ -182,18 +182,23 @@ class Swuds:
         if 'FROM_AQFR_CD' in self.df.columns:
             self.df["FROM_AQFR_CD"] = self.df["FROM_AQFR_CD"].str.strip()
 
-        # make depths floats
-        if 'FROM_WELL_DEPTH_VA' in self.df.columns:
-            self.df['SCREEN_BOT'] = pd.to_numeric(self.df['FROM_WELL_DEPTH_VA'], errors='coerce')
-        else:
-            self.df['SCREEN_BOT'] = np.nan
+        # make depths floats and convert units
+        length_conversion = convert_length_units(data_length_units, model_length_units)
         if 'FROM_ALT_VA' in self.df.columns:
             self.df['FROM_ALT_VA'] = pd.to_numeric(self.df['FROM_ALT_VA'], errors='coerce')
-
+            self.df['FROM_ALT_VA'] *= length_conversion
+        # TODO: move this below and populate screen bottom with actual elevations
+        # check subsequent code
+        if 'FROM_WELL_DEPTH_VA' in self.df.columns:
+            self.df['FROM_WELL_DEPTH_VA'] = pd.to_numeric(self.df['FROM_WELL_DEPTH_VA'], errors='coerce')
+            self.df['FROM_WELL_DEPTH_VA'] *= length_conversion
+            self.df['SCREEN_BOT'] = self.df['FROM_ALT_VA'] - self.df['FROM_WELL_DEPTH_VA']
+        else:
+            self.df['SCREEN_BOT'] = np.nan
+            
         # make dictionaries
-        length_conversion = convert_length_units(data_length_units, model_length_units)
-        self.depths = dict(list(zip(self.df['SITE_NO'], self.df['SCREEN_BOT'] * length_conversion)))
-        self.well_elevations = dict(zip(self.df['SITE_NO'], self.df['FROM_ALT_VA'] * length_conversion))
+        self.depths = dict(list(zip(self.df['SITE_NO'], self.df['FROM_WELL_DEPTH_VA'])))
+        self.well_elevations = dict(zip(self.df['SITE_NO'], self.df['FROM_ALT_VA']))
 
         self.sort_sites(primarysort=site_no_col)
         # Best to reproject on init so that we know the points are in the dest_crs
@@ -404,6 +409,9 @@ class Swuds:
             # reindex the site data to include all months for simulation period
             all_dates = pd.date_range(start_date, end_date, freq='MS')
             group = group.reindex(all_dates)
+            # skip sites that don't overlap at all with the start and end date
+            if group.reindex(all_dates).isna().all().all():
+                continue
             # fill empty dates
             q = []
             for month, q_monthly in zip(group.index.month, group.q_monthly):
