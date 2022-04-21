@@ -362,11 +362,23 @@ def preprocess_obs(data, metadata=None, data_columns=['flow'],
     #    df['line_id'] = [line_id_lookup[sn] for sn in df['site_no']]
         
     if include_sites is not None:
-        md = md.loc[md.site_no.isin(include_sites)]
-        df = df.loc[df.site_no.isin(include_sites)]
+        md_included = md.site_no.isin(include_sites)
+        if not any(md_included):
+            raise ValueError('None of the sites in include_sites are in the metadata or model area!')
+        md = md.loc[md_included]
+        data_included = df.site_no.isin(include_sites)
+        if not any(data_included):
+            raise ValueError('None of the sites in include_sites are in the data or model area!')
+        df = df.loc[data_included]
     if include_line_ids is not None:
-        md = md.loc[md.line_id.isin(include_line_ids)]
-        df = df.loc[df.line_id.isin(include_line_ids)]
+        md_included = md.line_id.isin(include_line_ids)
+        if not any(md_included):
+            raise ValueError('None of the sites in include_sites are in the metadata or model area!')
+        md = md.loc[md_included]
+        data_included = df.line_id.isin(include_line_ids)
+        if not any(data_included):
+            raise ValueError('None of the sites in include_sites are in the data or model area!')
+        df = df.loc[data_included]
     
     # convert units
     # ensure that values are numeric (may be objects if taken directly from NWIS)
