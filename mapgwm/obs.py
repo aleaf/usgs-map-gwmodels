@@ -362,6 +362,7 @@ def preprocess_obs(data, metadata=None, data_columns=['flow'],
     #    df['line_id'] = [line_id_lookup[sn] for sn in df['site_no']]
         
     if include_sites is not None:
+        include_sites = [str(site_no) for site_no in include_sites]
         md_included = md.site_no.isin(include_sites)
         if not any(md_included):
             raise ValueError('None of the sites in include_sites are in the metadata or model area!')
