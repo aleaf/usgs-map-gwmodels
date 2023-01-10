@@ -7,9 +7,9 @@ from mfsetup import load_modelgrid
 
 
 def get_monthly_means(ncfile, outfile, filter=None, 
-                      check_results=True):
+                      check_results=True, variable='net_infiltration'):
     get_monthly_values(ncfile, outfile, filter=filter, 
-                      check_results=check_results, stat='mean')
+                      check_results=check_results, stat='mean', variable=variable)
 
 
 def get_monthly_values(ncfile, outfile, filter=None, 
