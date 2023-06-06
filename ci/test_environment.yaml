@@ -1,8 +1,6 @@
 name: test
 channels:
 - conda-forge
-- defaults
-- atleaf
 dependencies:
 - python
 - ipython
@@ -11,11 +9,11 @@ dependencies:
 - ipykernel
 - matplotlib
 - pyyaml
-- numpy
+- numpy<1.20
 - scipy
 - xarray
 - netcdf4
-- pandas
+- pandas<2.0
 - openpyxl
 - gdal
 - fiona
@@ -23,7 +21,7 @@ dependencies:
 - rasterstats
 - shapely
 - rtree
-- pyproj>=2.2
+- pyproj
 - pyshp
 - codecov
 - coverage

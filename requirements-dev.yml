@@ -1,7 +1,6 @@
 name: usgs-map-gwmodels_dev
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - python
   - ipython
@@ -10,11 +9,11 @@ dependencies:
   - ipykernel
   - matplotlib
   - pyyaml
-  - numpy
+  - numpy<1.20
   - scipy
   - xarray
   - netcdf4
-  - pandas
+  - pandas<2.0
   - openpyxl
   - gdal
   - fiona
@@ -22,7 +21,7 @@ dependencies:
   - rasterstats
   - shapely
   - rtree
-  - pyproj>=2.2
+  - pyproj
   - pyshp
   - pytest
   - codecov
